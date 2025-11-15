@@ -1,0 +1,13 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+python-dotenv==1.0.1
+pydantic==2.10.3
+pydantic-settings==2.6.1
+httpx>=0.27.0,<0.28
+redis==5.2.0
+google-generativeai==0.8.3
+firebase-admin==6.6.0
+python-multipart==0.0.18
+pytest==8.3.3
+pytest-asyncio==0.24.0
+# pysui==0.65.0  # Requires Rust, install later when needed for blockchain integration

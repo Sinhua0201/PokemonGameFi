@@ -1,0 +1,279 @@
+'use client';
+
+import { useCurrentAccount } from '@mysten/dapp-kit';
+import { WalletConnect } from './WalletConnect';
+
+interface WalletGuardProps {
+  children: React.ReactNode;
+}
+
+export function WalletGuard({ children }: WalletGuardProps) {
+  const account = useCurrentAccount();
+
+  if (!account) {
+    return (
+      <>
+        <div className="wallet-guard-container">
+          <div className="wallet-guard-content">
+            <div className="pokeball-icon">
+              <div className="pokeball-top"></div>
+              <div className="pokeball-middle"></div>
+              <div className="pokeball-bottom"></div>
+              <div className="pokeball-center"></div>
+            </div>
+
+            <h1 className="wallet-guard-title">
+              PokéChain Battles
+            </h1>
+
+            <p className="wallet-guard-subtitle">
+              Connect your wallet to start your adventure
+            </p>
+
+            <div className="wallet-connect-wrapper">
+              <WalletConnect />
+            </div>
+
+            <div className="wallet-guard-footer">
+              <p>Don't have OneWallet?</p>
+              <a
+                href="https://chromewebstore.google.com/detail/onewallet/gclmcgmpkgblaglfokkaclneihpnbkli"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="download-link"
+              >
+                Download OneWallet Extension →
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .wallet-guard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+          }
+
+          .wallet-guard-container::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: pulse 4s ease-in-out infinite;
+          }
+
+          .wallet-guard-container::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: pulse 5s ease-in-out infinite;
+          }
+
+          @keyframes pulse {
+            0%, 100% {
+              transform: scale(1);
+              opacity: 0.5;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 0.8;
+            }
+          }
+
+          .wallet-guard-content {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+          }
+
+          @keyframes slideUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          .pokeball-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: bounce 2s ease-in-out infinite;
+          }
+
+          @keyframes bounce {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+          }
+
+          .pokeball-top {
+            width: 80px;
+            height: 40px;
+            background: #ef4444;
+            border-radius: 80px 80px 0 0;
+            position: relative;
+          }
+
+          .pokeball-middle {
+            width: 80px;
+            height: 8px;
+            background: #1f2937;
+            position: relative;
+          }
+
+          .pokeball-bottom {
+            width: 80px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0 0 80px 80px;
+            position: relative;
+          }
+
+          .pokeball-center {
+            width: 24px;
+            height: 24px;
+            background: #f3f4f6;
+            border: 4px solid #1f2937;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+          }
+
+          .wallet-guard-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+          }
+
+          .wallet-guard-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+          }
+
+          .wallet-connect-wrapper {
+            margin-bottom: 2rem;
+          }
+
+          .wallet-guard-footer {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+          }
+
+          .wallet-guard-footer p {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.5rem;
+          }
+
+          .download-link {
+            display: inline-block;
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+          }
+
+          .download-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #60a5fa;
+            transition: width 0.3s ease;
+          }
+
+          .download-link:hover {
+            color: #93c5fd;
+          }
+
+          .download-link:hover::after {
+            width: 100%;
+          }
+
+          @media (max-width: 640px) {
+            .wallet-guard-content {
+              padding: 2rem 1.5rem;
+            }
+
+            .wallet-guard-title {
+              font-size: 2rem;
+            }
+
+            .wallet-guard-subtitle {
+              font-size: 1rem;
+            }
+
+            .pokeball-icon {
+              width: 60px;
+              height: 60px;
+            }
+
+            .pokeball-top,
+            .pokeball-middle,
+            .pokeball-bottom {
+              width: 60px;
+            }
+
+            .pokeball-top,
+            .pokeball-bottom {
+              height: 30px;
+            }
+
+            .pokeball-center {
+              width: 18px;
+              height: 18px;
+              border-width: 3px;
+            }
+          }
+        `}</style>
+      </>
+    );
+  }
+
+  return <>{children}</>;
+}

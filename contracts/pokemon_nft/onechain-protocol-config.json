@@ -1,0 +1,8 @@
+﻿{
+    "jsonrpc":  "2.0",
+    "error":  {
+                  "code":  -32602,
+                  "message":  "expected value at line 3 column 16"
+              },
+    "id":  1
+}

@@ -1,0 +1,611 @@
+/* Pokemon Game Styles - 游戏化界面 */
+
+/* 像素化效果 */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* 游戏容器 */
+.game-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 动态背景粒子 */
+.game-bg-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: float 20s infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(50px);
+    opacity: 0;
+  }
+}
+
+/* Pokemon 卡片 - 游戏风格 */
+.pokemon-card {
+  background: linear-gradient(145deg, #2d3748, #1a202c);
+  border: 3px solid #4a5568;
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.pokemon-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s;
+}
+
+.pokemon-card:hover::before {
+  left: 100%;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  border-color: #63b3ed;
+  box-shadow: 0 20px 40px rgba(99, 179, 237, 0.4),
+              0 0 20px rgba(99, 179, 237, 0.3);
+}
+
+.pokemon-card-selected {
+  border-color: #48bb78;
+  box-shadow: 0 0 30px rgba(72, 187, 120, 0.6),
+              0 0 60px rgba(72, 187, 120, 0.4);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(72, 187, 120, 0.6),
+                0 0 60px rgba(72, 187, 120, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(72, 187, 120, 0.8),
+                0 0 80px rgba(72, 187, 120, 0.6);
+  }
+}
+
+/* 战斗场景 */
+.battle-arena {
+  background: linear-gradient(180deg, #4299e1 0%, #2b6cb0 50%, #2d5016 50%, #1a3a0f 100%);
+  border-radius: 30px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+}
+
+.battle-arena::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  opacity: 0.3;
+}
+
+/* Pokemon 战斗位置 */
+.pokemon-battle-position {
+  position: relative;
+  animation: pokemon-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pokemon-entrance {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.pokemon-sprite-container {
+  position: relative;
+  display: inline-block;
+}
+
+.pokemon-sprite {
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+  animation: pokemon-idle 2s ease-in-out infinite;
+}
+
+@keyframes pokemon-idle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 攻击动画 */
+.pokemon-attacking {
+  animation: attack-animation 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes attack-animation {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(50px) scale(1.2);
+  }
+  50% {
+    transform: translateX(50px) scale(1.2);
+  }
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* 受伤动画 */
+.pokemon-hurt {
+  animation: hurt-animation 0.5s;
+}
+
+@keyframes hurt-animation {
+  0%, 100% {
+    transform: translateX(0);
+    filter: brightness(1);
+  }
+  25% {
+    transform: translateX(-10px);
+    filter: brightness(1.5) hue-rotate(180deg);
+  }
+  75% {
+    transform: translateX(10px);
+    filter: brightness(1.5) hue-rotate(180deg);
+  }
+}
+
+/* HP 条 - 游戏风格 */
+.hp-bar-container {
+  background: #1a202c;
+  border: 3px solid #4a5568;
+  border-radius: 20px;
+  padding: 0.5rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hp-bar {
+  height: 24px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #742a2a, #9b2c2c);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hp-bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hp-bar-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: hp-shine 2s infinite;
+}
+
+@keyframes hp-shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+.hp-high {
+  background: linear-gradient(90deg, #22543d, #38a169, #48bb78);
+}
+
+.hp-medium {
+  background: linear-gradient(90deg, #744210, #d69e2e, #ecc94b);
+}
+
+.hp-low {
+  background: linear-gradient(90deg, #742a2a, #e53e3e, #fc8181);
+  animation: hp-critical 1s infinite;
+}
+
+@keyframes hp-critical {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 按钮 - 游戏风格 */
+.game-button {
+  background: linear-gradient(145deg, #4299e1, #3182ce);
+  border: 3px solid #2c5282;
+  border-radius: 15px;
+  padding: 1rem 2rem;
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.game-button:hover::before {
+  left: 100%;
+}
+
+.game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3),
+              inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.game-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+              inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-button-attack {
+  background: linear-gradient(145deg, #f56565, #e53e3e);
+  border-color: #9b2c2c;
+}
+
+.game-button-success {
+  background: linear-gradient(145deg, #48bb78, #38a169);
+  border-color: #22543d;
+}
+
+.game-button-disabled {
+  background: linear-gradient(145deg, #4a5568, #2d3748);
+  border-color: #1a202c;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 经验值条 */
+.exp-bar {
+  background: #1a202c;
+  border: 2px solid #4a5568;
+  border-radius: 10px;
+  height: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #805ad5, #9f7aea, #b794f4);
+  border-radius: 8px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(159, 122, 234, 0.5);
+  animation: exp-pulse 2s infinite;
+}
+
+@keyframes exp-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(159, 122, 234, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(159, 122, 234, 0.8);
+  }
+}
+
+/* 升级效果 */
+.level-up-animation {
+  animation: level-up 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes level-up {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* 进化效果 */
+.evolution-effect {
+  animation: evolution 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes evolution {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0;
+    transform: scale(1.5) rotate(180deg);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(0.5) rotate(360deg);
+  }
+  75% {
+    opacity: 0;
+    transform: scale(1.5) rotate(540deg);
+  }
+}
+
+/* 战斗日志 */
+.battle-log {
+  background: rgba(26, 32, 44, 0.95);
+  border: 3px solid #4a5568;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+.battle-log::-webkit-scrollbar {
+  width: 8px;
+}
+
+.battle-log::-webkit-scrollbar-track {
+  background: #1a202c;
+  border-radius: 4px;
+}
+
+.battle-log::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+.battle-log::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+.battle-log-entry {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(74, 85, 104, 0.3);
+  border-left: 4px solid #4299e1;
+  border-radius: 8px;
+  animation: log-entry-appear 0.3s;
+}
+
+@keyframes log-entry-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 粒子效果容器 */
+.particle-effect {
+  position: absolute;
+  pointer-events: none;
+}
+
+.damage-number {
+  position: absolute;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8),
+               0 0 20px rgba(255, 0, 0, 0.5);
+  animation: damage-float 1s forwards;
+  z-index: 100;
+}
+
+@keyframes damage-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1.5);
+  }
+}
+
+/* 胜利/失败屏幕 */
+.result-screen {
+  background: linear-gradient(135deg, rgba(26, 32, 44, 0.98), rgba(45, 55, 72, 0.98));
+  border: 4px solid;
+  border-radius: 30px;
+  padding: 3rem;
+  backdrop-filter: blur(20px);
+  animation: result-appear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.result-screen-victory {
+  border-color: #48bb78;
+  box-shadow: 0 0 50px rgba(72, 187, 120, 0.5),
+              inset 0 0 50px rgba(72, 187, 120, 0.1);
+}
+
+.result-screen-defeat {
+  border-color: #f56565;
+  box-shadow: 0 0 50px rgba(245, 101, 101, 0.5),
+              inset 0 0 50px rgba(245, 101, 101, 0.1);
+}
+
+@keyframes result-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* 星星效果 */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 3s infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .pokemon-card {
+    padding: 1rem;
+  }
+  
+  .game-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .battle-arena {
+    padding: 1rem;
+  }
+}
+
+/* 加载动画 */
+.pokeball-loader {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  position: relative;
+  animation: pokeball-spin 1s linear infinite;
+  background: linear-gradient(180deg, #f56565 50%, white 50%);
+  border: 4px solid #1a202c;
+}
+
+.pokeball-loader::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid #1a202c;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pokeball-loader::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: #1a202c;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+@keyframes pokeball-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

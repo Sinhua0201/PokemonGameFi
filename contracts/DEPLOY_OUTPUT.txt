@@ -1,0 +1,486 @@
+[Note]: Dependency sources are no longer verified automatically during publication and upgrade. You can pass the `--verify-deps` option if you would like to verify them as part of publication or upgrade.
+[note] Dependencies on Bridge, MoveStdlib, Sui, and SuiSystem are automatically added, but this feature is disabled for your package because you have explicitly included dependencies on Sui. Consider removing these dependencies from Move.toml.
+UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
+INCLUDING DEPENDENCY Sui
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING pokemon_nft
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:4:23
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{[0m[33mSelf[0m, UID};
+  [0m[36m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:4:29
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{Self, [0m[33mUID[0m};
+  [0m[36m│[0m                             [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:5:14
+  [0m[36m│[0m
+[0m[36m5[0m [0m[36m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:6:27
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[36m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:6:33
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[36m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:9:14
+  [0m[36m│[0m
+[0m[36m9[0m [0m[36m│[0m     use std::[0m[33mvector[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'vector' for module 'std::vector'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:47:12
+   [0m[36m│[0m
+[0m[36m47[0m [0m[36m│[0m     public [0m[33mentry[0m fun mint_starter(
+   [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:93:12
+   [0m[36m│[0m
+[0m[36m93[0m [0m[36m│[0m     public [0m[33mentry[0m fun mint_captured(
+   [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\pokemon.move:146:12
+    [0m[36m│[0m
+[0m[36m146[0m [0m[36m│[0m     public [0m[33mentry[0m fun update_stats(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:4:23
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{[0m[33mSelf[0m, UID, ID};
+  [0m[36m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:4:29
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{Self, [0m[33mUID[0m, ID};
+  [0m[36m│[0m                             [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:4:34
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{Self, UID, [0m[33mID[0m};
+  [0m[36m│[0m                                  [0m[33m^^[0m [0m[33mUnnecessary alias 'ID' for module member 'sui::object::ID'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:5:14
+  [0m[36m│[0m
+[0m[36m5[0m [0m[36m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:6:27
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[36m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:6:33
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[36m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:92:12
+   [0m[36m│[0m
+[0m[36m92[0m [0m[36m│[0m     public [0m[33mentry[0m fun list_pokemon(
+   [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:127:12
+    [0m[36m│[0m
+[0m[36m127[0m [0m[36m│[0m     public [0m[33mentry[0m fun list_egg(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:165:12
+    [0m[36m│[0m
+[0m[36m165[0m [0m[36m│[0m     public [0m[33mentry[0m fun buy_pokemon(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:210:12
+    [0m[36m│[0m
+[0m[36m210[0m [0m[36m│[0m     public [0m[33mentry[0m fun buy_egg(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:257:12
+    [0m[36m│[0m
+[0m[36m257[0m [0m[36m│[0m     public [0m[33mentry[0m fun cancel_listing(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:282:12
+    [0m[36m│[0m
+[0m[36m282[0m [0m[36m│[0m     public [0m[33mentry[0m fun update_fee(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\marketplace.move:296:12
+    [0m[36m│[0m
+[0m[36m296[0m [0m[36m│[0m     public [0m[33mentry[0m fun withdraw_fees(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:4:23
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{[0m[33mSelf[0m, UID};
+  [0m[36m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:4:29
+  [0m[36m│[0m
+[0m[36m4[0m [0m[36m│[0m     use sui::object::{Self, [0m[33mUID[0m};
+  [0m[36m│[0m                             [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:5:14
+  [0m[36m│[0m
+[0m[36m5[0m [0m[36m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:6:27
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[36m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:6:33
+  [0m[36m│[0m
+[0m[36m6[0m [0m[36m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[36m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:8:23
+  [0m[36m│[0m
+[0m[36m8[0m [0m[36m│[0m     use std::string::{[0m[33mSelf[0m, String};
+  [0m[36m│[0m                       [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'string'. Consider removing it[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:8:29
+  [0m[36m│[0m
+[0m[36m8[0m [0m[36m│[0m     use std::string::{Self, [0m[33mString[0m};
+  [0m[36m│[0m                             [0m[33m^^^^^^[0m [0m[33mUnused 'use' of alias 'String'. Consider removing it[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:9:14
+  [0m[36m│[0m
+[0m[36m9[0m [0m[36m│[0m     use std::[0m[33mvector[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'vector' for module 'std::vector'. This alias is provided by default[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:9:14
+  [0m[36m│[0m
+[0m[36m9[0m [0m[36m│[0m     use std::[0m[33mvector[0m;
+  [0m[36m│[0m              [0m[33m^^^^^^[0m [0m[33mUnused 'use' of alias 'vector'. Consider removing it[0m
+  [0m[36m│[0m
+  [0m[36m=[0m This alias does not shadow the built-in type 'vector' in type annotations.
+  [0m[36m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:10:38
+   [0m[36m│[0m
+[0m[36m10[0m [0m[36m│[0m     use pokemon_nft::pokemon::{Self, [0m[33mPokemon[0m};
+   [0m[36m│[0m                                      [0m[33m^^^^^^^[0m [0m[33mUnused 'use' of alias 'Pokemon'. Consider removing it[0m
+   [0m[36m│[0m
+   [0m[36m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:39:11
+   [0m[36m│[0m
+[0m[36m39[0m [0m[36m│[0m     const [0m[33mEIncompatibleParents[0m: u64 = 1;
+   [0m[36m│[0m           [0m[33m^^^^^^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EIncompatibleParents' is never used. Consider removing it.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:41:11
+   [0m[36m│[0m
+[0m[36m41[0m [0m[36m│[0m     const [0m[33mEMaxIncubationReached[0m: u64 = 3;
+   [0m[36m│[0m           [0m[33m^^^^^^^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EMaxIncubationReached' is never used. Consider removing it.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:54:12
+   [0m[36m│[0m
+[0m[36m54[0m [0m[36m│[0m     public [0m[33mentry[0m fun breed_pokemon(
+   [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:88:12
+   [0m[36m│[0m
+[0m[36m88[0m [0m[36m│[0m     public [0m[33mentry[0m fun increment_incubation(
+   [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[36m│[0m
+   [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:105:12
+    [0m[36m│[0m
+[0m[36m105[0m [0m[36m│[0m     public [0m[33mentry[0m fun add_battle_steps(egg: &mut Egg) {
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[36m┌─[0m \\?\C:\Users\User\Desktop\PokemonGameFi\contracts\pokemon_nft\sources\egg.move:121:12
+    [0m[36m│[0m
+[0m[36m121[0m [0m[36m│[0m     public [0m[33mentry[0m fun hatch_egg(
+    [0m[36m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[36m│[0m
+    [0m[36m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[36m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+
+Skipping dependency verification
+Transaction Digest: FLtkpMxqwg1rGzb3c5Vq6p4DnCRPEurinaEdaxFmTynU
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Transaction Data                                                                                             │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Sender: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                   │
+│ Gas Owner: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                │
+│ Gas Budget: 100000000 MIST                                                                                   │
+│ Gas Price: 1000 MIST                                                                                         │
+│ Gas Payment:                                                                                                 │
+│  ┌──                                                                                                         │
+│  │ ID: 0xf5c43a1e04071e6404a543d655228236f8b19f3ba39358b8975c141b12c99c04                                    │
+│  │ Version: 349180854                                                                                        │
+│  │ Digest: DsXJs3zzDv3t1DiDW1qPXF1rXPyv45CMRPJi55XyxStH                                                      │
+│  └──                                                                                                         │
+│                                                                                                              │
+│ Transaction Kind: Programmable                                                                               │
+│ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────╮ │
+│ │ Input Objects                                                                                            │ │
+│ ├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤ │
+│ │ 0   Pure Arg: Type: address, Value: "0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be" │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│ ╭─────────────────────────────────────────────────────────────────────────╮                                  │
+│ │ Commands                                                                │                                  │
+│ ├─────────────────────────────────────────────────────────────────────────┤                                  │
+│ │ 0  Publish:                                                             │                                  │
+│ │  ┌                                                                      │                                  │
+│ │  │ Dependencies:                                                        │                                  │
+│ │  │   0x0000000000000000000000000000000000000000000000000000000000000001 │                                  │
+│ │  │   0x0000000000000000000000000000000000000000000000000000000000000002 │                                  │
+│ │  └                                                                      │                                  │
+│ │                                                                         │                                  │
+│ │ 1  TransferObjects:                                                     │                                  │
+│ │  ┌                                                                      │                                  │
+│ │  │ Arguments:                                                           │                                  │
+│ │  │   Result 0                                                           │                                  │
+│ │  │ Address: Input  0                                                    │                                  │
+│ │  └                                                                      │                                  │
+│ ╰─────────────────────────────────────────────────────────────────────────╯                                  │
+│                                                                                                              │
+│ Signatures:                                                                                                  │
+│    C3Ta7Pxp7fvES1ygvPHoq0fVzYyZGSJCZzHrmKDRw1NSYEQocvqbto6XkFr7Uc8eUtkV2XDwGHm1bxMbtHuiBA==                  │
+│                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Transaction Effects                                                                               │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Digest: FLtkpMxqwg1rGzb3c5Vq6p4DnCRPEurinaEdaxFmTynU                                              │
+│ Status: Success                                                                                   │
+│ Executed Epoch: 905                                                                               │
+│                                                                                                   │
+│ Created Objects:                                                                                  │
+│  ┌──                                                                                              │
+│  │ ID: 0x2f3db25245da2213ddc7d722ada032fde090bb34f891982ef776b0b59e9cca87                         │
+│  │ Owner: Shared( 349180855 )                                                                     │
+│  │ Version: 349180855                                                                             │
+│  │ Digest: 8hapLaJ4YX5yTCfW3QjyW743rw6t3yJEa1fqbnygN9vR                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0x586b7fa7a8ef018df5bed618b8b84eff3a0538072d34195cd0fe7d763f493cfa                         │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )  │
+│  │ Version: 349180855                                                                             │
+│  │ Digest: 5eq2BJfj77W8kUvmpFbwazu9uL7dkhzHTLViPPZfxa1o                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0x6e035e55e528d9c5660c4736adf388294f0ec86846813c385dd3676e6d59ef4a                         │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )  │
+│  │ Version: 349180855                                                                             │
+│  │ Digest: ETWMGZmCvu42656ADL4te1CSp2DY2UdtNJ5GvwHuT3HJ                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xa9d61b1d0160c295f30fdacc43ba61425fef501e3629fa4688c382c5c60c07fe                         │
+│  │ Owner: Immutable                                                                               │
+│  │ Version: 1                                                                                     │
+│  │ Digest: 4CktBHKtj5LEVi24UioPv4zB9rAuBSNS9whUUoB3mmEo                                           │
+│  └──                                                                                              │
+│ Mutated Objects:                                                                                  │
+│  ┌──                                                                                              │
+│  │ ID: 0xf5c43a1e04071e6404a543d655228236f8b19f3ba39358b8975c141b12c99c04                         │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )  │
+│  │ Version: 349180855                                                                             │
+│  │ Digest: DcMemAdcrCgi2YPAHVaP1dmt8iMDQsrtwQ99NWSz8qyn                                           │
+│  └──                                                                                              │
+│ Gas Object:                                                                                       │
+│  ┌──                                                                                              │
+│  │ ID: 0xf5c43a1e04071e6404a543d655228236f8b19f3ba39358b8975c141b12c99c04                         │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )  │
+│  │ Version: 349180855                                                                             │
+│  │ Digest: DcMemAdcrCgi2YPAHVaP1dmt8iMDQsrtwQ99NWSz8qyn                                           │
+│  └──                                                                                              │
+│ Gas Cost Summary:                                                                                 │
+│    Storage Cost: 49650800 MIST                                                                    │
+│    Computation Cost: 1000000 MIST                                                                 │
+│    Storage Rebate: 978120 MIST                                                                    │
+│    Non-refundable Storage Fee: 9880 MIST                                                          │
+│                                                                                                   │
+│ Transaction Dependencies:                                                                         │
+│    Dd9pn1zFcSJjinxQewFd2gQdR4XKsHxFioD5MYnwLZQz                                                   │
+│    E3LwkkSsT2Qb7Nsg5RCFbupKBaWa81dxeEuM8rxnJbGs                                                   │
+│    EH9ogcem4zRb4YPs6GDdtK1K2RJwdiSd9jWZe11SnvdB                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────╮
+│ No transaction block events │
+╰─────────────────────────────╯
+
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Object Changes                                                                                                       │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Created Objects:                                                                                                     │
+│  ┌──                                                                                                                 │
+│  │ ObjectID: 0x2f3db25245da2213ddc7d722ada032fde090bb34f891982ef776b0b59e9cca87                                      │
+│  │ Sender: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                        │
+│  │ Owner: Shared( 349180855 )                                                                                        │
+│  │ ObjectType: 0xa9d61b1d0160c295f30fdacc43ba61425fef501e3629fa4688c382c5c60c07fe::marketplace::Marketplace          │
+│  │ Version: 349180855                                                                                                │
+│  │ Digest: 8hapLaJ4YX5yTCfW3QjyW743rw6t3yJEa1fqbnygN9vR                                                              │
+│  └──                                                                                                                 │
+│  ┌──                                                                                                                 │
+│  │ ObjectID: 0x586b7fa7a8ef018df5bed618b8b84eff3a0538072d34195cd0fe7d763f493cfa                                      │
+│  │ Sender: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                        │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )                     │
+│  │ ObjectType: 0xa9d61b1d0160c295f30fdacc43ba61425fef501e3629fa4688c382c5c60c07fe::marketplace::MarketplaceAdminCap  │
+│  │ Version: 349180855                                                                                                │
+│  │ Digest: 5eq2BJfj77W8kUvmpFbwazu9uL7dkhzHTLViPPZfxa1o                                                              │
+│  └──                                                                                                                 │
+│  ┌──                                                                                                                 │
+│  │ ObjectID: 0x6e035e55e528d9c5660c4736adf388294f0ec86846813c385dd3676e6d59ef4a                                      │
+│  │ Sender: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                        │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )                     │
+│  │ ObjectType: 0x2::package::UpgradeCap                                                                              │
+│  │ Version: 349180855                                                                                                │
+│  │ Digest: ETWMGZmCvu42656ADL4te1CSp2DY2UdtNJ5GvwHuT3HJ                                                              │
+│  └──                                                                                                                 │
+│ Mutated Objects:                                                                                                     │
+│  ┌──                                                                                                                 │
+│  │ ObjectID: 0xf5c43a1e04071e6404a543d655228236f8b19f3ba39358b8975c141b12c99c04                                      │
+│  │ Sender: 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be                                        │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )                     │
+│  │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI>                                                                        │
+│  │ Version: 349180855                                                                                                │
+│  │ Digest: DcMemAdcrCgi2YPAHVaP1dmt8iMDQsrtwQ99NWSz8qyn                                                              │
+│  └──                                                                                                                 │
+│ Published Objects:                                                                                                   │
+│  ┌──                                                                                                                 │
+│  │ PackageID: 0xa9d61b1d0160c295f30fdacc43ba61425fef501e3629fa4688c382c5c60c07fe                                     │
+│  │ Version: 1                                                                                                        │
+│  │ Digest: 4CktBHKtj5LEVi24UioPv4zB9rAuBSNS9whUUoB3mmEo                                                              │
+│  │ Modules: egg, marketplace, pokemon                                                                                │
+│  └──                                                                                                                 │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Balance Changes                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ┌──                                                                                              │
+│  │ Owner: Account Address ( 0xfcad7ec61928514cc34e9f3df33a1e504b30f6e0643e1bcb8ab0e1d9893931be )  │
+│  │ CoinType: 0x2::sui::SUI                                                                        │
+│  │ Amount: -49672680                                                                              │
+│  └──                                                                                              │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
