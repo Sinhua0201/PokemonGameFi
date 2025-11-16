@@ -93,8 +93,7 @@ export function useMintPokemon() {
                     if (change.type === 'created' && 
                         change.objectType?.includes('::pokemon::Pokemon')) {
                       pokemonObjectId = change.objectId;
-                      walletAddress = change.owner?.AddressOwner || 
-                                    (change.owner as any)?.AddressOwner;
+                      walletAddress = (change.owner as any)?.AddressOwner;
                       console.log('🎯 Found Pokemon object:', pokemonObjectId);
                       console.log('👤 Owner:', walletAddress);
                       break;
