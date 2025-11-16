@@ -17,7 +17,7 @@ export default function QuestsPage() {
   const { quests, isLoading: questsLoading } = useActiveQuests();
   const { challenges, isLoading: challengesLoading, lastReset, fetchChallenges } = useDailyChallenges();
   const { generateQuest, isGenerating } = useGenerateQuest();
-  const { pokemon } = usePlayerPokemon();
+  const { pokemon } = usePlayerPokemon(account?.address);
   const [selectedTab, setSelectedTab] = useState<'quests' | 'challenges'>('quests');
 
   useEffect(() => {
