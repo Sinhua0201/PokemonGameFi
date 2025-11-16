@@ -2,7 +2,7 @@
 // 将下载的 GLB 文件放到 frontend/public/assets/models/ 文件夹
 
 import { useGLTF } from '@react-three/drei'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -10,10 +10,10 @@ import * as THREE from 'three'
 export function Tree3D({ position }: { position: [number, number, number] }) {
   // 加载 GLB 模型
   const { scene } = useGLTF('/assets/models/environment/tree.glb')
-  
+
   return (
-    <primitive 
-      object={scene.clone()} 
+    <primitive
+      object={scene.clone()}
       position={position}
       scale={[1.5, 1.5, 1.5]}  // 调整大小
       castShadow
@@ -25,10 +25,10 @@ export function Tree3D({ position }: { position: [number, number, number] }) {
 // ===== 石头模型 =====
 export function Rock3D({ position }: { position: [number, number, number] }) {
   const { scene } = useGLTF('/assets/models/environment/rock.glb')
-  
+
   return (
-    <primitive 
-      object={scene.clone()} 
+    <primitive
+      object={scene.clone()}
       position={position}
       scale={0.8}
       castShadow
@@ -40,18 +40,18 @@ export function Rock3D({ position }: { position: [number, number, number] }) {
 export function Flower3D({ position }: { position: [number, number, number] }) {
   const { scene } = useGLTF('/assets/models/environment/flower.glb')
   const groupRef = useRef<THREE.Group>(null)
-  
+
   // 添加轻微摇摆动画
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime) * 0.1
     }
   })
-  
+
   return (
     <group ref={groupRef} position={position}>
-      <primitive 
-        object={scene.clone()} 
+      <primitive
+        object={scene.clone()}
         scale={0.5}
       />
     </group>
@@ -62,7 +62,7 @@ export function Flower3D({ position }: { position: [number, number, number] }) {
 export function Player3D({ position }: { position: [number, number, number] }) {
   const { scene } = useGLTF('/assets/models/characters/player.glb')
   const groupRef = useRef<THREE.Group>(null)
-  
+
   // 添加呼吸动画
   useFrame((state) => {
     if (groupRef.current) {
@@ -70,11 +70,11 @@ export function Player3D({ position }: { position: [number, number, number] }) {
       groupRef.current.scale.set(scale, scale, scale)
     }
   })
-  
+
   return (
     <group ref={groupRef} position={position}>
-      <primitive 
-        object={scene.clone()} 
+      <primitive
+        object={scene.clone()}
         scale={1}
         castShadow
       />
@@ -85,10 +85,10 @@ export function Player3D({ position }: { position: [number, number, number] }) {
 // ===== 建筑物模型 =====
 export function Building3D({ position }: { position: [number, number, number] }) {
   const { scene } = useGLTF('/assets/models/environment/building.glb')
-  
+
   return (
-    <primitive 
-      object={scene.clone()} 
+    <primitive
+      object={scene.clone()}
       position={position}
       scale={2}
       castShadow
@@ -98,16 +98,16 @@ export function Building3D({ position }: { position: [number, number, number] })
 }
 
 // ===== 动物/生物模型 =====
-export function Creature3D({ 
-  position, 
-  modelPath 
-}: { 
+export function Creature3D({
+  position,
+  modelPath
+}: {
   position: [number, number, number]
-  modelPath: string 
+  modelPath: string
 }) {
   const { scene } = useGLTF(modelPath)
   const groupRef = useRef<THREE.Group>(null)
-  
+
   // 浮动动画
   useFrame((state) => {
     if (groupRef.current) {
@@ -115,11 +115,11 @@ export function Creature3D({
       groupRef.current.rotation.y += 0.01
     }
   })
-  
+
   return (
     <group ref={groupRef} position={position}>
-      <primitive 
-        object={scene.clone()} 
+      <primitive
+        object={scene.clone()}
         scale={1}
         castShadow
       />
@@ -155,7 +155,7 @@ function MyScene() {
 // ===== 批量渲染示例 =====
 export function Forest({ count = 10 }: { count?: number }) {
   const positions: [number, number, number][] = []
-  
+
   for (let i = 0; i < count; i++) {
     positions.push([
       (Math.random() - 0.5) * 40,
@@ -163,7 +163,7 @@ export function Forest({ count = 10 }: { count?: number }) {
       (Math.random() - 0.5) * 40
     ])
   }
-  
+
   return (
     <>
       {positions.map((pos, i) => (
@@ -174,22 +174,22 @@ export function Forest({ count = 10 }: { count?: number }) {
 }
 
 // ===== 带旋转的模型 =====
-export function RotatingModel({ 
-  modelPath, 
-  position 
-}: { 
+export function RotatingModel({
+  modelPath,
+  position
+}: {
   modelPath: string
-  position: [number, number, number] 
+  position: [number, number, number]
 }) {
   const { scene } = useGLTF(modelPath)
   const groupRef = useRef<THREE.Group>(null)
-  
+
   useFrame(() => {
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.01
     }
   })
-  
+
   return (
     <group ref={groupRef} position={position}>
       <primitive object={scene.clone()} scale={1} />
@@ -198,21 +198,21 @@ export function RotatingModel({
 }
 
 // ===== 可点击的模型 =====
-export function ClickableModel({ 
-  modelPath, 
+export function ClickableModel({
+  modelPath,
   position,
-  onClick 
-}: { 
+  onClick
+}: {
   modelPath: string
   position: [number, number, number]
   onClick: () => void
 }) {
   const { scene } = useGLTF(modelPath)
   const [hovered, setHovered] = useState(false)
-  
+
   return (
-    <primitive 
-      object={scene.clone()} 
+    <primitive
+      object={scene.clone()}
       position={position}
       scale={hovered ? 1.1 : 1}
       onClick={onClick}
