@@ -53,8 +53,22 @@ function Island({ onClick, islandRef }: { onClick: (point: THREE.Vector3) => voi
           const mesh = child as THREE.Mesh;
           mesh.castShadow = true;
           mesh.receiveShadow = true;
+
+          // 确保材质正确显示颜色
+          if (mesh.material) {
+            const material = mesh.material as THREE.MeshStandardMaterial;
+            // 增强材质属性以显示更好的颜色
+            material.metalness = 0.1;
+            material.roughness = 0.8;
+            // 如果材质有颜色，确保它被使用
+            if (material.color) {
+              material.color.multiplyScalar(1.2); // 稍微增强颜色亮度
+            }
+            material.needsUpdate = true;
+          }
         }
       });
+      console.log('🏝️ Island materials updated');
     }
   }, [gltf]);
 
@@ -72,6 +86,136 @@ function Island({ onClick, islandRef }: { onClick: (point: THREE.Vector3) => voi
       position={[0, -2, 0]}
       onClick={handleClick}
     />
+  );
+}
+
+// Battle Tower
+function BattleTower({
+  onEnter,
+  playerPosition
+}: {
+  onEnter: () => void;
+  playerPosition: [number, number, number];
+}) {
+  const gltf = useLoader(GLTFLoader, '/assets/models/battle.glb');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const hasEnteredRef = useRef(false);
+  const towerPosition = [35, 23, -30];
+
+  useEffect(() => {
+    if (gltf.scene) {
+      gltf.scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
+    }
+  }, [gltf]);
+
+  // Check distance to player
+  useFrame(() => {
+    const distance = Math.sqrt(
+      Math.pow(playerPosition[0] - towerPosition[0], 2) +
+      Math.pow(playerPosition[2] - towerPosition[2], 2)
+    );
+
+    const isNear = distance < 10;
+    setShowPrompt(isNear);
+
+    // Auto-enter when very close
+    if (distance < 5 && !hasEnteredRef.current) {
+      hasEnteredRef.current = true;
+      onEnter();
+    }
+  });
+
+  return (
+    <group position={[towerPosition[0], towerPosition[1], towerPosition[2]]}>
+      <primitive
+        object={gltf.scene}
+        scale={1.3}
+      />
+      {/* Battle Icon */}
+      <Html position={[0, 12, 0]} center>
+        <div className="transition-all">
+          <div className="bg-red-500 text-white px-3 py-1.5 rounded-full shadow-lg font-bold text-lg animate-pulse">
+            ⚔️ Battle
+          </div>
+          {showPrompt && (
+            <div className="mt-1 bg-yellow-500 text-black px-2 py-1 rounded font-bold text-sm text-center animate-bounce">
+              Walk closer to enter!
+            </div>
+          )}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// Breeding Center
+function BreedingCenter({
+  onEnter,
+  playerPosition
+}: {
+  onEnter: () => void;
+  playerPosition: [number, number, number];
+}) {
+  const gltf = useLoader(GLTFLoader, '/assets/models/breeding.glb');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const hasEnteredRef = useRef(false);
+  const centerPosition = [-30, 2, 45]; // 移到右下方位置
+
+  useEffect(() => {
+    if (gltf.scene) {
+      gltf.scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
+    }
+  }, [gltf]);
+
+  // Check distance to player
+  useFrame(() => {
+    const distance = Math.sqrt(
+      Math.pow(playerPosition[0] - centerPosition[0], 2) +
+      Math.pow(playerPosition[2] - centerPosition[2], 2)
+    );
+
+    const isNear = distance < 10;
+    setShowPrompt(isNear);
+
+    // Auto-enter when very close
+    if (distance < 5 && !hasEnteredRef.current) {
+      hasEnteredRef.current = true;
+      onEnter();
+    }
+  });
+
+  return (
+    <group position={[centerPosition[0], centerPosition[1], centerPosition[2]]}>
+      <primitive
+        object={gltf.scene}
+        scale={0.1} // 缩小到原来的 1/10
+      />
+      {/* Breeding Icon */}
+      <Html position={[0, 10, 0]} center>
+        <div className="transition-all">
+          <div className="bg-pink-500 text-white px-3 py-1.5 rounded-full shadow-lg font-bold text-lg animate-pulse">
+            🥚 Breeding
+          </div>
+          {showPrompt && (
+            <div className="mt-1 bg-yellow-500 text-black px-2 py-1 rounded font-bold text-sm text-center animate-bounce">
+              Walk closer to enter!
+            </div>
+          )}
+        </div>
+      </Html>
+    </group>
   );
 }
 
@@ -286,8 +430,8 @@ function WildPokemonSprite({
 
       wasNearRef.current = isNear;
 
-      // Bounce animation
-      spriteRef.current.position.y = pokemon.position.y + 5 + Math.sin(Date.now() * 0.003) * 2;
+      // Bounce animation - 降低高度
+      spriteRef.current.position.y = pokemon.position.y + 2 + Math.sin(Date.now() * 0.003) * 1;
     }
   });
 
@@ -303,13 +447,13 @@ function WildPokemonSprite({
     <group>
       <sprite
         ref={spriteRef}
-        position={[pokemon.position.x, pokemon.position.y + 3, pokemon.position.z]}
+        position={[pokemon.position.x, pokemon.position.y + 1, pokemon.position.z]}
         scale={[6, 6, 1]}
       >
         <spriteMaterial map={texture} transparent />
       </sprite>
       {showPrompt && (
-        <Html position={[pokemon.position.x, pokemon.position.y + 10, pokemon.position.z]} center>
+        <Html position={[pokemon.position.x, pokemon.position.y + 5, pokemon.position.z]} center>
           <style jsx>{`
             .press-e-prompt {
               background: #ef4444;
@@ -365,12 +509,16 @@ function Scene({
   otherPlayers,
   wildPokemon,
   onIslandClick,
+  onBattleTowerEnter,
+  onBreedingCenterEnter,
   islandRef,
 }: {
   currentPlayer: Player | null;
   otherPlayers: Player[];
   wildPokemon: WildPokemon[];
   onIslandClick: (point: THREE.Vector3) => void;
+  onBattleTowerEnter: () => void;
+  onBreedingCenterEnter: () => void;
   islandRef: React.MutableRefObject<THREE.Group | null>;
 }) {
   const controlsRef = useRef<any>(null);
@@ -430,10 +578,13 @@ function Scene({
         enableZoom={true}
       />
 
-      <ambientLight intensity={0.6} />
+      {/* 增强环境光 - 提供基础亮度 */}
+      <ambientLight intensity={1.2} />
+
+      {/* 主方向光 - 模拟太阳光 */}
       <directionalLight
         position={[50, 100, 50]}
-        intensity={1.5}
+        intensity={2.5}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -443,10 +594,33 @@ function Scene({
         shadow-camera-top={100}
         shadow-camera-bottom={-100}
       />
-      <hemisphereLight args={['#87CEEB', '#5a8f5a', 0.8]} />
-      <pointLight position={[0, 50, 0]} intensity={0.3} />
+
+      {/* 补充方向光 - 从另一侧照亮 */}
+      <directionalLight
+        position={[-50, 80, -50]}
+        intensity={1.5}
+      />
+
+      {/* 半球光 - 天空和地面反射 */}
+      <hemisphereLight args={['#87CEEB', '#5a8f5a', 1.2]} />
+
+      {/* 顶部点光源 - 增加整体亮度 */}
+      <pointLight position={[0, 100, 0]} intensity={1.0} distance={200} />
+
+      {/* 岛屿中心点光源 */}
+      <pointLight position={[0, 20, 0]} intensity={0.8} distance={150} />
 
       <Island onClick={onIslandClick} islandRef={islandRef} />
+
+      <BattleTower
+        onEnter={onBattleTowerEnter}
+        playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
+      />
+
+      <BreedingCenter
+        onEnter={onBreedingCenterEnter}
+        playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
+      />
 
       {currentPlayer && (
         <PlayerCharacter
@@ -491,7 +665,7 @@ export default function IslandExplore() {
   const { eggs } = usePlayerEggs();
   const { addBattleSteps } = useAddBattleSteps();
   const { addExperience } = useAddExperience();
-  
+
   // Debug: log player Pokemon
   useEffect(() => {
     console.log('🎮 Player Pokemon from blockchain:', playerPokemonList);
@@ -619,7 +793,7 @@ export default function IslandExplore() {
           rotation: currentPlayer.rotation,
           lastUpdate: serverTimestamp(),
         }, { merge: true });
-        
+
         // Log occasionally (every 10 syncs)
         if (Math.random() < 0.1) {
           console.log('📡 Position synced:', currentPlayer.position);
@@ -652,15 +826,15 @@ export default function IslandExplore() {
       (snapshot) => {
         const players: Player[] = [];
         const now = Date.now();
-        
+
         snapshot.forEach((doc) => {
           if (doc.id !== account.address) {
             const data = doc.data();
-            
+
             // Only show players active in last 2 minutes
             const lastUpdate = data.lastUpdate?.toMillis?.() || 0;
             const timeSinceUpdate = now - lastUpdate;
-            
+
             if (timeSinceUpdate < 2 * 60 * 1000) { // 2 minutes
               players.push({
                 address: doc.id,
@@ -674,13 +848,9 @@ export default function IslandExplore() {
             }
           }
         });
-        
+
         console.log(`👥 Total other players: ${players.length}`);
         setOtherPlayers(players);
-        
-        if (players.length > 0) {
-          toast.success(`${players.length} other player(s) online!`, { duration: 2000 });
-        }
       },
       (error) => {
         console.error('❌ Error listening to players:', error);
@@ -699,7 +869,7 @@ export default function IslandExplore() {
     const timer = setTimeout(() => {
       const generatePokemon = () => {
         const pokemon: WildPokemon[] = [];
-        
+
         // Pokemon with rarity weights (higher = more common)
         const pokemonPool = [
           // Common (70% chance)
@@ -711,7 +881,7 @@ export default function IslandExplore() {
           { id: 19, weight: 8 },   // Rattata
           { id: 43, weight: 7 },   // Oddish
           { id: 69, weight: 7 },   // Bellsprout
-          
+
           // Uncommon (20% chance)
           { id: 25, weight: 5 },   // Pikachu
           { id: 133, weight: 4 },  // Eevee
@@ -721,18 +891,18 @@ export default function IslandExplore() {
           { id: 252, weight: 3 },  // Treecko
           { id: 255, weight: 3 },  // Torchic
           { id: 258, weight: 3 },  // Mudkip
-          
+
           // Rare (8% chance)
           { id: 147, weight: 2 },  // Dratini
           { id: 246, weight: 2 },  // Larvitar
           { id: 371, weight: 2 },  // Bagon
-          
+
           // Very Rare (2% chance)
           { id: 131, weight: 0.5 }, // Lapras
           { id: 143, weight: 0.5 }, // Snorlax
           { id: 149, weight: 0.3 }, // Dragonite
         ];
-        
+
         const totalWeight = pokemonPool.reduce((sum, p) => sum + p.weight, 0);
         const minDistance = 15;
 
@@ -740,7 +910,7 @@ export default function IslandExplore() {
           // Weighted random selection
           let random = Math.random() * totalWeight;
           let speciesId = 1;
-          
+
           for (const p of pokemonPool) {
             random -= p.weight;
             if (random <= 0) {
@@ -748,7 +918,7 @@ export default function IslandExplore() {
               break;
             }
           }
-          
+
           let x: number = 0, z: number = 0, y: number = 0;
           let attempts = 0;
           let validPosition = false;
@@ -765,7 +935,7 @@ export default function IslandExplore() {
             // Check distance to all existing Pokemon
             validPosition = pokemon.every(p => {
               const dist = Math.sqrt(
-                Math.pow(x - p.position.x, 2) + 
+                Math.pow(x - p.position.x, 2) +
                 Math.pow(z - p.position.z, 2)
               );
               return dist >= minDistance;
@@ -1135,6 +1305,8 @@ export default function IslandExplore() {
           otherPlayers={otherPlayers}
           wildPokemon={wildPokemon}
           onIslandClick={handleIslandClick}
+          onBattleTowerEnter={() => router.push('/battle')}
+          onBreedingCenterEnter={() => router.push('/breeding')}
           islandRef={islandRef}
         />
       </Canvas>
