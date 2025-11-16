@@ -607,49 +607,90 @@ export default function IslandExplore() {
   useEffect(() => {
     if (!currentPlayer || !account?.address) return;
 
+    console.log('📡 Starting position sync for:', currentPlayer.name);
+
     const interval = setInterval(async () => {
       try {
         await setDoc(doc(db, 'onlinePlayers', account.address), {
-          ...currentPlayer,
+          address: account.address,
+          name: currentPlayer.name,
+          characterId: currentPlayer.characterId,
+          position: currentPlayer.position,
+          rotation: currentPlayer.rotation,
           lastUpdate: serverTimestamp(),
         }, { merge: true });
+        
+        // Log occasionally (every 10 syncs)
+        if (Math.random() < 0.1) {
+          console.log('📡 Position synced:', currentPlayer.position);
+        }
       } catch (error) {
-        console.error('Failed to sync position:', error);
+        console.error('❌ Failed to sync position:', error);
       }
-    }, 500);
+    }, 1000); // Sync every second
 
-    return () => clearInterval(interval);
+    // Cleanup on unmount
+    return () => {
+      clearInterval(interval);
+      // Mark player as offline
+      setDoc(doc(db, 'onlinePlayers', account.address), {
+        lastUpdate: serverTimestamp(),
+      }, { merge: true }).catch(console.error);
+      console.log('👋 Player going offline');
+    };
   }, [currentPlayer, account]);
 
   // Listen to other players
   useEffect(() => {
     if (!account?.address) return;
 
-    const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    const q = query(
+    console.log('👥 Starting to listen for other players...');
+
+    // Listen to ALL players in real-time (no time filter for now)
+    const unsubscribe = onSnapshot(
       collection(db, 'onlinePlayers'),
-      where('lastUpdate', '>', fiveMinutesAgo)
+      (snapshot) => {
+        const players: Player[] = [];
+        const now = Date.now();
+        
+        snapshot.forEach((doc) => {
+          if (doc.id !== account.address) {
+            const data = doc.data();
+            
+            // Only show players active in last 2 minutes
+            const lastUpdate = data.lastUpdate?.toMillis?.() || 0;
+            const timeSinceUpdate = now - lastUpdate;
+            
+            if (timeSinceUpdate < 2 * 60 * 1000) { // 2 minutes
+              players.push({
+                address: doc.id,
+                name: data.name || 'Player',
+                characterId: data.characterId || 1,
+                position: data.position || { x: 0, y: 0, z: 0 },
+                rotation: data.rotation || 0,
+                lastUpdate: data.lastUpdate,
+              });
+              console.log(`✅ Found player: ${data.name} at`, data.position);
+            }
+          }
+        });
+        
+        console.log(`👥 Total other players: ${players.length}`);
+        setOtherPlayers(players);
+        
+        if (players.length > 0) {
+          toast.success(`${players.length} other player(s) online!`, { duration: 2000 });
+        }
+      },
+      (error) => {
+        console.error('❌ Error listening to players:', error);
+      }
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const players: Player[] = [];
-      snapshot.forEach((doc) => {
-        if (doc.id !== account.address) {
-          const data = doc.data();
-          players.push({
-            address: doc.id,
-            name: data.name,
-            characterId: data.characterId,
-            position: data.position,
-            rotation: data.rotation,
-            lastUpdate: data.lastUpdate,
-          });
-        }
-      });
-      setOtherPlayers(players);
-    });
-
-    return () => unsubscribe();
+    return () => {
+      console.log('👋 Stopped listening for other players');
+      unsubscribe();
+    };
   }, [account]);
 
   // Generate wild Pokemon (delayed until island loads)

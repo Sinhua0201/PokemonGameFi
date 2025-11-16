@@ -45,6 +45,18 @@ export default function ExplorePage() {
         </button>
       </div>
 
+      {/* Online Players Counter */}
+      <div className="fixed top-4 left-4 z-50">
+        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-sm font-semibold text-gray-800">
+              在线玩家
+            </span>
+          </div>
+        </div>
+      </div>
+
       <Suspense fallback={
         <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 via-purple-900 to-pink-900">
           <div className="text-white text-2xl">Loading...</div>
