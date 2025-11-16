@@ -708,7 +708,7 @@ export default function IslandExplore() {
             }
           }
           
-          let x: number, z: number, y: number;
+          let x: number = 0, z: number = 0, y: number = 0;
           let attempts = 0;
           let validPosition = false;
 
