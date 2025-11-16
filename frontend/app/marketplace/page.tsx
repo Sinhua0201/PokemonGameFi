@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { WalletGuard } from '@/components/WalletGuard';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { usePlayerPokemon } from '@/hooks/usePlayerPokemon';
+import { usePlayerPokemonNFT } from '@/hooks/usePlayerPokemonNFT';
 import { usePlayerEggs } from '@/hooks/useBreeding';
 import {
   useMarketplaceListings,
@@ -25,7 +25,7 @@ import { db } from '@/lib/firebase';
 export default function MarketplacePage() {
   const router = useRouter();
   const account = useCurrentAccount();
-  const { pokemon, loading: loadingPokemon } = usePlayerPokemon(account?.address);
+  const { pokemon, loading: loadingPokemon, refetch: refetchPokemon } = usePlayerPokemonNFT();
   const { eggs, isLoading: loadingEggs, refetch: refetchEggs } = usePlayerEggs();
   
   const [filters, setFilters] = useState<{
@@ -34,30 +34,15 @@ export default function MarketplacePage() {
     searchTerm?: string;
   }>({});
 
-  // Convert Firestore Pokemon to NFT-like format for compatibility
-  const pokemonNFTs = pokemon.map((poke: any) => ({
-    data: {
-      objectId: poke.id,
-      content: {
-        fields: {
-          species_id: poke.species_id || poke.speciesId,
-          name: poke.name,
-          level: poke.level,
-          experience: poke.experience,
-          stats: {
-            fields: {
-              hp: poke.maxHp || poke.stats?.hp,
-              attack: poke.attack || poke.stats?.attack,
-              defense: poke.defense || poke.stats?.defense,
-              speed: poke.speed || poke.stats?.speed,
-            }
-          },
-          types: poke.types,
-          owner: poke.owner,
-        }
-      }
-    }
-  }));
+  // Debug: Log pokemon data
+  useEffect(() => {
+    console.log('Marketplace - Pokemon data:', pokemon);
+    console.log('Marketplace - Loading:', loadingPokemon);
+    console.log('Marketplace - Account:', account?.address);
+  }, [pokemon, loadingPokemon, account]);
+
+  // Pokemon from usePlayerPokemonNFT are already in the correct format
+  const pokemonNFTs = pokemon;
   
   const { listings, isLoading: loadingListings, refetch: refetchListings } = useMarketplaceListings({
     nftType: filters.nftType === 'all' ? undefined : filters.nftType,
@@ -105,7 +90,32 @@ export default function MarketplacePage() {
   };
 
   const handleListNFT = (nft: any, type: 'pokemon' | 'egg') => {
-    setSelectedNFT(nft);
+    // Convert Pokemon data to expected format for modal
+    const formattedNFT = type === 'pokemon' ? {
+      data: {
+        objectId: nft.id,
+        content: {
+          fields: {
+            species_id: nft.speciesId || nft.species_id,
+            name: nft.name,
+            level: nft.level,
+            experience: nft.experience,
+            stats: {
+              fields: {
+                hp: nft.stats?.hp || nft.maxHp,
+                attack: nft.stats?.attack || nft.attack,
+                defense: nft.stats?.defense || nft.defense,
+                speed: nft.stats?.speed || nft.speed,
+              }
+            },
+            types: nft.types,
+            owner: nft.owner,
+          }
+        }
+      }
+    } : nft;
+    
+    setSelectedNFT(formattedNFT);
     setSelectedNFTType(type);
     setShowListModal(true);
   };
@@ -337,34 +347,78 @@ export default function MarketplacePage() {
 
                 {/* Pokémon Section */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4">Pokémon ({pokemonNFTs.length})</h3>
-                  {pokemonNFTs.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
-                      You don't have any Pokémon NFTs yet
+                  <h3 className="text-xl font-bold text-white mb-4">
+                    Pokémon ({pokemonNFTs.length})
+                    {loadingPokemon && <span className="text-sm text-gray-400 ml-2">(Loading...)</span>}
+                  </h3>
+                  {loadingPokemon ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
+                      <p className="text-gray-400 mt-4">Loading your Pokémon...</p>
+                    </div>
+                  ) : pokemonNFTs.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="text-6xl mb-4">🎮</div>
+                      <p className="text-gray-400 mb-2">You don't have any Pokémon NFTs yet</p>
+                      <p className="text-gray-500 text-sm mb-4">Get a starter Pokémon to begin!</p>
+                      <button
+                        onClick={() => router.push('/starter')}
+                        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
+                      >
+                        Get Starter Pokémon
+                      </button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {pokemonNFTs.map((poke: any) => (
-                        <div
-                          key={poke.data?.objectId}
-                          className="bg-gray-900 rounded-lg p-4 border-2 border-gray-700 hover:border-purple-500 transition-all"
-                        >
-                          <div className="text-center mb-4">
-                            <p className="text-white font-semibold">
-                              {poke.data?.content?.fields?.name || 'Unknown'}
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              Level {poke.data?.content?.fields?.level || '1'}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => handleListNFT(poke, 'pokemon')}
-                            className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {pokemonNFTs.map((poke: any) => {
+                        const speciesId = poke.speciesId || poke.species_id;
+                        const name = poke.name || 'Unknown';
+                        const level = poke.level || 1;
+                        const types = poke.types || ['normal'];
+                        
+                        return (
+                          <div
+                            key={poke.id}
+                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:border-purple-500 transition-all hover:scale-105"
                           >
-                            List for Sale
-                          </button>
-                        </div>
-                      ))}
+                            {/* Pokemon Image */}
+                            <div className="flex justify-center mb-3">
+                              <img
+                                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${speciesId}.gif`}
+                                alt={name}
+                                className="w-24 h-24 object-contain"
+                                onError={(e) => {
+                                  e.currentTarget.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`;
+                                }}
+                              />
+                            </div>
+                            
+                            {/* Pokemon Info */}
+                            <div className="text-center mb-3">
+                              <p className="text-white font-bold text-lg mb-1">{name}</p>
+                              <p className="text-gray-400 text-sm mb-2">Level {level}</p>
+                              <div className="flex gap-1 justify-center">
+                                {types.map((type: string, idx: number) => (
+                                  <span
+                                    key={idx}
+                                    className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs uppercase"
+                                  >
+                                    {type}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            
+                            {/* List Button */}
+                            <button
+                              onClick={() => handleListNFT(poke, 'pokemon')}
+                              className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
+                            >
+                              List for Sale
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

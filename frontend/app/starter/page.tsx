@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { WalletGuard } from '@/components/WalletGuard';
@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-export default function StarterPage() {
+function StarterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedPokemonId = searchParams.get('pokemon');
@@ -173,5 +173,17 @@ export default function StarterPage() {
         />
       </div>
     </WalletGuard>
+  );
+}
+
+export default function StarterPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    }>
+      <StarterPageContent />
+    </Suspense>
   );
 }

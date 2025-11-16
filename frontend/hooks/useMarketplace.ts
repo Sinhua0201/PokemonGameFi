@@ -123,6 +123,7 @@ export function useListPokemon() {
             },
             onError: (err) => {
               console.error('❌ Failed to list Pokémon:', err);
+              console.error('Error details:', JSON.stringify(err, null, 2));
               setError(err as Error);
               setIsLoading(false);
               reject(err);
