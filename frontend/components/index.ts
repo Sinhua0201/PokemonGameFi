@@ -18,7 +18,6 @@ export * from './MoveSelection';
 // Pokemon Components
 export * from './PokemonCard';
 export * from './PokemonDetailModal';
-export * from './StarterSelection';
 export * from './WildEncounter';
 
 // Breeding Components
@@ -38,3 +37,9 @@ export * from './WalletGuard';
 
 // AI Components
 export * from './AITrainerDialogue';
+
+// UX Components
+export * from './FriendlyError';
+export * from './PageGuide';
+export * from './LoadingProgress';
+export * from './SuccessModal';

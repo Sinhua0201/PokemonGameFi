@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { WalletGuard } from '@/components/WalletGuard';
+import { SetupGuard } from '@/components/SetupGuard';
+import { PageGuide } from '@/components/PageGuide';
+import { FriendlyError } from '@/components/FriendlyError';
 import { WildEncounter } from '@/components/WildEncounter';
 import { useEncounter } from '@/hooks/useEncounter';
 import { useCapture } from '@/hooks/useCapture';
@@ -156,14 +159,16 @@ export default function EncounterPage() {
   if (isChecking || isFetchingPokemon) {
     return (
       <WalletGuard>
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4" />
-            <p className="text-white text-lg">
-              {isFetchingPokemon ? 'Searching for Pokémon...' : 'Loading...'}
-            </p>
+        <SetupGuard>
+          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4" />
+              <p className="text-white text-lg">
+                {isFetchingPokemon ? 'Searching for Pokémon...' : 'Loading...'}
+              </p>
+            </div>
           </div>
-        </div>
+        </SetupGuard>
       </WalletGuard>
     );
   }
@@ -172,33 +177,35 @@ export default function EncounterPage() {
   if (!canEncounter && !encounterPokemon) {
     return (
       <WalletGuard>
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-          <div className="text-center max-w-md">
-            <div className="bg-gray-800 rounded-lg p-8 shadow-xl">
-              <div className="text-6xl mb-4">⏰</div>
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Encounter Cooldown
-              </h2>
-              <p className="text-gray-300 mb-6">
-                You need to wait before encountering another wild Pokémon.
-              </p>
-              <div className="bg-gray-900 rounded-lg p-6 mb-6">
-                <div className="text-4xl font-bold text-purple-400">
-                  {formatCooldown(cooldownRemaining)}
+        <SetupGuard>
+          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+            <div className="text-center max-w-md">
+              <div className="bg-gray-800 rounded-lg p-8 shadow-xl">
+                <div className="text-6xl mb-4">⏰</div>
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Encounter Cooldown
+                </h2>
+                <p className="text-gray-300 mb-6">
+                  You need to wait before encountering another wild Pokémon.
+                </p>
+                <div className="bg-gray-900 rounded-lg p-6 mb-6">
+                  <div className="text-4xl font-bold text-purple-400">
+                    {formatCooldown(cooldownRemaining)}
+                  </div>
+                  <div className="text-gray-400 text-sm mt-2">
+                    Time remaining
+                  </div>
                 </div>
-                <div className="text-gray-400 text-sm mt-2">
-                  Time remaining
-                </div>
+                <button
+                  onClick={() => router.push('/')}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                >
+                  Return Home
+                </button>
               </div>
-              <button
-                onClick={() => router.push('/')}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-              >
-                Return Home
-              </button>
             </div>
           </div>
-        </div>
+        </SetupGuard>
       </WalletGuard>
     );
   }
@@ -207,7 +214,8 @@ export default function EncounterPage() {
   if (showResult && encounterPokemon) {
     return (
       <WalletGuard>
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4">
+        <SetupGuard>
+          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4">
           <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full text-center shadow-2xl">
             {captureSuccess ? (
               <>
@@ -260,6 +268,7 @@ export default function EncounterPage() {
             )}
           </div>
         </div>
+        </SetupGuard>
       </WalletGuard>
     );
   }
@@ -267,7 +276,20 @@ export default function EncounterPage() {
   // Main encounter view
   return (
     <WalletGuard>
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
+      <SetupGuard>
+        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
+          <div className="max-w-4xl mx-auto">
+            <PageGuide
+              title="野外遭遇"
+              description="在这里你可以遇到随机的野生宝可梦并尝试捕捉它们"
+              tips={[
+                '每次遭遇有 5 分钟冷却时间',
+                '宝可梦血量越低，捕捉率越高',
+                '捕捉成功后会获得经验和奖励'
+              ]}
+              storageKey="encounter-guide"
+            />
+          </div>
         {encounterPokemon ? (
           <WildEncounter
             pokemon={encounterPokemon}
@@ -286,6 +308,7 @@ export default function EncounterPage() {
           </div>
         )}
       </div>
+      </SetupGuard>
     </WalletGuard>
   );
 }

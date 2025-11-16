@@ -1,51 +1,16 @@
 'use client';
 
 import { WalletGuard } from '@/components/WalletGuard';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { SetupGuard } from '@/components/SetupGuard';
 import Link from 'next/link';
-import { LoadingScreen } from '@/components/LoadingSpinner';
 import { ResponsiveContainer, Card, Grid } from '@/components/ResponsiveContainer';
-import { useCurrentAccount } from '@mysten/dapp-kit';
-import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
 
 export default function Home() {
-  const router = useRouter();
-  const account = useCurrentAccount();
-  const [checkingProfile, setCheckingProfile] = useState(true);
-
-  // 检查用户是否已创建角色
-  useEffect(() => {
-    const checkProfile = async () => {
-      if (account?.address) {
-        try {
-          const profileRef = doc(db, 'trainers', account.address);
-          const profileSnap = await getDoc(profileRef);
-          
-          if (!profileSnap.exists()) {
-            // 没有角色，跳转到创建角色页面
-            router.push('/start-game');
-            return;
-          }
-        } catch (error) {
-          console.error('Error checking profile:', error);
-        }
-      }
-      setCheckingProfile(false);
-    };
-
-    checkProfile();
-  }, [account, router]);
-
-  if (checkingProfile && account) {
-    return <LoadingScreen />;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-gray-900 dark:from-gray-900 dark:via-gray-800 dark:to-black">
       <ResponsiveContainer maxWidth="2xl" className="py-8 sm:py-12">
         <WalletGuard>
+          <SetupGuard>
           <div className="text-center space-y-8 animate-fade-in">
             {/* Hero Section */}
             <div className="space-y-4 mb-12">
@@ -60,17 +25,7 @@ export default function Home() {
 
             {/* Action Cards */}
             <Grid cols={3} gap={6} className="mt-12">
-              <Link href="/starter" className="group animate-slide-in-left">
-                <Card hover className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/30 hover:border-blue-500">
-                  <div className="text-5xl mb-4 group-hover:animate-bounce-slow">🎁</div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Get Starter</h3>
-                  <p className="text-gray-300">
-                    Receive your first Pokémon NFT to begin your journey
-                  </p>
-                </Card>
-              </Link>
-
-              <Link href="/encounter" className="group animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
+              <Link href="/encounter" className="group animate-slide-in-left">
                 <Card hover className="p-6 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/30 hover:border-green-500">
                   <div className="text-5xl mb-4 group-hover:animate-bounce-slow">🌿</div>
                   <h3 className="text-xl font-semibold text-white mb-2">Wild Encounter</h3>
@@ -80,7 +35,7 @@ export default function Home() {
                 </Card>
               </Link>
 
-              <Link href="/battle?player=25&opponent=4" className="group animate-slide-in-left" style={{ animationDelay: '0.2s' }}>
+              <Link href="/battle?player=25&opponent=4" className="group animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
                 <Card hover className="p-6 bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/30 hover:border-red-500">
                   <div className="text-5xl mb-4 group-hover:animate-bounce-slow">⚔️</div>
                   <h3 className="text-xl font-semibold text-white mb-2">Battle</h3>
@@ -163,6 +118,7 @@ export default function Home() {
               </div>
             </Card>
           </div>
+          </SetupGuard>
         </WalletGuard>
       </ResponsiveContainer>
 

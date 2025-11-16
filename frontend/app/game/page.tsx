@@ -30,7 +30,7 @@ export default function GamePage() {
   useEffect(() => {
     if (!loading && pokemon.length === 0 && currentScene === 'main-menu') {
       toast.info('欢迎！让我们开始你的冒险吧！', { duration: 3000 });
-      setTimeout(() => router.push('/starter'), 2000);
+      setTimeout(() => router.push('/start-game'), 2000);
     }
   }, [loading, pokemon.length, currentScene, router]);
 
@@ -52,7 +52,7 @@ export default function GamePage() {
 
   const changeScene = (scene: GameScene) => {
     if (scene === 'starter') {
-      router.push('/starter');
+      router.push('/start-game');
       return;
     }
     setCurrentScene(scene);

@@ -97,19 +97,58 @@ export const battleApi = {
     pokemonId: number,
     healthPercent: number
   ): Promise<{ capture_rate: number }> {
-    const response = await fetch(`${API_URL}/api/battle/capture-rate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pokemon_id: pokemonId,
-        health_percent: healthPercent,
-      }),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to calculate capture rate');
+    try {
+      const response = await fetch(`${API_URL}/api/battle/capture-rate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pokemon_id: pokemonId,
+          health_percent: healthPercent,
+        }),
+      });
+      
+      if (!response.ok) {
+        console.warn('Backend API failed, using fallback calculation');
+        // 降级方案：使用本地计算
+        return { capture_rate: this.calculateLocalCaptureRate(pokemonId, healthPercent) };
+      }
+      return response.json();
+    } catch (error) {
+      console.warn('Backend API error, using fallback calculation:', error);
+      // 降级方案：使用本地计算
+      return { capture_rate: this.calculateLocalCaptureRate(pokemonId, healthPercent) };
     }
-    return response.json();
+  },
+
+  /**
+   * 本地计算捕捉率（降级方案）
+   */
+  calculateLocalCaptureRate(pokemonId: number, healthPercent: number): number {
+    // 基础捕捉率（根据宝可梦稀有度）
+    let baseRate = 0.5;
+    
+    // 传说宝可梦（更难捕捉）
+    const legendaryIds = [144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251];
+    if (legendaryIds.includes(pokemonId)) {
+      baseRate = 0.03;
+    }
+    // 稀有宝可梦
+    else if (pokemonId > 130) {
+      baseRate = 0.25;
+    }
+    // 普通宝可梦
+    else {
+      baseRate = 0.5;
+    }
+    
+    // 根据血量调整捕捉率
+    const healthModifier = 1 - (healthPercent * 0.5); // 血量越低，捕捉率越高
+    const finalRate = Math.min(0.95, baseRate + healthModifier);
+    
+    return Math.max(0.05, finalRate); // 最低 5%，最高 95%
+  },
+
+  /**
   },
 
   /**

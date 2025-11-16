@@ -611,7 +611,7 @@ export default function BattlePage() {
                     <div className="text-6xl mb-6">🎮</div>
                     <p className="text-xl text-white mb-6">你还没有 Pokemon！</p>
                     <button
-                      onClick={() => router.push('/starter')}
+                      onClick={() => router.push('/start-game')}
                       className="game-button game-button-success w-full"
                     >
                       获取 Starter Pokemon

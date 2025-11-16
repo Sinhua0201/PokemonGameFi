@@ -116,7 +116,7 @@ export default function DebugPokemonPage() {
           {/* Actions */}
           <div className="mt-6 flex gap-4">
             <a
-              href="/starter"
+              href="/start-game"
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold"
             >
               去获取 Starter Pokemon

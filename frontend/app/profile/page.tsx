@@ -61,10 +61,10 @@ export default function ProfilePage() {
 
     try {
       setLoadingProfile(true);
-      
+
       // Load player data from Firestore
       const playerData = await getPlayer(account.address);
-      
+
       if (playerData) {
         setPlayerStats(playerData.stats || {
           totalBattles: 0,
@@ -96,7 +96,7 @@ export default function ProfilePage() {
     try {
       const { doc, updateDoc } = await import('firebase/firestore');
       const { db } = await import('@/lib/firebase');
-      
+
       await updateDoc(doc(db, 'players', account.address), {
         username: newUsername.trim(),
       });
@@ -130,7 +130,7 @@ export default function ProfilePage() {
     };
   });
 
-  const winRate = playerStats.totalBattles > 0 
+  const winRate = playerStats.totalBattles > 0
     ? ((playerStats.wins / playerStats.totalBattles) * 100).toFixed(1)
     : '0.0';
 
@@ -221,31 +221,28 @@ export default function ProfilePage() {
             <div className="flex border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('pokemon')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  activeTab === 'pokemon'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'pokemon'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 Pokémon Collection ({parsedPokemon.length})
               </button>
               <button
                 onClick={() => setActiveTab('eggs')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  activeTab === 'eggs'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'eggs'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 Eggs ({eggs.length})
               </button>
               <button
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${
-                  activeTab === 'history'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'history'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
               >
                 Battle History
               </button>
@@ -266,7 +263,7 @@ export default function ProfilePage() {
                       <h3 className="text-xl font-semibold text-gray-700 mb-2">No Pokémon Yet</h3>
                       <p className="text-gray-500 mb-6">Start your adventure by getting a starter Pokémon!</p>
                       <button
-                        onClick={() => router.push('/starter')}
+                        onClick={() => router.push('/start-game')}
                         className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                       >
                         Get Starter Pokémon
@@ -384,9 +381,8 @@ export default function ProfilePage() {
                           <div
                             key={egg.id}
                             onClick={() => setSelectedEgg(egg)}
-                            className={`bg-gradient-to-br from-white to-gray-50 rounded-lg p-4 border-2 cursor-pointer transition-all hover:shadow-lg ${
-                              isReady ? 'border-green-500 hover:border-green-600' : 'border-gray-200 hover:border-purple-500'
-                            }`}
+                            className={`bg-gradient-to-br from-white to-gray-50 rounded-lg p-4 border-2 cursor-pointer transition-all hover:shadow-lg ${isReady ? 'border-green-500 hover:border-green-600' : 'border-gray-200 hover:border-purple-500'
+                              }`}
                           >
                             <div className="text-center mb-4">
                               <div className="text-6xl mb-2">🥚</div>
@@ -405,9 +401,8 @@ export default function ProfilePage() {
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-3">
                                 <div
-                                  className={`h-3 rounded-full transition-all ${
-                                    isReady ? 'bg-green-500' : 'bg-purple-500'
-                                  }`}
+                                  className={`h-3 rounded-full transition-all ${isReady ? 'bg-green-500' : 'bg-purple-500'
+                                    }`}
                                   style={{ width: `${Math.min(100, progress)}%` }}
                                 ></div>
                               </div>
@@ -449,11 +444,9 @@ export default function ProfilePage() {
                         return (
                           <div
                             key={battle.id}
-                            className={`bg-gradient-to-r ${
-                              isWin ? 'from-green-50 to-green-100' : 'from-red-50 to-red-100'
-                            } rounded-lg p-4 border-2 ${
-                              isWin ? 'border-green-300' : 'border-red-300'
-                            }`}
+                            className={`bg-gradient-to-r ${isWin ? 'from-green-50 to-green-100' : 'from-red-50 to-red-100'
+                              } rounded-lg p-4 border-2 ${isWin ? 'border-green-300' : 'border-red-300'
+                              }`}
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">

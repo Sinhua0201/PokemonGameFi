@@ -362,7 +362,7 @@ export default function MarketplacePage() {
                       <p className="text-gray-400 mb-2">You don't have any Pokémon NFTs yet</p>
                       <p className="text-gray-500 text-sm mb-4">Get a starter Pokémon to begin!</p>
                       <button
-                        onClick={() => router.push('/starter')}
+                        onClick={() => router.push('/start-game')}
                         className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
                       >
                         Get Starter Pokémon
