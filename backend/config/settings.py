@@ -1,12 +1,13 @@
 from pydantic_settings import BaseSettings
 from typing import List
+import os
 
 
 class Settings(BaseSettings):
     # Server Configuration
     HOST: str = "0.0.0.0"
-    PORT: int = 8000
-    DEBUG: bool = True
+    PORT: int = int(os.getenv("PORT", "8000"))  # Railway uses PORT env variable
+    DEBUG: bool = False
     
     # CORS Configuration
     CORS_ORIGINS: str = "http://localhost:3000"

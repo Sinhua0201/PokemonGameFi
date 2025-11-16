@@ -12,19 +12,26 @@ import asyncio
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: Initialize Redis connection
-    await redis_service.connect()
-    print("✅ Redis connected")
-    
-    # Pre-fetch Generation 1 Pokémon in background
-    print("🔄 Starting Pokémon cache pre-fetch...")
-    asyncio.create_task(pokemon_service.prefetch_generation_1())
+    # Startup: Initialize Redis connection (optional)
+    try:
+        await redis_service.connect()
+        print("✅ Redis connected")
+        
+        # Pre-fetch Generation 1 Pokémon in background
+        print("🔄 Starting Pokémon cache pre-fetch...")
+        asyncio.create_task(pokemon_service.prefetch_generation_1())
+    except Exception as e:
+        print(f"⚠️ Redis connection failed: {e}")
+        print("⚠️ Running without Redis cache")
     
     yield
     
     # Shutdown: Close Redis connection
-    await redis_service.close()
-    print("❌ Redis disconnected")
+    try:
+        await redis_service.close()
+        print("❌ Redis disconnected")
+    except Exception as e:
+        print(f"⚠️ Redis disconnect error: {e}")
 
 
 app = FastAPI(
