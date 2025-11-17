@@ -447,7 +447,7 @@ function WildPokemonSprite({
     <group>
       <sprite
         ref={spriteRef}
-        position={[pokemon.position.x, pokemon.position.y + 1, pokemon.position.z]}
+        position={[pokemon.position.x, pokemon.position.y + 2, pokemon.position.z]}
         scale={[6, 6, 1]}
       >
         <spriteMaterial map={texture} transparent />
