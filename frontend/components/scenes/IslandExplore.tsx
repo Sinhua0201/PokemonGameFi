@@ -54,18 +54,7 @@ function Island({ onClick, islandRef }: { onClick: (point: THREE.Vector3) => voi
           mesh.castShadow = true;
           mesh.receiveShadow = true;
 
-          // 确保材质正确显示颜色
-          if (mesh.material) {
-            const material = mesh.material as THREE.MeshStandardMaterial;
-            // 增强材质属性以显示更好的颜色
-            material.metalness = 0.1;
-            material.roughness = 0.8;
-            // 如果材质有颜色，确保它被使用
-            if (material.color) {
-              material.color.multiplyScalar(1.2); // 稍微增强颜色亮度
-            }
-            material.needsUpdate = true;
-          }
+
         }
       });
       console.log('🏝️ Island materials updated');
@@ -136,15 +125,151 @@ function BattleTower({
       <primitive
         object={gltf.scene}
         scale={1.3}
+        rotation={[0, Math.PI * 1.5, 0]}
       />
       {/* Battle Icon */}
       <Html position={[0, 12, 0]} center>
-        <div className="transition-all">
-          <div className="bg-red-500 text-white px-3 py-1.5 rounded-full shadow-lg font-bold text-lg animate-pulse">
+        <style>{`
+          .battle-icon {
+            transition: all 0.3s;
+          }
+          .battle-badge {
+            background: #ef4444;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 1.125rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+          .battle-prompt {
+            margin-top: 4px;
+            background: #eab308;
+            color: black;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            text-align: center;
+            animation: bounce 1s infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+        `}</style>
+        <div className="battle-icon">
+          <div className="battle-badge">
             ⚔️ Battle
           </div>
           {showPrompt && (
-            <div className="mt-1 bg-yellow-500 text-black px-2 py-1 rounded font-bold text-sm text-center animate-bounce">
+            <div className="battle-prompt">
+              Walk closer to enter!
+            </div>
+          )}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
+// Marketplace
+function Marketplace({
+  onEnter,
+  playerPosition
+}: {
+  onEnter: () => void;
+  playerPosition: [number, number, number];
+}) {
+  const gltf = useLoader(GLTFLoader, '/assets/models/shop.glb');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const hasEnteredRef = useRef(false);
+  const marketPosition = [-52, 11, -5]; // 红色方格位置（中下方），提高Y坐标
+
+  useEffect(() => {
+    if (gltf.scene) {
+      gltf.scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
+      console.log('🏪 Market model loaded');
+    }
+  }, [gltf]);
+
+  // Check distance to player
+  useFrame(() => {
+    const distance = Math.sqrt(
+      Math.pow(playerPosition[0] - marketPosition[0], 2) +
+      Math.pow(playerPosition[2] - marketPosition[2], 2)
+    );
+
+    const isNear = distance < 10;
+    setShowPrompt(isNear);
+
+    // Auto-enter when very close
+    if (distance < 5 && !hasEnteredRef.current) {
+      hasEnteredRef.current = true;
+      onEnter();
+    }
+  });
+
+  return (
+    <group position={[marketPosition[0], marketPosition[1], marketPosition[2]]}>
+      <primitive
+        object={gltf.scene}
+        scale={0.3}
+        rotation={[0, Math.PI / 2, 0]}
+      />
+      {/* Market Icon */}
+      <Html position={[0, 10, 0]} center>
+        <style>{`
+          .market-icon {
+            transition: all 0.3s;
+          }
+          .market-badge {
+            background: #22c55e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 1.125rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+          .market-prompt {
+            margin-top: 4px;
+            background: #eab308;
+            color: black;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            text-align: center;
+            animation: bounce 1s infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+        `}</style>
+        <div className="market-icon">
+          <div className="market-badge">
+            🏪 Market
+          </div>
+          {showPrompt && (
+            <div className="market-prompt">
               Walk closer to enter!
             </div>
           )}
@@ -204,12 +329,46 @@ function BreedingCenter({
       />
       {/* Breeding Icon */}
       <Html position={[0, 10, 0]} center>
-        <div className="transition-all">
-          <div className="bg-pink-500 text-white px-3 py-1.5 rounded-full shadow-lg font-bold text-lg animate-pulse">
+        <style>{`
+          .breeding-icon {
+            transition: all 0.3s;
+          }
+          .breeding-badge {
+            background: #ec4899;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 1.125rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+          .breeding-prompt {
+            margin-top: 4px;
+            background: #eab308;
+            color: black;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            text-align: center;
+            animation: bounce 1s infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+        `}</style>
+        <div className="breeding-icon">
+          <div className="breeding-badge">
             🥚 Breeding
           </div>
           {showPrompt && (
-            <div className="mt-1 bg-yellow-500 text-black px-2 py-1 rounded font-bold text-sm text-center animate-bounce">
+            <div className="breeding-prompt">
               Walk closer to enter!
             </div>
           )}
@@ -374,8 +533,15 @@ function PlayerCharacter({
     <group ref={groupRef}>
       {model && <primitive object={model} />}
       <Html position={[0, 8, 0]} center>
-        <div className={`px-2 py-0.5 rounded-full text-xs font-bold whitespace-nowrap ${isCurrentPlayer ? 'bg-yellow-500 text-black' : 'bg-white/90 text-black'
-          }`}>
+        <div style={{
+          padding: '2px 8px',
+          borderRadius: '9999px',
+          fontSize: '0.75rem',
+          fontWeight: 'bold',
+          whiteSpace: 'nowrap',
+          background: isCurrentPlayer ? '#eab308' : 'rgba(255, 255, 255, 0.9)',
+          color: 'black'
+        }}>
           {name}
         </div>
       </Html>
@@ -431,7 +597,7 @@ function WildPokemonSprite({
       wasNearRef.current = isNear;
 
       // Bounce animation - 降低高度
-      spriteRef.current.position.y = pokemon.position.y + 2 + Math.sin(Date.now() * 0.003) * 1;
+      spriteRef.current.position.y = pokemon.position.y + 5 + Math.sin(Date.now() * 0.003) * 2;
     }
   });
 
@@ -447,7 +613,7 @@ function WildPokemonSprite({
     <group>
       <sprite
         ref={spriteRef}
-        position={[pokemon.position.x, pokemon.position.y + 2, pokemon.position.z]}
+        position={[pokemon.position.x, pokemon.position.y + 3, pokemon.position.z]}
         scale={[6, 6, 1]}
       >
         <spriteMaterial map={texture} transparent />
@@ -511,6 +677,7 @@ function Scene({
   onIslandClick,
   onBattleTowerEnter,
   onBreedingCenterEnter,
+  onMarketplaceEnter,
   islandRef,
 }: {
   currentPlayer: Player | null;
@@ -519,6 +686,7 @@ function Scene({
   onIslandClick: (point: THREE.Vector3) => void;
   onBattleTowerEnter: () => void;
   onBreedingCenterEnter: () => void;
+  onMarketplaceEnter: () => void;
   islandRef: React.MutableRefObject<THREE.Group | null>;
 }) {
   const controlsRef = useRef<any>(null);
@@ -578,13 +746,10 @@ function Scene({
         enableZoom={true}
       />
 
-      {/* 增强环境光 - 提供基础亮度 */}
-      <ambientLight intensity={1.2} />
-
-      {/* 主方向光 - 模拟太阳光 */}
+      <ambientLight intensity={0.6} />
       <directionalLight
         position={[50, 100, 50]}
-        intensity={2.5}
+        intensity={1.5}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -594,21 +759,8 @@ function Scene({
         shadow-camera-top={100}
         shadow-camera-bottom={-100}
       />
-
-      {/* 补充方向光 - 从另一侧照亮 */}
-      <directionalLight
-        position={[-50, 80, -50]}
-        intensity={1.5}
-      />
-
-      {/* 半球光 - 天空和地面反射 */}
-      <hemisphereLight args={['#87CEEB', '#5a8f5a', 1.2]} />
-
-      {/* 顶部点光源 - 增加整体亮度 */}
-      <pointLight position={[0, 100, 0]} intensity={1.0} distance={200} />
-
-      {/* 岛屿中心点光源 */}
-      <pointLight position={[0, 20, 0]} intensity={0.8} distance={150} />
+      <hemisphereLight args={['#87CEEB', '#5a8f5a', 0.8]} />
+      <pointLight position={[0, 50, 0]} intensity={0.3} />
 
       <Island onClick={onIslandClick} islandRef={islandRef} />
 
@@ -619,6 +771,11 @@ function Scene({
 
       <BreedingCenter
         onEnter={onBreedingCenterEnter}
+        playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
+      />
+
+      <Marketplace
+        onEnter={onMarketplaceEnter}
         playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
       />
 
@@ -1291,14 +1448,21 @@ export default function IslandExplore() {
 
   if (loading) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 to-purple-900">
-        <div className="text-white text-2xl">Loading Island...</div>
+      <div style={{
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(to bottom, #1e3a8a, #581c87)'
+      }}>
+        <div style={{ color: 'white', fontSize: '1.5rem' }}>Loading Island...</div>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-screen">
+    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
       <Canvas shadows gl={{ antialias: true }}>
         <Scene
           currentPlayer={currentPlayer}
@@ -1307,6 +1471,7 @@ export default function IslandExplore() {
           onIslandClick={handleIslandClick}
           onBattleTowerEnter={() => router.push('/battle')}
           onBreedingCenterEnter={() => router.push('/breeding')}
+          onMarketplaceEnter={() => router.push('/marketplace')}
           islandRef={islandRef}
         />
       </Canvas>
