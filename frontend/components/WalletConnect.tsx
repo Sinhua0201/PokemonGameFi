@@ -15,9 +15,6 @@ export function WalletConnect() {
       // Update wallet store
       setWallet(account.address, '0'); // Balance will be fetched separately
       
-      // Show success immediately
-      toast.success('Wallet connected successfully!');
-      
       // Try to link wallet to Firebase Auth (optional feature)
       linkWalletToFirebase(account.address)
         .then(() => {

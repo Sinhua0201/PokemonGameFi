@@ -11,6 +11,13 @@ import { PokemonDetailModal } from '@/components/PokemonDetailModal';
 import { EggDetailModal } from '@/components/EggDetailModal';
 import { PokemonNFT, EggNFT } from '@/types/pokemon';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+import { CharacterDetailModal } from '@/components/CharacterDetailModal';
+
+const CharacterModel3D = dynamic(
+  () => import('@/components/CharacterModel3D').then(mod => ({ default: mod.CharacterModel3D })),
+  { ssr: false }
+);
 
 interface PlayerStats {
   totalBattles: number;
@@ -49,6 +56,8 @@ export default function ProfilePage() {
   const [selectedEgg, setSelectedEgg] = useState<EggNFT | null>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [activeTab, setActiveTab] = useState<'pokemon' | 'eggs' | 'history'>('pokemon');
+  const [characterId, setCharacterId] = useState<number>(1);
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
 
   useEffect(() => {
     if (account?.address) {
@@ -74,6 +83,8 @@ export default function ProfilePage() {
         });
         setUsername(playerData.username || '');
         setNewUsername(playerData.username || '');
+        setCharacterId(playerData.characterId || 1);
+        console.log('📊 Loaded character ID:', playerData.characterId);
       }
 
       // Load battle history
@@ -141,9 +152,14 @@ export default function ProfilePage() {
           {/* Header */}
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                  {username ? username[0].toUpperCase() : '?'}
+              <div className="flex items-center gap-6">
+                {/* 3D Character Model */}
+                <div 
+                  className="w-32 h-32 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg overflow-hidden border-4 border-blue-200 shadow-lg cursor-pointer hover:border-blue-400 hover:shadow-xl transition-all"
+                  onClick={() => setShowCharacterModal(true)}
+                  title="Click to view character"
+                >
+                  <CharacterModel3D characterId={characterId} autoRotate={true} scale={0.015} />
                 </div>
                 <div>
                   {isEditingUsername ? (
@@ -502,6 +518,15 @@ export default function ProfilePage() {
             refetchPokemon();
             loadPlayerData();
           }}
+        />
+      )}
+
+      {/* Character Detail Modal */}
+      {showCharacterModal && (
+        <CharacterDetailModal
+          characterId={characterId}
+          username={username || 'Trainer'}
+          onClose={() => setShowCharacterModal(false)}
         />
       )}
     </WalletGuard>

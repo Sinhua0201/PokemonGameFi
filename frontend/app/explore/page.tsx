@@ -27,34 +27,22 @@ export default function ExplorePage() {
 
   return (
     <WalletGuard>
-      {/* Music Controls */}
-      <div className="fixed top-4 right-4 z-50 flex gap-2">
+      {/* Music Controls - Moved to bottom right to avoid overlap */}
+      <div className="fixed bottom-4 right-4 z-50 flex gap-2">
         <button
           onClick={togglePlay}
-          className="bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all hover:scale-110"
+          className="bg-white/90 hover:bg-white backdrop-blur-md text-gray-800 p-3 rounded-xl shadow-lg transition-all hover:scale-110 border border-gray-200/50"
           title={isPlaying ? 'Pause Music' : 'Play Music'}
         >
           {isPlaying ? '⏸️' : '▶️'}
         </button>
         <button
           onClick={toggleMute}
-          className="bg-white/80 hover:bg-white text-gray-800 p-3 rounded-full shadow-lg transition-all hover:scale-110"
+          className="bg-white/90 hover:bg-white backdrop-blur-md text-gray-800 p-3 rounded-xl shadow-lg transition-all hover:scale-110 border border-gray-200/50"
           title={isMuted ? 'Unmute' : 'Mute'}
         >
           {isMuted ? '🔇' : '🔊'}
         </button>
-      </div>
-
-      {/* Online Players Counter */}
-      <div className="fixed top-4 left-4 z-50">
-        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-sm font-semibold text-gray-800">
-              在线玩家
-            </span>
-          </div>
-        </div>
       </div>
 
       <Suspense fallback={

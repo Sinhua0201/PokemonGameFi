@@ -178,6 +178,107 @@ function BattleTower({
   );
 }
 
+// Profile Building
+function ProfileBuilding({
+  onEnter,
+  playerPosition
+}: {
+  onEnter: () => void;
+  playerPosition: [number, number, number];
+}) {
+  const gltf = useLoader(GLTFLoader, '/assets/models/profile.glb');
+  const [showPrompt, setShowPrompt] = useState(false);
+  const hasEnteredRef = useRef(false);
+  const profilePosition = [-3, 4, -35]; // 岛上位置
+
+  useEffect(() => {
+    if (gltf.scene) {
+      gltf.scene.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
+      console.log('👤 Profile building loaded');
+    }
+  }, [gltf]);
+
+  // Check distance to player
+  useFrame(() => {
+    const distance = Math.sqrt(
+      Math.pow(playerPosition[0] - profilePosition[0], 2) +
+      Math.pow(playerPosition[2] - profilePosition[2], 2)
+    );
+
+    const isNear = distance < 10;
+    setShowPrompt(isNear);
+
+    // Auto-enter when very close
+    if (distance < 5 && !hasEnteredRef.current) {
+      hasEnteredRef.current = true;
+      onEnter();
+    }
+  });
+
+  return (
+    <group position={[profilePosition[0], profilePosition[1], profilePosition[2]]}>
+      <primitive
+        object={gltf.scene}
+        scale={0.05}
+        rotation={[0, 0, 0]}
+      />
+      {/* Profile Icon */}
+      <Html position={[0, 15, 0]} center>
+        <style>{`
+          .profile-icon {
+            transition: all 0.3s;
+          }
+          .profile-badge {
+            background: #8b5cf6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 1.125rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+          .profile-prompt {
+            margin-top: 4px;
+            background: #eab308;
+            color: black;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.875rem;
+            text-align: center;
+            animation: bounce 1s infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+        `}</style>
+        <div className="profile-icon">
+          <div className="profile-badge">
+            👤 Profile
+          </div>
+          {showPrompt && (
+            <div className="profile-prompt">
+              Walk closer to enter!
+            </div>
+          )}
+        </div>
+      </Html>
+    </group>
+  );
+}
+
 // Marketplace
 function Marketplace({
   onEnter,
@@ -189,7 +290,7 @@ function Marketplace({
   const gltf = useLoader(GLTFLoader, '/assets/models/shop.glb');
   const [showPrompt, setShowPrompt] = useState(false);
   const hasEnteredRef = useRef(false);
-  const marketPosition = [-52, 11, -5]; // 红色方格位置（中下方），提高Y坐标
+  const marketPosition = [-55, 11, -5]; // 红色方格位置（中下方），提高Y坐标
 
   useEffect(() => {
     if (gltf.scene) {
@@ -678,6 +779,7 @@ function Scene({
   onBattleTowerEnter,
   onBreedingCenterEnter,
   onMarketplaceEnter,
+  onProfileEnter,
   islandRef,
 }: {
   currentPlayer: Player | null;
@@ -687,6 +789,7 @@ function Scene({
   onBattleTowerEnter: () => void;
   onBreedingCenterEnter: () => void;
   onMarketplaceEnter: () => void;
+  onProfileEnter: () => void;
   islandRef: React.MutableRefObject<THREE.Group | null>;
 }) {
   const controlsRef = useRef<any>(null);
@@ -776,6 +879,11 @@ function Scene({
 
       <Marketplace
         onEnter={onMarketplaceEnter}
+        playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
+      />
+
+      <ProfileBuilding
+        onEnter={onProfileEnter}
         playerPosition={currentPlayer ? [currentPlayer.position.x, currentPlayer.position.y, currentPlayer.position.z] : [0, 0, 0]}
       />
 
@@ -1178,44 +1286,8 @@ export default function IslandExplore() {
       let newRotation = currentPlayer.rotation;
       let moved = false;
 
-      // Keyboard movement (cancels click movement)
-      if (keysPressed.current.size > 0) {
-        isMovingToTarget.current = false;
-        targetPosition.current = null;
-
-        // Try different rotation values to find the right one
-        let moveX = 0;
-        let moveZ = 0;
-
-        if (keysPressed.current.has('w') || keysPressed.current.has('arrowup')) {
-          moveZ -= 1;
-        }
-        if (keysPressed.current.has('s') || keysPressed.current.has('arrowdown')) {
-          moveZ += 1;
-        }
-        if (keysPressed.current.has('a') || keysPressed.current.has('arrowleft')) {
-          moveX -= 1;
-        }
-        if (keysPressed.current.has('d') || keysPressed.current.has('arrowright')) {
-          moveX += 1;
-        }
-
-        if (moveX !== 0 || moveZ !== 0) {
-          // Normalize
-          const length = Math.sqrt(moveX * moveX + moveZ * moveZ);
-          moveX = (moveX / length) * speed;
-          moveZ = (moveZ / length) * speed;
-
-          newPosition.x += moveX;
-          newPosition.z += moveZ;
-
-          // Same rotation calculation as mouse click
-          newRotation = Math.atan2(moveX, moveZ);
-          moved = true;
-        }
-      }
-      // Mouse click movement
-      else if (isMovingToTarget.current && targetPosition.current) {
+      // Mouse click movement only
+      if (isMovingToTarget.current && targetPosition.current) {
         const dx = targetPosition.current.x - currentPlayer.position.x;
         const dz = targetPosition.current.z - currentPlayer.position.z;
         const distance = Math.sqrt(dx * dx + dz * dz);
@@ -1462,7 +1534,7 @@ export default function IslandExplore() {
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100vh' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
       <Canvas shadows gl={{ antialias: true }}>
         <Scene
           currentPlayer={currentPlayer}
@@ -1472,57 +1544,42 @@ export default function IslandExplore() {
           onBattleTowerEnter={() => router.push('/battle')}
           onBreedingCenterEnter={() => router.push('/breeding')}
           onMarketplaceEnter={() => router.push('/marketplace')}
+          onProfileEnter={() => router.push('/profile')}
           islandRef={islandRef}
         />
       </Canvas>
 
-      {/* UI Overlays */}
-      <style jsx>{`
-        .info-panel {
-          position: absolute;
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(10px);
-          color: white;
-          padding: 15px;
-          border-radius: 12px;
-          border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .info-panel h3 {
-          font-weight: bold;
-          font-size: 18px;
-          margin: 0 0 10px 0;
-        }
-
-        .info-panel p {
-          font-size: 14px;
-          margin: 0 0 5px 0;
-        }
-
-        .top-left {
-          top: 16px;
-          left: 16px;
-        }
-
-        .bottom-left {
-          bottom: 16px;
-          left: 16px;
-        }
-      `}</style>
-
-      <div className="info-panel top-left">
-        <h3>{currentPlayer?.name}</h3>
-        <p>🌍 Players Online: {otherPlayers.length + 1}</p>
-        <p>🎮 Pokemon: {playerPokemonList.length}</p>
-      </div>
-
-      <div className="info-panel bottom-left">
-        <h3>🎮 Controls</h3>
-        <p>🖱️ Click Island: Move to location</p>
-        <p>⌨️ WASD / Arrows: Move</p>
-        <p>E: Interact with Pokemon</p>
-        <p>🖱️ Drag: Rotate Camera</p>
-        <p>🖱️ Scroll: Zoom</p>
+      {/* Online Players Counter - Top Center */}
+      <div style={{
+        position: 'absolute',
+        top: '16px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(12px)',
+        padding: '8px 16px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        border: '1px solid rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        zIndex: 10,
+      }}>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          background: '#22c55e',
+          borderRadius: '50%',
+          animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        }} />
+        <span style={{
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#1f2937',
+        }}>
+          {otherPlayers.length + 1} Online
+        </span>
       </div>
 
       {/* Battle Modal */}
