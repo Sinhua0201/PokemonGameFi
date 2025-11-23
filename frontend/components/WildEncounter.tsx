@@ -59,21 +59,21 @@ export function WildEncounter({
   return (
     <div className="w-full max-w-4xl mx-auto">
       {/* Encounter Header */}
-      <div className="bg-gradient-to-r from-purple-900 to-blue-900 rounded-t-lg p-6 text-center">
-        <h2 className="text-3xl font-bold text-white mb-2">
-          Wild Encounter!
+      <div className="bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 rounded-t-2xl p-6 text-center border-4 border-purple-300 border-b-0">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          ⚔️ Wild Encounter!
         </h2>
         <div className="flex items-center justify-center gap-2">
-          <span className="text-yellow-400 text-xl">⚡</span>
-          <p className="text-gray-200 text-lg">
+          <span className="text-yellow-500 text-xl">⚡</span>
+          <p className="text-gray-700 text-lg font-bold">
             A wild Pokémon has appeared!
           </p>
-          <span className="text-yellow-400 text-xl">⚡</span>
+          <span className="text-yellow-500 text-xl">⚡</span>
         </div>
       </div>
 
       {/* Encounter Content */}
-      <div className="bg-gray-800 rounded-b-lg p-8">
+      <div className="bg-white rounded-b-2xl p-8 border-4 border-purple-300 border-t-0 shadow-2xl">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left: Pokémon Card */}
           <div className="flex flex-col items-center">
@@ -82,26 +82,26 @@ export function WildEncounter({
             </div>
             
             {/* Level Badge */}
-            <div className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold text-lg">
-              Level {level}
+            <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg">
+              ⭐ Level {level}
             </div>
           </div>
 
           {/* Right: Encounter Info */}
           <div className="flex flex-col justify-between">
             {/* AI-Generated Encounter Text */}
-            <div className="bg-gray-900 rounded-lg p-6 mb-6">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 mb-6 border-2 border-purple-200 shadow-md">
               <div className="flex items-start gap-3">
                 <div className="text-3xl">📖</div>
                 <div className="flex-1">
                   {isLoadingText ? (
                     <div className="space-y-2">
-                      <div className="h-4 bg-gray-700 rounded animate-pulse" />
-                      <div className="h-4 bg-gray-700 rounded animate-pulse w-5/6" />
-                      <div className="h-4 bg-gray-700 rounded animate-pulse w-4/6" />
+                      <div className="h-4 bg-purple-200 rounded animate-pulse" />
+                      <div className="h-4 bg-purple-200 rounded animate-pulse w-5/6" />
+                      <div className="h-4 bg-purple-200 rounded animate-pulse w-4/6" />
                     </div>
                   ) : (
-                    <p className="text-gray-200 text-lg leading-relaxed">
+                    <p className="text-gray-800 text-lg leading-relaxed font-medium">
                       {encounterText}
                     </p>
                   )}
@@ -110,32 +110,32 @@ export function WildEncounter({
             </div>
 
             {/* Capture Rate Display */}
-            <div className="bg-gray-900 rounded-lg p-6 mb-6">
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 mb-6 border-2 border-orange-200 shadow-md">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-gray-400 font-semibold">
-                  Capture Rate:
+                <span className="text-gray-800 font-bold flex items-center gap-2">
+                  <span className="text-xl">🎯</span> Capture Rate:
                 </span>
-                <span className={`text-2xl font-bold ${captureRateColor}`}>
+                <span className={`text-2xl font-bold ${captureRateColor.replace('text-', 'text-')}`}>
                   {captureRatePercent}%
                 </span>
               </div>
               
               {/* Capture Rate Bar */}
-              <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+              <div className="w-full bg-gray-300 rounded-full h-4 overflow-hidden border-2 border-gray-400">
                 <div
                   className={`h-full transition-all duration-500 ${
                     captureRatePercent >= 70
-                      ? 'bg-green-500'
+                      ? 'bg-gradient-to-r from-green-500 to-green-600'
                       : captureRatePercent >= 40
-                      ? 'bg-yellow-500'
-                      : 'bg-red-500'
+                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
+                      : 'bg-gradient-to-r from-red-500 to-red-600'
                   }`}
                   style={{ width: `${captureRatePercent}%` }}
                 />
               </div>
 
               {/* Capture Tip */}
-              <p className="text-gray-400 text-sm mt-3 text-center">
+              <p className="text-gray-700 text-sm mt-3 text-center font-bold bg-white/70 rounded-full py-2">
                 {captureRatePercent >= 70
                   ? '✨ High chance of success!'
                   : captureRatePercent >= 40
@@ -150,11 +150,11 @@ export function WildEncounter({
                 onClick={onCapture}
                 disabled={isCapturing}
                 className={`
-                  py-4 rounded-lg font-bold text-lg transition-all duration-200
+                  py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg
                   ${
                     isCapturing
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-red-600 hover:bg-red-700 text-white hover:scale-105 active:scale-95'
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white hover:scale-105 active:scale-95 shadow-red-300'
                   }
                 `}
               >
@@ -191,11 +191,11 @@ export function WildEncounter({
                 onClick={onFlee}
                 disabled={isCapturing}
                 className={`
-                  py-4 rounded-lg font-bold text-lg transition-all duration-200
+                  py-4 rounded-xl font-bold text-lg transition-all duration-200 shadow-lg
                   ${
                     isCapturing
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-700 hover:bg-gray-600 text-white hover:scale-105 active:scale-95'
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white hover:scale-105 active:scale-95'
                   }
                 `}
               >

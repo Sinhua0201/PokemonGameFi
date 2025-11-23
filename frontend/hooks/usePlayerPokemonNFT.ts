@@ -45,15 +45,20 @@ export function usePlayerPokemonNFT() {
     }
     
     // Decode types from bytes
-    let types: string[] = ['normal'];
+    let types: string[] = [];
     if (content.types && Array.isArray(content.types)) {
       try {
         types = content.types.map((typeBytes: number[]) => {
-          return new TextDecoder().decode(new Uint8Array(typeBytes));
-        });
+          const decoded = new TextDecoder().decode(new Uint8Array(typeBytes));
+          return decoded.trim();
+        }).filter((t: string) => t.length > 0);
       } catch (e) {
         console.error('Failed to decode types:', e);
       }
+    }
+    // Ensure at least one type
+    if (types.length === 0) {
+      types = ['normal'];
     }
     
     const speciesId = parseInt(content.species_id || '0');

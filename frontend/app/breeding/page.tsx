@@ -165,51 +165,49 @@ export default function BreedingPage() {
 
   return (
     <WalletGuard>
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="pokemon-page">
+        <div className="pokemon-container">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+          <div className="pokemon-header fade-in">
+            <h1 className="pokemon-title">
               🥚 Breeding & Incubation
             </h1>
-            <p className="text-gray-300">
+            <p className="pokemon-subtitle">
               Breed your Pokémon to create eggs and hatch new creatures
             </p>
-            <button
-              onClick={() => router.push('/')}
-              className="mt-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
-            >
-              ← Back to Home
-            </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex justify-center gap-4 mb-8">
+          <div className="pokemon-tabs">
             <button
               onClick={() => setActiveTab('breed')}
-              className={`
-                px-6 py-3 rounded-lg font-semibold transition-all
-                ${activeTab === 'breed'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }
-              `}
+              className={`pokemon-tab ${activeTab === 'breed' ? 'active' : ''}`}
             >
-              Breed Pokémon
+              🎯 Breed Pokémon
             </button>
             <button
               onClick={() => setActiveTab('incubate')}
-              className={`
-                px-6 py-3 rounded-lg font-semibold transition-all relative
-                ${activeTab === 'incubate'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }
-              `}
+              className={`pokemon-tab ${activeTab === 'incubate' ? 'active' : ''}`}
+              style={{ position: 'relative' }}
             >
-              Incubating Eggs
+              🥚 Incubating Eggs
               {eggs.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                  color: 'white',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  borderRadius: '9999px',
+                  width: '24px',
+                  height: '24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)'
+                }}>
                   {eggs.length}
                 </span>
               )}
@@ -217,7 +215,7 @@ export default function BreedingPage() {
           </div>
 
           {/* Content */}
-          <div className="bg-gray-800/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700">
+          <div className="pokemon-card fade-in">
             {activeTab === 'breed' ? (
               <>
                 <ParentSelection
@@ -228,8 +226,8 @@ export default function BreedingPage() {
 
                 {/* Breed Confirmation */}
                 {showBreedConfirm && parent1Data && parent2Data && (
-                  <div className="mt-8 p-6 bg-purple-900/30 rounded-lg border-2 border-purple-500">
-                    <h3 className="text-xl font-bold text-white mb-4 text-center">
+                  <div className="mt-8 p-6 bg-purple-50 rounded-lg border-2 border-purple-500 shadow-lg">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
                       Ready to Breed?
                     </h3>
                     <div className="flex justify-center items-center gap-4 mb-6">
@@ -240,9 +238,9 @@ export default function BreedingPage() {
                           className="pixelated w-24 h-24 mx-auto mb-2"
                           style={{ imageRendering: 'pixelated' }}
                         />
-                        <p className="text-white font-semibold">{parent1Data.name}</p>
+                        <p className="text-gray-900 font-bold">{parent1Data.name}</p>
                       </div>
-                      <div className="text-4xl text-purple-400">+</div>
+                      <div className="text-4xl text-purple-600 font-bold">+</div>
                       <div className="text-center">
                         <img
                           src={parent2Data.sprite}
@@ -250,9 +248,9 @@ export default function BreedingPage() {
                           className="pixelated w-24 h-24 mx-auto mb-2"
                           style={{ imageRendering: 'pixelated' }}
                         />
-                        <p className="text-white font-semibold">{parent2Data.name}</p>
+                        <p className="text-gray-900 font-bold">{parent2Data.name}</p>
                       </div>
-                      <div className="text-4xl text-purple-400">=</div>
+                      <div className="text-4xl text-purple-600 font-bold">=</div>
                       <div className="text-6xl">🥚</div>
                     </div>
                     <div className="flex justify-center gap-4">
@@ -287,7 +285,7 @@ export default function BreedingPage() {
                       </button>
                     </div>
                     {eggs.length >= MAX_INCUBATING_EGGS && (
-                      <p className="text-center text-red-400 text-sm mt-4">
+                      <p className="text-center text-red-600 text-sm mt-4 font-bold">
                         You can only incubate {MAX_INCUBATING_EGGS} eggs at a time. Hatch an egg first!
                       </p>
                     )}
@@ -303,9 +301,9 @@ export default function BreedingPage() {
           </div>
 
           {/* Info Box */}
-          <div className="mt-8 bg-blue-900/30 rounded-lg p-6 border border-blue-500">
-            <h3 className="text-lg font-bold text-white mb-2">ℹ️ How Breeding Works</h3>
-            <ul className="text-gray-300 space-y-2 text-sm">
+          <div className="mt-8 bg-blue-50 rounded-lg p-6 border-2 border-blue-400 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">ℹ️ How Breeding Works</h3>
+            <ul className="text-gray-700 space-y-2 text-sm font-medium">
               <li>• Select any two Pokémon from your collection to breed</li>
               <li>• Breeding creates an Egg NFT with genetics from both parents</li>
               <li>• Breeding creates an Egg NFT on the blockchain</li>

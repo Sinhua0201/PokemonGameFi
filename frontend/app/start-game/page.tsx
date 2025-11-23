@@ -207,7 +207,7 @@ export default function StartGamePage() {
           ]}
           primaryAction={{
             label: '开始冒险',
-            href: '/'
+            href: '/explore'
           }}
         />
       )}

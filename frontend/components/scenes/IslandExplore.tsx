@@ -1519,18 +1519,7 @@ export default function IslandExplore() {
   };
 
   if (loading) {
-    return (
-      <div style={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(to bottom, #1e3a8a, #581c87)'
-      }}>
-        <div style={{ color: 'white', fontSize: '1.5rem' }}>Loading Island...</div>
-      </div>
-    );
+    return null; // Let the parent handle loading with PokemonLoading
   }
 
   return (

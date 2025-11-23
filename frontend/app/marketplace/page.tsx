@@ -17,10 +17,32 @@ import { MarketplaceGrid } from '@/components/MarketplaceGrid';
 import { MarketplaceFilters } from '@/components/MarketplaceFilters';
 import { ListNFTModal } from '@/components/ListNFTModal';
 import { PurchaseConfirmModal } from '@/components/PurchaseConfirmModal';
-import { MarketplaceListing } from '@/types/pokemon';
+import { MarketplaceListing, PokemonData } from '@/types/pokemon';
 import { toast } from 'sonner';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { pokemonApi } from '@/lib/api';
+
+const typeColors: Record<string, string> = {
+  normal: 'bg-gray-400',
+  fire: 'bg-red-500',
+  water: 'bg-blue-500',
+  electric: 'bg-yellow-400',
+  grass: 'bg-green-500',
+  ice: 'bg-cyan-400',
+  fighting: 'bg-red-700',
+  poison: 'bg-purple-500',
+  ground: 'bg-yellow-700',
+  flying: 'bg-indigo-400',
+  psychic: 'bg-pink-500',
+  bug: 'bg-lime-500',
+  rock: 'bg-yellow-800',
+  ghost: 'bg-purple-700',
+  dragon: 'bg-indigo-700',
+  dark: 'bg-gray-800',
+  steel: 'bg-gray-500',
+  fairy: 'bg-pink-300',
+};
 
 export default function MarketplacePage() {
   const router = useRouter();
@@ -33,13 +55,44 @@ export default function MarketplacePage() {
     maxPrice?: number;
     searchTerm?: string;
   }>({});
+  
+  const [pokemonDataCache, setPokemonDataCache] = useState<Map<number, PokemonData>>(new Map());
 
-  // Debug: Log pokemon data
+  // Load Pokemon data from PokeAPI for types and other info
   useEffect(() => {
-    console.log('Marketplace - Pokemon data:', pokemon);
-    console.log('Marketplace - Loading:', loadingPokemon);
-    console.log('Marketplace - Account:', account?.address);
-  }, [pokemon, loadingPokemon, account]);
+    const loadPokemonData = async () => {
+      if (pokemon.length === 0) return;
+      
+      const dataMap = new Map<number, PokemonData>();
+      const speciesIds = new Set<number>();
+      
+      // Collect all unique species IDs
+      pokemon.forEach((poke: any) => {
+        const speciesId = poke.speciesId || poke.species_id;
+        if (speciesId) {
+          speciesIds.add(speciesId);
+        }
+      });
+      
+      // Fetch data for each species
+      for (const speciesId of speciesIds) {
+        if (!pokemonDataCache.has(speciesId)) {
+          try {
+            const data = await pokemonApi.getPokemon(speciesId);
+            dataMap.set(speciesId, data);
+          } catch (error) {
+            console.error(`Failed to load Pokemon ${speciesId}:`, error);
+          }
+        }
+      }
+      
+      if (dataMap.size > 0) {
+        setPokemonDataCache(new Map([...pokemonDataCache, ...dataMap]));
+      }
+    };
+    
+    loadPokemonData();
+  }, [pokemon]);
 
   // Pokemon from usePlayerPokemonNFT are already in the correct format
   const pokemonNFTs = pokemon;
@@ -246,71 +299,63 @@ export default function MarketplacePage() {
 
   return (
     <WalletGuard>
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="pokemon-page">
+        <div className="pokemon-container">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+          <div className="pokemon-header fade-in">
+            <h1 className="pokemon-title">
               🏪 NFT Marketplace
             </h1>
-            <p className="text-gray-300">
+            <p className="pokemon-subtitle">
               Buy, sell, and trade Pokémon and Egg NFTs
             </p>
-            <button
-              onClick={() => router.push('/')}
-              className="mt-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
-            >
-              ← Back to Home
-            </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex justify-center gap-4 mb-8">
+          <div className="pokemon-tabs">
             <button
               onClick={() => setActiveTab('browse')}
-              className={`
-                px-6 py-3 rounded-lg font-semibold transition-all
-                ${activeTab === 'browse'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }
-              `}
+              className={`pokemon-tab ${activeTab === 'browse' ? 'active' : ''}`}
             >
-              Browse Listings
+              🔍 Browse Listings
             </button>
             <button
               onClick={() => setActiveTab('myListings')}
-              className={`
-                px-6 py-3 rounded-lg font-semibold transition-all relative
-                ${activeTab === 'myListings'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }
-              `}
+              className={`pokemon-tab ${activeTab === 'myListings' ? 'active' : ''}`}
+              style={{ position: 'relative' }}
             >
-              My Listings
+              📋 My Listings
               {myListings.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                <span style={{
+                  position: 'absolute',
+                  top: '-8px',
+                  right: '-8px',
+                  background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)',
+                  color: 'white',
+                  fontSize: '0.75rem',
+                  fontWeight: 'bold',
+                  borderRadius: '9999px',
+                  width: '24px',
+                  height: '24px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)'
+                }}>
                   {myListings.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab('myNFTs')}
-              className={`
-                px-6 py-3 rounded-lg font-semibold transition-all
-                ${activeTab === 'myNFTs'
-                  ? 'bg-purple-600 text-white shadow-lg'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }
-              `}
+              className={`pokemon-tab ${activeTab === 'myNFTs' ? 'active' : ''}`}
             >
-              My NFTs
+              🎒 My NFTs
             </button>
           </div>
 
           {/* Content */}
-          <div className="bg-gray-800/50 rounded-2xl p-8 backdrop-blur-sm border border-gray-700">
+          <div className="pokemon-card fade-in">
             {activeTab === 'browse' && (
               <>
                 <MarketplaceFilters onFilterChange={handleFilterChange} />
@@ -326,8 +371,8 @@ export default function MarketplacePage() {
             {activeTab === 'myListings' && (
               <>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Your Active Listings</h2>
-                  <p className="text-gray-400">Manage your NFTs currently listed for sale</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Active Listings</h2>
+                  <p className="text-gray-700 font-medium">Manage your NFTs currently listed for sale</p>
                 </div>
                 <MarketplaceGrid
                   listings={myListings}
@@ -341,26 +386,26 @@ export default function MarketplacePage() {
             {activeTab === 'myNFTs' && (
               <>
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Your NFT Collection</h2>
-                  <p className="text-gray-400">Select an NFT to list it for sale</p>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Your NFT Collection</h2>
+                  <p className="text-gray-700 font-medium">Select an NFT to list it for sale</p>
                 </div>
 
                 {/* Pokémon Section */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">
                     Pokémon ({pokemonNFTs.length})
-                    {loadingPokemon && <span className="text-sm text-gray-400 ml-2">(Loading...)</span>}
+                    {loadingPokemon && <span className="text-sm text-gray-600 ml-2">(Loading...)</span>}
                   </h3>
                   {loadingPokemon ? (
                     <div className="text-center py-8">
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto"></div>
-                      <p className="text-gray-400 mt-4">Loading your Pokémon...</p>
+                      <p className="text-gray-800 font-semibold mt-4">Loading your Pokémon...</p>
                     </div>
                   ) : pokemonNFTs.length === 0 ? (
                     <div className="text-center py-8">
                       <div className="text-6xl mb-4">🎮</div>
-                      <p className="text-gray-400 mb-2">You don't have any Pokémon NFTs yet</p>
-                      <p className="text-gray-500 text-sm mb-4">Get a starter Pokémon to begin!</p>
+                      <p className="text-gray-800 font-bold mb-2">You don't have any Pokémon NFTs yet</p>
+                      <p className="text-gray-600 text-sm mb-4 font-medium">Get a starter Pokémon to begin!</p>
                       <button
                         onClick={() => router.push('/start-game')}
                         className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
@@ -372,14 +417,24 @@ export default function MarketplacePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {pokemonNFTs.map((poke: any) => {
                         const speciesId = poke.speciesId || poke.species_id;
-                        const name = poke.name || 'Unknown';
+                        const pokemonData = pokemonDataCache.get(speciesId);
+                        
+                        const name = pokemonData?.name || poke.name || 'Unknown';
                         const level = poke.level || 1;
-                        const types = poke.types || ['normal'];
+                        // Get types from PokeAPI data
+                        const types = pokemonData?.types || ['normal'];
+                        
+                        const stats = poke.stats || {
+                          hp: poke.maxHp || 0,
+                          attack: poke.attack || 0,
+                          defense: poke.defense || 0,
+                          speed: poke.speed || 0
+                        };
                         
                         return (
                           <div
                             key={poke.id}
-                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:border-purple-500 transition-all hover:scale-105"
+                            className="bg-white rounded-lg p-4 border-2 border-gray-300 hover:border-purple-500 transition-all hover:scale-105 shadow-md hover:shadow-xl"
                           >
                             {/* Pokemon Image */}
                             <div className="flex justify-center mb-3">
@@ -394,27 +449,49 @@ export default function MarketplacePage() {
                             </div>
                             
                             {/* Pokemon Info */}
-                            <div className="text-center mb-3">
-                              <p className="text-white font-bold text-lg mb-1">{name}</p>
-                              <p className="text-gray-400 text-sm mb-2">Level {level}</p>
-                              <div className="flex gap-1 justify-center">
+                            <div className="mb-3">
+                              <p className="text-gray-900 font-bold text-lg mb-1 text-center">{name}</p>
+                              <p className="text-gray-600 text-sm mb-2 font-semibold text-center">Level {level}</p>
+                              
+                              {/* Types */}
+                              <div className="flex gap-1 justify-center mb-3">
                                 {types.map((type: string, idx: number) => (
                                   <span
                                     key={idx}
-                                    className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs uppercase"
+                                    className={`px-3 py-1 text-white rounded-full text-xs uppercase font-bold shadow-sm ${typeColors[type.toLowerCase()] || 'bg-gray-400'}`}
                                   >
                                     {type}
                                   </span>
                                 ))}
+                              </div>
+                              
+                              {/* Stats */}
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className="bg-red-50 rounded px-2 py-1 border border-red-200">
+                                  <span className="text-red-600 font-semibold">HP:</span>{' '}
+                                  <span className="text-gray-900 font-bold">{stats.hp}</span>
+                                </div>
+                                <div className="bg-orange-50 rounded px-2 py-1 border border-orange-200">
+                                  <span className="text-orange-600 font-semibold">ATK:</span>{' '}
+                                  <span className="text-gray-900 font-bold">{stats.attack}</span>
+                                </div>
+                                <div className="bg-blue-50 rounded px-2 py-1 border border-blue-200">
+                                  <span className="text-blue-600 font-semibold">DEF:</span>{' '}
+                                  <span className="text-gray-900 font-bold">{stats.defense}</span>
+                                </div>
+                                <div className="bg-green-50 rounded px-2 py-1 border border-green-200">
+                                  <span className="text-green-600 font-semibold">SPD:</span>{' '}
+                                  <span className="text-gray-900 font-bold">{stats.speed}</span>
+                                </div>
                               </div>
                             </div>
                             
                             {/* List Button */}
                             <button
                               onClick={() => handleListNFT(poke, 'pokemon')}
-                              className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all"
+                              className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-semibold transition-all shadow-md hover:shadow-lg"
                             >
-                              List for Sale
+                              💰 List for Sale
                             </button>
                           </div>
                         );
@@ -425,9 +502,9 @@ export default function MarketplacePage() {
 
                 {/* Eggs Section */}
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-4">Eggs ({eggs.length})</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Eggs ({eggs.length})</h3>
                   {eggs.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-gray-700 font-semibold">
                       You don't have any Egg NFTs yet
                     </div>
                   ) : (
@@ -435,12 +512,12 @@ export default function MarketplacePage() {
                       {eggs.map((egg: any) => (
                         <div
                           key={egg.id}
-                          className="bg-gray-900 rounded-lg p-4 border-2 border-gray-700 hover:border-purple-500 transition-all"
+                          className="bg-white rounded-lg p-4 border-2 border-gray-300 hover:border-purple-500 transition-all shadow-md hover:shadow-xl"
                         >
                           <div className="text-center mb-4">
                             <div className="text-6xl mb-2">🥚</div>
-                            <p className="text-white font-semibold">Pokémon Egg</p>
-                            <p className="text-gray-400 text-sm">
+                            <p className="text-gray-900 font-bold">Pokémon Egg</p>
+                            <p className="text-gray-600 text-sm font-semibold">
                               {egg.incubationSteps}/{egg.requiredSteps} steps
                             </p>
                           </div>
@@ -460,9 +537,9 @@ export default function MarketplacePage() {
           </div>
 
           {/* Info Box */}
-          <div className="mt-8 bg-blue-900/30 rounded-lg p-6 border border-blue-500">
-            <h3 className="text-lg font-bold text-white mb-2">ℹ️ Marketplace Info</h3>
-            <ul className="text-gray-300 space-y-2 text-sm">
+          <div className="mt-8 bg-blue-50 rounded-lg p-6 border-2 border-blue-400 shadow-lg">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">ℹ️ Marketplace Info</h3>
+            <ul className="text-gray-700 space-y-2 text-sm font-medium">
               <li>• All prices are in SUI tokens</li>
               <li>• Marketplace fee: 2.5% on all sales</li>
               <li>• Sellers receive 97.5% of the sale price</li>

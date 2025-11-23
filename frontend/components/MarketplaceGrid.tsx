@@ -6,6 +6,27 @@ import { pokemonApi } from '@/lib/api';
 import { toast } from 'sonner';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 
+const typeColors: Record<string, string> = {
+  normal: 'bg-gray-400',
+  fire: 'bg-red-500',
+  water: 'bg-blue-500',
+  electric: 'bg-yellow-400',
+  grass: 'bg-green-500',
+  ice: 'bg-cyan-400',
+  fighting: 'bg-red-700',
+  poison: 'bg-purple-500',
+  ground: 'bg-yellow-700',
+  flying: 'bg-indigo-400',
+  psychic: 'bg-pink-500',
+  bug: 'bg-lime-500',
+  rock: 'bg-yellow-800',
+  ghost: 'bg-purple-700',
+  dragon: 'bg-indigo-700',
+  dark: 'bg-gray-800',
+  steel: 'bg-gray-500',
+  fairy: 'bg-pink-300',
+};
+
 interface MarketplaceGridProps {
   listings: MarketplaceListing[];
   onBuy: (listing: MarketplaceListing) => void;
@@ -71,10 +92,10 @@ export function MarketplaceGrid({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="bg-gray-800 rounded-lg p-6 animate-pulse">
-            <div className="w-full h-48 bg-gray-700 rounded-lg mb-4" />
-            <div className="h-6 bg-gray-700 rounded mb-2" />
-            <div className="h-4 bg-gray-700 rounded w-2/3" />
+          <div key={i} className="bg-white rounded-lg p-6 animate-pulse border-2 border-gray-200 shadow-md">
+            <div className="w-full h-48 bg-gray-200 rounded-lg mb-4" />
+            <div className="h-6 bg-gray-200 rounded mb-2" />
+            <div className="h-4 bg-gray-200 rounded w-2/3" />
           </div>
         ))}
       </div>
@@ -85,8 +106,8 @@ export function MarketplaceGrid({
     return (
       <div className="text-center py-12">
         <div className="text-6xl mb-4">🏪</div>
-        <h3 className="text-xl font-bold text-white mb-2">No listings available</h3>
-        <p className="text-gray-400">Check back later or list your own NFTs!</p>
+        <h3 className="text-xl font-bold text-gray-900 mb-2">No listings available</h3>
+        <p className="text-gray-700 font-medium">Check back later or list your own NFTs!</p>
       </div>
     );
   }
@@ -102,10 +123,10 @@ export function MarketplaceGrid({
         return (
           <div 
             key={listing.id}
-            className="bg-gray-800 rounded-lg p-6 border-2 border-gray-700 hover:border-purple-500 transition-all"
+            className="bg-white rounded-lg p-6 border-2 border-gray-300 hover:border-purple-500 transition-all shadow-md hover:shadow-xl"
           >
             {/* NFT Image */}
-            <div className="bg-gray-900 rounded-lg p-4 mb-4 flex items-center justify-center h-48">
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 flex items-center justify-center h-48 border border-gray-200">
               {listing.nftType === 'pokemon' && pokemonData ? (
                 <img
                   src={pokemonData.sprite}
@@ -116,7 +137,7 @@ export function MarketplaceGrid({
               ) : listing.nftType === 'egg' ? (
                 <div className="text-8xl">🥚</div>
               ) : (
-                <div className="text-gray-600">Loading...</div>
+                <div className="text-gray-600 font-semibold">Loading...</div>
               )}
             </div>
 
@@ -124,53 +145,53 @@ export function MarketplaceGrid({
             <div className="mb-4">
               {listing.nftType === 'pokemon' && pokemonData ? (
                 <>
-                  <h3 className="text-xl font-bold text-white mb-2 capitalize">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 capitalize">
                     {pokemonData.name}
                   </h3>
-                  <div className="flex gap-2 mb-2">
+                  <div className="flex gap-2 mb-2 justify-center">
                     {pokemonData.types.map(type => (
                       <span
                         key={type}
-                        className="px-2 py-1 bg-gray-700 text-white text-xs rounded capitalize"
+                        className={`px-3 py-1 text-white rounded-full text-xs uppercase font-bold shadow-sm ${typeColors[type.toLowerCase()] || 'bg-gray-400'}`}
                       >
                         {type}
                       </span>
                     ))}
                   </div>
                   {listing.nftMetadata.level && (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-600 text-sm font-semibold">
                       Level {listing.nftMetadata.level}
                     </p>
                   )}
                   {listing.nftMetadata.stats && (
                     <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-                      <div className="text-gray-400">
-                        HP: <span className="text-white">{listing.nftMetadata.stats.hp}</span>
+                      <div className="text-gray-600 font-semibold">
+                        HP: <span className="text-gray-900 font-bold">{listing.nftMetadata.stats.hp}</span>
                       </div>
-                      <div className="text-gray-400">
-                        ATK: <span className="text-white">{listing.nftMetadata.stats.attack}</span>
+                      <div className="text-gray-600 font-semibold">
+                        ATK: <span className="text-gray-900 font-bold">{listing.nftMetadata.stats.attack}</span>
                       </div>
-                      <div className="text-gray-400">
-                        DEF: <span className="text-white">{listing.nftMetadata.stats.defense}</span>
+                      <div className="text-gray-600 font-semibold">
+                        DEF: <span className="text-gray-900 font-bold">{listing.nftMetadata.stats.defense}</span>
                       </div>
-                      <div className="text-gray-400">
-                        SPD: <span className="text-white">{listing.nftMetadata.stats.speed}</span>
+                      <div className="text-gray-600 font-semibold">
+                        SPD: <span className="text-gray-900 font-bold">{listing.nftMetadata.stats.speed}</span>
                       </div>
                     </div>
                   )}
                 </>
               ) : listing.nftType === 'egg' ? (
                 <>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     Pokémon Egg
                   </h3>
                   {listing.nftMetadata.incubationProgress !== undefined && (
                     <div className="mb-2">
-                      <div className="flex justify-between text-sm text-gray-400 mb-1">
+                      <div className="flex justify-between text-sm text-gray-700 font-semibold mb-1">
                         <span>Incubation</span>
                         <span>{listing.nftMetadata.incubationProgress}/1000</span>
                       </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="w-full bg-gray-300 rounded-full h-2 border border-gray-400">
                         <div
                           className="bg-purple-500 h-2 rounded-full transition-all"
                           style={{
@@ -181,7 +202,7 @@ export function MarketplaceGrid({
                     </div>
                   )}
                   {listing.nftMetadata.parentSpecies && (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-600 text-sm font-semibold">
                       Parents: {listing.nftMetadata.parentSpecies.map((id: string) => {
                         const parent = pokemonDataCache[parseInt(id)];
                         return parent ? parent.name : `#${id}`;
@@ -193,22 +214,22 @@ export function MarketplaceGrid({
             </div>
 
             {/* Price and Actions */}
-            <div className="border-t border-gray-700 pt-4">
+            <div className="border-t-2 border-gray-200 pt-4">
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <p className="text-gray-400 text-sm">Price</p>
-                  <p className="text-2xl font-bold text-white">
-                    {listing.price} <span className="text-lg text-gray-400">SUI</span>
+                  <p className="text-gray-600 text-sm font-semibold">Price</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {listing.price} <span className="text-lg text-gray-600">SUI</span>
                   </p>
                 </div>
                 {isOwnListing && (
-                  <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded">
+                  <span className="px-2 py-1 bg-blue-500 text-white text-xs rounded font-bold">
                     Your Listing
                   </span>
                 )}
               </div>
 
-              <div className="text-xs text-gray-500 mb-3">
+              <div className="text-xs text-gray-600 font-semibold mb-3">
                 Seller: {listing.sellerAddress.slice(0, 6)}...{listing.sellerAddress.slice(-4)}
               </div>
 

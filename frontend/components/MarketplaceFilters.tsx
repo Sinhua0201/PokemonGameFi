@@ -50,12 +50,12 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
   };
 
   return (
-    <div className="bg-gray-800/50 rounded-lg p-6 mb-8 border border-gray-700">
+    <div className="bg-white rounded-lg p-6 mb-8 border-2 border-gray-300 shadow-md">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white">Filters</h3>
+        <h3 className="text-lg font-bold text-gray-900">Filters</h3>
         <button
           onClick={handleClearFilters}
-          className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+          className="text-sm text-purple-600 hover:text-purple-700 transition-colors font-semibold"
         >
           Clear All
         </button>
@@ -64,7 +64,7 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* NFT Type Filter */}
         <div>
-          <label className="block text-white font-semibold mb-2 text-sm">
+          <label className="block text-gray-900 font-bold mb-2 text-sm">
             NFT Type
           </label>
           <div className="flex gap-2">
@@ -73,8 +73,8 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
               className={`
                 flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all
                 ${nftType === 'all'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
                 }
               `}
             >
@@ -85,8 +85,8 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
               className={`
                 flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all
                 ${nftType === 'pokemon'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
                 }
               `}
             >
@@ -97,8 +97,8 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
               className={`
                 flex-1 px-3 py-2 rounded-lg font-semibold text-sm transition-all
                 ${nftType === 'egg'
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
                 }
               `}
             >
@@ -109,7 +109,7 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
 
         {/* Max Price Filter */}
         <div>
-          <label className="block text-white font-semibold mb-2 text-sm">
+          <label className="block text-gray-900 font-bold mb-2 text-sm">
             Max Price (SUI)
           </label>
           <input
@@ -119,13 +119,13 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
             value={maxPrice}
             onChange={(e) => handleMaxPriceChange(e.target.value)}
             placeholder="Any price"
-            className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg border-2 border-gray-700 focus:border-purple-500 focus:outline-none text-sm"
+            className="w-full px-4 py-2 bg-white text-gray-900 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none text-sm font-medium"
           />
         </div>
 
         {/* Search Filter */}
         <div>
-          <label className="block text-white font-semibold mb-2 text-sm">
+          <label className="block text-gray-900 font-bold mb-2 text-sm">
             Search
           </label>
           <input
@@ -133,7 +133,7 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search by name..."
-            className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg border-2 border-gray-700 focus:border-purple-500 focus:outline-none text-sm"
+            className="w-full px-4 py-2 bg-white text-gray-900 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none text-sm font-medium"
           />
         </div>
       </div>
@@ -141,19 +141,19 @@ export function MarketplaceFilters({ onFilterChange }: MarketplaceFiltersProps) 
       {/* Active Filters Display */}
       {(nftType !== 'all' || maxPrice || searchTerm) && (
         <div className="mt-4 flex flex-wrap gap-2">
-          <span className="text-sm text-gray-400">Active filters:</span>
+          <span className="text-sm text-gray-700 font-semibold">Active filters:</span>
           {nftType !== 'all' && (
-            <span className="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-xs">
+            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
               {nftType === 'pokemon' ? 'Pokémon' : 'Eggs'}
             </span>
           )}
           {maxPrice && (
-            <span className="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-xs">
+            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
               Max: {maxPrice} SUI
             </span>
           )}
           {searchTerm && (
-            <span className="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-xs">
+            <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold">
               "{searchTerm}"
             </span>
           )}

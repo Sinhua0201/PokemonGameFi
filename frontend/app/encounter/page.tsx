@@ -160,11 +160,11 @@ export default function EncounterPage() {
     return (
       <WalletGuard>
         <SetupGuard>
-          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+          <div className="pokemon-page flex items-center justify-center">
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4" />
-              <p className="text-white text-lg">
-                {isFetchingPokemon ? 'Searching for Pokémon...' : 'Loading...'}
+              <p className="text-gray-900 text-lg font-bold">
+                {isFetchingPokemon ? '🔍 Searching for Pokémon...' : 'Loading...'}
               </p>
             </div>
           </div>
@@ -178,27 +178,27 @@ export default function EncounterPage() {
     return (
       <WalletGuard>
         <SetupGuard>
-          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+          <div className="pokemon-page flex items-center justify-center">
             <div className="text-center max-w-md">
-              <div className="bg-gray-800 rounded-lg p-8 shadow-xl">
+              <div className="pokemon-card">
                 <div className="text-6xl mb-4">⏰</div>
-                <h2 className="text-2xl font-bold text-white mb-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
                   Encounter Cooldown
                 </h2>
-                <p className="text-gray-300 mb-6">
+                <p className="text-gray-700 font-medium mb-6">
                   You need to wait before encountering another wild Pokémon.
                 </p>
-                <div className="bg-gray-900 rounded-lg p-6 mb-6">
-                  <div className="text-4xl font-bold text-purple-400">
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 mb-6 border-2 border-purple-300">
+                  <div className="text-4xl font-bold text-purple-600">
                     {formatCooldown(cooldownRemaining)}
                   </div>
-                  <div className="text-gray-400 text-sm mt-2">
+                  <div className="text-gray-700 text-sm mt-2 font-semibold">
                     Time remaining
                   </div>
                 </div>
                 <button
                   onClick={() => router.push('/')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                  className="pokemon-button pokemon-button-primary w-full"
                 >
                   Return Home
                 </button>
@@ -215,28 +215,31 @@ export default function EncounterPage() {
     return (
       <WalletGuard>
         <SetupGuard>
-          <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4">
-          <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full text-center shadow-2xl">
+          <div className="pokemon-page flex items-center justify-center p-4">
+          <div className="pokemon-card max-w-md w-full text-center">
             {captureSuccess ? (
               <>
                 <div className="text-6xl mb-4 animate-bounce">🎉</div>
-                <h2 className="text-3xl font-bold text-green-400 mb-4">
+                <h2 className="text-3xl font-bold text-green-600 mb-4">
                   Success!
                 </h2>
-                <p className="text-gray-200 text-lg mb-6">
-                  You successfully captured <span className="font-bold text-white">{encounterPokemon.name}</span>!
+                <p className="text-gray-700 text-lg mb-6 font-medium">
+                  You successfully captured <span className="font-bold text-gray-900">{encounterPokemon.name}</span>!
                 </p>
-                <div className="bg-gray-900 rounded-lg p-4 mb-6">
-                  <img
-                    src={encounterPokemon.sprite}
-                    alt={encounterPokemon.name}
-                    className="w-32 h-32 mx-auto pixelated"
-                    style={{ imageRendering: 'pixelated' }}
-                  />
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 mb-6 border-2 border-green-300">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-200 to-green-300 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+                    <img
+                      src={encounterPokemon.sprite}
+                      alt={encounterPokemon.name}
+                      className="relative w-32 h-32 mx-auto pixelated drop-shadow-2xl"
+                      style={{ imageRendering: 'pixelated' }}
+                    />
+                  </div>
                 </div>
                 <button
                   onClick={handleContinue}
-                  className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold transition-colors"
+                  className="pokemon-button pokemon-button-success w-full"
                 >
                   Continue
                 </button>
@@ -244,22 +247,22 @@ export default function EncounterPage() {
             ) : (
               <>
                 <div className="text-6xl mb-4">😔</div>
-                <h2 className="text-3xl font-bold text-red-400 mb-4">
+                <h2 className="text-3xl font-bold text-red-600 mb-4">
                   Oh no!
                 </h2>
-                <p className="text-gray-200 text-lg mb-6">
-                  <span className="font-bold text-white">{encounterPokemon.name}</span> broke free from the capture!
+                <p className="text-gray-700 text-lg mb-6 font-medium">
+                  <span className="font-bold text-gray-900">{encounterPokemon.name}</span> broke free from the capture!
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={handleContinue}
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                    className="pokemon-button pokemon-button-primary"
                   >
                     Try Again
                   </button>
                   <button
                     onClick={handleFlee}
-                    className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
+                    className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-bold transition-all shadow-md"
                   >
                     Flee
                   </button>
@@ -277,15 +280,15 @@ export default function EncounterPage() {
   return (
     <WalletGuard>
       <SetupGuard>
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-12 px-4">
-          <div className="max-w-4xl mx-auto">
+        <div className="pokemon-page py-12 px-4">
+          <div className="pokemon-container">
             <PageGuide
-              title="野外遭遇"
-              description="在这里你可以遇到随机的野生宝可梦并尝试捕捉它们"
+              title="Wild Encounter"
+              description="Encounter random wild Pokémon and try to capture them"
               tips={[
-                '每次遭遇有 5 分钟冷却时间',
-                '宝可梦血量越低，捕捉率越高',
-                '捕捉成功后会获得经验和奖励'
+                'Each encounter has a 5-minute cooldown',
+                'Lower Pokémon HP increases capture rate',
+                'Successful captures grant experience and rewards'
               ]}
               storageKey="encounter-guide"
             />

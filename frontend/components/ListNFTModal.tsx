@@ -4,6 +4,27 @@ import { useState, useEffect } from 'react';
 import { PokemonData } from '@/types/pokemon';
 import { pokemonApi } from '@/lib/api';
 
+const typeColors: Record<string, string> = {
+  normal: 'bg-gray-400',
+  fire: 'bg-red-500',
+  water: 'bg-blue-500',
+  electric: 'bg-yellow-400',
+  grass: 'bg-green-500',
+  ice: 'bg-cyan-400',
+  fighting: 'bg-red-700',
+  poison: 'bg-purple-500',
+  ground: 'bg-yellow-700',
+  flying: 'bg-indigo-400',
+  psychic: 'bg-pink-500',
+  bug: 'bg-lime-500',
+  rock: 'bg-yellow-800',
+  ghost: 'bg-purple-700',
+  dragon: 'bg-indigo-700',
+  dark: 'bg-gray-800',
+  steel: 'bg-gray-500',
+  fairy: 'bg-pink-300',
+};
+
 interface ListNFTModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -99,13 +120,13 @@ export function ListNFTModal({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full border-2 border-purple-500">
-        <h2 className="text-2xl font-bold text-white mb-6">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full border-2 border-purple-500 shadow-2xl">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
           List {nftType === 'pokemon' ? 'Pokémon' : 'Egg'} for Sale
         </h2>
 
         {/* NFT Preview */}
-        <div className="bg-gray-900 rounded-lg p-6 mb-6">
+        <div className="bg-gray-50 rounded-lg p-6 mb-6 border-2 border-gray-200">
           {loadingData ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto" />
@@ -127,29 +148,29 @@ export function ListNFTModal({
 
               {nftType === 'pokemon' && pokemonData ? (
                 <>
-                  <h3 className="text-xl font-bold text-white text-center mb-2 capitalize">
+                  <h3 className="text-xl font-bold text-gray-900 text-center mb-2 capitalize">
                     {pokemonData.name}
                   </h3>
                   <div className="flex justify-center gap-2 mb-2">
                     {pokemonData.types.map(type => (
                       <span
                         key={type}
-                        className="px-2 py-1 bg-gray-700 text-white text-xs rounded capitalize"
+                        className={`px-3 py-1 text-white rounded-full text-xs uppercase font-bold shadow-sm ${typeColors[type.toLowerCase()] || 'bg-gray-400'}`}
                       >
                         {type}
                       </span>
                     ))}
                   </div>
-                  <p className="text-gray-400 text-sm text-center">
+                  <p className="text-gray-600 text-sm text-center font-semibold">
                     Level {content.level || '1'}
                   </p>
                 </>
               ) : nftType === 'egg' ? (
                 <>
-                  <h3 className="text-xl font-bold text-white text-center mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
                     Pokémon Egg
                   </h3>
-                  <div className="text-sm text-gray-400 text-center">
+                  <div className="text-sm text-gray-700 text-center font-semibold">
                     <p>Incubation: {nft.incubationSteps || 0}/{nft.requiredSteps || 1000}</p>
                     <p className="mt-1">
                       Progress: {Math.round(((nft.incubationSteps || 0) / (nft.requiredSteps || 1000)) * 100)}%
@@ -164,7 +185,7 @@ export function ListNFTModal({
         {/* Price Input Form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
-            <label className="block text-white font-semibold mb-2">
+            <label className="block text-gray-900 font-bold mb-2">
               Price (SUI)
             </label>
             <input
@@ -174,11 +195,11 @@ export function ListNFTModal({
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Enter price in SUI"
-              className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg border-2 border-gray-700 focus:border-purple-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none font-medium"
               required
               disabled={isLoading}
             />
-            <p className="text-gray-400 text-xs mt-2">
+            <p className="text-gray-600 text-xs mt-2 font-semibold">
               Marketplace fee: 2.5% • You'll receive: {price ? (parseFloat(price) * 0.975).toFixed(2) : '0.00'} SUI
             </p>
           </div>

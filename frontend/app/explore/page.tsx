@@ -4,18 +4,11 @@ import dynamic from 'next/dynamic';
 import { WalletGuard } from '@/components/WalletGuard';
 import { Suspense } from 'react';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
+import { PokemonLoading } from '@/components/PokemonLoading';
 
 const IslandExplore = dynamic(() => import('@/components/scenes/IslandExplore'), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 via-purple-900 to-pink-900">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4" />
-        <div className="text-white text-2xl font-bold">Loading 3D Island...</div>
-        <p className="text-gray-300 mt-2">Preparing your adventure</p>
-      </div>
-    </div>
-  ),
+  loading: () => <PokemonLoading duration={2000} />,
 });
 
 export default function ExplorePage() {
@@ -45,11 +38,7 @@ export default function ExplorePage() {
         </button>
       </div>
 
-      <Suspense fallback={
-        <div className="w-full h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 via-purple-900 to-pink-900">
-          <div className="text-white text-2xl">Loading...</div>
-        </div>
-      }>
+      <Suspense fallback={<PokemonLoading duration={2000} />}>
         <IslandExplore />
       </Suspense>
     </WalletGuard>

@@ -104,6 +104,7 @@ export default function BattlePage() {
   const [showEvolution, setShowEvolution] = useState(false);
   const [showEvolutionChoice, setShowEvolutionChoice] = useState(false);
   const [pendingEvolution, setPendingEvolution] = useState<any>(null);
+  const [showAllPokemon, setShowAllPokemon] = useState(false);
   const battleLogRef = useRef<HTMLDivElement>(null);
 
   // 自动滚动战斗日志
@@ -599,79 +600,95 @@ export default function BattlePage() {
             {/* 选择 Pokemon 阶段 */}
             {phase === 'select' && (
               <div>
-                <div className="text-center mb-12">
-                  <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(255,255,255,0.5)' }}>
-                    ⚔️ 快速对战
+                <div className="pokemon-header fade-in text-center mb-12">
+                  <h1 className="pokemon-title">
+                    ⚔️ Quick Battle
                   </h1>
-                  <p className="text-2xl text-white/90">选择你的 Pokemon 开始训练！</p>
+                  <p className="pokemon-subtitle">Choose your Pokémon to start training!</p>
                 </div>
 
                 {playerPokemonList.length === 0 ? (
                   <div className="max-w-md mx-auto pokemon-card text-center">
                     <div className="text-6xl mb-6">🎮</div>
-                    <p className="text-xl text-white mb-6">你还没有 Pokemon！</p>
+                    <p className="text-xl text-gray-900 font-bold mb-6">You don't have any Pokémon yet!</p>
                     <button
                       onClick={() => router.push('/start-game')}
-                      className="game-button game-button-success w-full"
+                      className="pokemon-button pokemon-button-success w-full"
                     >
-                      获取 Starter Pokemon
+                      Get Starter Pokémon
                     </button>
                   </div>
                 ) : (
+                  <>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {playerPokemonList.map((pokemon) => (
+                    {playerPokemonList.slice(0, showAllPokemon ? undefined : 6).map((pokemon) => (
                       <div
                         key={pokemon.id}
                         onClick={() => handleSelectPokemon(pokemon)}
-                        className="pokemon-card"
+                        className="pokemon-card cursor-pointer hover:scale-105 transition-transform"
                       >
                         <div className="text-center">
-                          <div className="pokemon-sprite-container mb-4">
+                          <div className="mb-4 relative">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full blur-xl opacity-50"></div>
                             <img
                               src={pokemon.sprite}
                               alt={pokemon.name}
-                              className="pokemon-sprite w-40 h-40 mx-auto pixelated"
+                              className="relative w-40 h-40 mx-auto pixelated drop-shadow-2xl"
+                              style={{ imageRendering: 'pixelated' }}
                             />
                           </div>
-                          <h3 className="text-3xl font-bold text-white mb-2">{pokemon.name}</h3>
-                          <div className="inline-block px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mb-4">
-                            <span className="text-lg font-bold text-gray-900">Lv. {pokemon.level}</span>
+                          <h3 className="text-3xl font-bold text-gray-900 mb-2">{pokemon.name}</h3>
+                          <div className="inline-block px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mb-4 shadow-md">
+                            <span className="text-lg font-bold text-gray-900">⭐ Lv. {pokemon.level}</span>
                           </div>
 
-                          <div className="space-y-3 mb-4">
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 font-semibold">❤️ HP:</span>
-                              <span className="text-red-400 font-bold text-lg">{pokemon.maxHp || (pokemon as any).stats?.hp}</span>
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between items-center bg-red-50 rounded-lg px-3 py-2 border border-red-200">
+                              <span className="text-gray-800 font-bold">❤️ HP:</span>
+                              <span className="text-red-600 font-bold text-lg">{pokemon.maxHp || (pokemon as any).stats?.hp}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 font-semibold">⚔️ 攻击:</span>
-                              <span className="text-orange-400 font-bold text-lg">{pokemon.attack || (pokemon as any).stats?.attack}</span>
+                            <div className="flex justify-between items-center bg-orange-50 rounded-lg px-3 py-2 border border-orange-200">
+                              <span className="text-gray-800 font-bold">⚔️ Attack:</span>
+                              <span className="text-orange-600 font-bold text-lg">{pokemon.attack || (pokemon as any).stats?.attack}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 font-semibold">🛡️ 防御:</span>
-                              <span className="text-blue-400 font-bold text-lg">{pokemon.defense || (pokemon as any).stats?.defense}</span>
+                            <div className="flex justify-between items-center bg-blue-50 rounded-lg px-3 py-2 border border-blue-200">
+                              <span className="text-gray-800 font-bold">🛡️ Defense:</span>
+                              <span className="text-blue-600 font-bold text-lg">{pokemon.defense || (pokemon as any).stats?.defense}</span>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-gray-300 font-semibold">✨ 经验:</span>
-                              <span className="text-purple-400 font-bold text-lg">{pokemon.experience || 0}</span>
+                            <div className="flex justify-between items-center bg-purple-50 rounded-lg px-3 py-2 border border-purple-200">
+                              <span className="text-gray-800 font-bold">✨ EXP:</span>
+                              <span className="text-purple-600 font-bold text-lg">{pokemon.experience || 0}</span>
                             </div>
                           </div>
 
-                          <button className="game-button game-button-attack w-full">
-                            选择战斗
+                          <button className="pokemon-button pokemon-button-danger w-full">
+                            Select for Battle
                           </button>
                         </div>
                       </div>
                     ))}
                   </div>
+                  
+                  {/* See More Button */}
+                  {playerPokemonList.length > 6 && (
+                    <div className="mt-8 text-center">
+                      <button
+                        onClick={() => setShowAllPokemon(!showAllPokemon)}
+                        className="pokemon-button pokemon-button-primary"
+                      >
+                        {showAllPokemon ? 'Show Less ▲' : `See More (${playerPokemonList.length - 6} more) ▼`}
+                      </button>
+                    </div>
+                  )}
+                  </>
                 )}
 
                 <div className="mt-12 text-center">
                   <button
                     onClick={() => router.push('/')}
-                    className="game-button"
+                    className="pokemon-button"
                   >
-                    ← 返回首页
+                    ← Back to Home
                   </button>
                 </div>
               </div>

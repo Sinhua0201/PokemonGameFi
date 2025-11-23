@@ -98,7 +98,7 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
-        <p className="text-gray-300">Loading Pokémon data...</p>
+        <p className="text-gray-800 font-semibold">Loading Pokémon data...</p>
       </div>
     );
   }
@@ -106,10 +106,10 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
   if (pokemonNFTs.length < 2) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-300 text-lg">
+        <p className="text-gray-800 text-lg font-bold">
           You need at least 2 Pokémon to breed.
         </p>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-600 text-sm mt-2 font-medium">
           Catch more Pokémon to start breeding!
         </p>
       </div>
@@ -119,10 +119,10 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-2xl font-bold text-white mb-2">
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">
           Select Two Pokémon to Breed
         </h3>
-        <p className="text-gray-300">
+        <p className="text-gray-700 font-medium">
           {!selectedParent1 && 'Choose the first parent'}
           {selectedParent1 && !selectedParent2 && 'Choose the second parent'}
           {selectedParent1 && selectedParent2 && 'Parents selected! Click Breed to continue.'}
@@ -130,7 +130,7 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
         {selectedParent1 && (
           <button
             onClick={handleReset}
-            className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm"
+            className="mt-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-semibold"
           >
             Reset Selection
           </button>
@@ -154,10 +154,10 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
               key={nft.data?.objectId}
               onClick={() => handleSelectPokemon(nft)}
               className={`
-                relative rounded-lg border-2 p-4 transition-all cursor-pointer
+                relative rounded-lg border-2 p-4 transition-all cursor-pointer bg-white
                 ${isSelected 
-                  ? 'border-blue-500 bg-blue-900/30 ring-4 ring-blue-500 scale-105' 
-                  : 'border-gray-600 bg-gray-800 hover:border-blue-400 hover:scale-105'
+                  ? 'border-blue-500 ring-4 ring-blue-300 scale-105 shadow-xl' 
+                  : 'border-gray-300 hover:border-blue-400 hover:scale-105 shadow-md'
                 }
                 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
               `}
@@ -177,11 +177,11 @@ export function ParentSelection({ pokemonNFTs, onParentsSelected, isLoading }: P
                 />
               </div>
 
-              <h4 className="text-lg font-bold text-center text-white mb-1">
+              <h4 className="text-lg font-bold text-center text-gray-900 mb-1">
                 {data.name}
               </h4>
 
-              <p className="text-center text-sm text-gray-400 mb-2">
+              <p className="text-center text-sm text-gray-600 font-semibold mb-2">
                 Level {level}
               </p>
 

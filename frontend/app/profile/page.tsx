@@ -13,6 +13,28 @@ import { PokemonNFT, EggNFT } from '@/types/pokemon';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import { CharacterDetailModal } from '@/components/CharacterDetailModal';
+import { pokemonApi, PokemonData } from '@/lib/api';
+
+const typeColors: Record<string, string> = {
+  normal: 'bg-gray-400',
+  fire: 'bg-red-500',
+  water: 'bg-blue-500',
+  electric: 'bg-yellow-400',
+  grass: 'bg-green-500',
+  ice: 'bg-cyan-400',
+  fighting: 'bg-red-700',
+  poison: 'bg-purple-500',
+  ground: 'bg-yellow-700',
+  flying: 'bg-indigo-400',
+  psychic: 'bg-pink-500',
+  bug: 'bg-lime-500',
+  rock: 'bg-yellow-800',
+  ghost: 'bg-purple-700',
+  dragon: 'bg-indigo-700',
+  dark: 'bg-gray-800',
+  steel: 'bg-gray-500',
+  fairy: 'bg-pink-300',
+};
 
 const CharacterModel3D = dynamic(
   () => import('@/components/CharacterModel3D').then(mod => ({ default: mod.CharacterModel3D })),
@@ -58,12 +80,47 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'pokemon' | 'eggs' | 'history'>('pokemon');
   const [characterId, setCharacterId] = useState<number>(1);
   const [showCharacterModal, setShowCharacterModal] = useState(false);
+  const [pokemonDataCache, setPokemonDataCache] = useState<Map<number, PokemonData>>(new Map());
 
   useEffect(() => {
     if (account?.address) {
       loadPlayerData();
     }
   }, [account?.address]);
+
+  // Load Pokemon data from PokeAPI for types
+  useEffect(() => {
+    const loadPokemonData = async () => {
+      if (pokemon.length === 0) return;
+      
+      const dataMap = new Map<number, PokemonData>();
+      const speciesIds = new Set<number>();
+      
+      pokemon.forEach((poke: any) => {
+        const speciesId = poke.speciesId || poke.species_id;
+        if (speciesId) {
+          speciesIds.add(speciesId);
+        }
+      });
+      
+      for (const speciesId of speciesIds) {
+        if (!pokemonDataCache.has(speciesId)) {
+          try {
+            const data = await pokemonApi.getPokemon(speciesId);
+            dataMap.set(speciesId, data);
+          } catch (error) {
+            console.error(`Failed to load Pokemon ${speciesId}:`, error);
+          }
+        }
+      }
+      
+      if (dataMap.size > 0) {
+        setPokemonDataCache(new Map([...pokemonDataCache, ...dataMap]));
+      }
+    };
+    
+    loadPokemonData();
+  }, [pokemon]);
 
   const loadPlayerData = async () => {
     if (!account?.address) return;
@@ -147,10 +204,10 @@ export default function ProfilePage() {
 
   return (
     <WalletGuard>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 py-8 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="pokemon-page">
+        <div className="pokemon-container">
           {/* Header */}
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="pokemon-card fade-in mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-6">
                 {/* 3D Character Model */}
@@ -233,38 +290,29 @@ export default function ProfilePage() {
           </div>
 
           {/* Tabs */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="flex border-b border-gray-200">
+          <div className="pokemon-card fade-in">
+            <div className="pokemon-tabs mb-6">
               <button
                 onClick={() => setActiveTab('pokemon')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'pokemon'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-                  }`}
+                className={`pokemon-tab ${activeTab === 'pokemon' ? 'active' : ''}`}
               >
-                Pokémon Collection ({parsedPokemon.length})
+                🎮 Pokémon Collection ({parsedPokemon.length})
               </button>
               <button
                 onClick={() => setActiveTab('eggs')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'eggs'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-                  }`}
+                className={`pokemon-tab ${activeTab === 'eggs' ? 'active' : ''}`}
               >
-                Eggs ({eggs.length})
+                🥚 Eggs ({eggs.length})
               </button>
               <button
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 px-6 py-4 text-center font-semibold transition-colors ${activeTab === 'history'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-                  }`}
+                className={`pokemon-tab ${activeTab === 'history' ? 'active' : ''}`}
               >
-                Battle History
+                ⚔️ Battle History
               </button>
             </div>
 
-            <div className="p-6">
+            <div>
               {/* Pokémon Collection Tab */}
               {activeTab === 'pokemon' && (
                 <div>
@@ -276,8 +324,8 @@ export default function ProfilePage() {
                   ) : parsedPokemon.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-4">🎮</div>
-                      <h3 className="text-xl font-semibold text-gray-700 mb-2">No Pokémon Yet</h3>
-                      <p className="text-gray-500 mb-6">Start your adventure by getting a starter Pokémon!</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">No Pokémon Yet</h3>
+                      <p className="text-gray-700 font-medium mb-6">Start your adventure by getting a starter Pokémon!</p>
                       <button
                         onClick={() => router.push('/start-game')}
                         className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
@@ -287,11 +335,15 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {parsedPokemon.map((poke) => (
+                      {parsedPokemon.map((poke) => {
+                        const pokemonData = pokemonDataCache.get(poke.speciesId);
+                        const types = pokemonData?.types || poke.types || ['normal'];
+                        
+                        return (
                         <div
                           key={poke.id}
                           onClick={() => setSelectedPokemon(poke)}
-                          className="bg-gradient-to-br from-white to-gray-50 rounded-lg p-4 border-2 border-gray-200 hover:border-blue-500 cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+                          className="bg-white rounded-lg p-4 border-2 border-gray-300 hover:border-purple-500 cursor-pointer transition-all hover:shadow-xl hover:scale-105"
                         >
                           {/* Pokemon Image */}
                           <div className="flex justify-center mb-3">
@@ -300,7 +352,6 @@ export default function ProfilePage() {
                               alt={poke.name}
                               className="w-24 h-24 object-contain"
                               onError={(e) => {
-                                // Fallback to static sprite if GIF fails
                                 e.currentTarget.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.speciesId}.png`;
                               }}
                             />
@@ -308,18 +359,18 @@ export default function ProfilePage() {
 
                           {/* Pokemon Name and Level */}
                           <div className="text-center mb-3">
-                            <h3 className="text-xl font-bold text-gray-800 mb-1">{poke.name}</h3>
-                            <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+                            <h3 className="text-xl font-bold text-gray-900 mb-1">{poke.name}</h3>
+                            <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
                               Lv. {poke.level}
                             </span>
                           </div>
 
                           {/* Types */}
                           <div className="flex gap-2 justify-center mb-3">
-                            {poke.types.map((type: string, index: number) => (
+                            {types.map((type: string, index: number) => (
                               <span
                                 key={`${type}-${index}`}
-                                className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium uppercase"
+                                className={`px-3 py-1 text-white rounded-full text-xs uppercase font-bold shadow-sm ${typeColors[type.toLowerCase()] || 'bg-gray-400'}`}
                               >
                                 {type}
                               </span>
@@ -327,31 +378,31 @@ export default function ProfilePage() {
                           </div>
 
                           {/* Stats */}
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">❤️ HP:</span>
-                              <span className="font-semibold text-red-600">{poke.stats.hp}</span>
+                          <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                            <div className="bg-red-50 rounded px-2 py-1 border border-red-200">
+                              <span className="text-red-600 font-semibold">HP:</span>{' '}
+                              <span className="text-gray-900 font-bold">{poke.stats.hp}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">⚔️ Attack:</span>
-                              <span className="font-semibold text-orange-600">{poke.stats.attack}</span>
+                            <div className="bg-orange-50 rounded px-2 py-1 border border-orange-200">
+                              <span className="text-orange-600 font-semibold">ATK:</span>{' '}
+                              <span className="text-gray-900 font-bold">{poke.stats.attack}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">🛡️ Defense:</span>
-                              <span className="font-semibold text-blue-600">{poke.stats.defense}</span>
+                            <div className="bg-blue-50 rounded px-2 py-1 border border-blue-200">
+                              <span className="text-blue-600 font-semibold">DEF:</span>{' '}
+                              <span className="text-gray-900 font-bold">{poke.stats.defense}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-gray-600">⚡ Speed:</span>
-                              <span className="font-semibold text-green-600">{poke.stats.speed}</span>
+                            <div className="bg-green-50 rounded px-2 py-1 border border-green-200">
+                              <span className="text-green-600 font-semibold">SPD:</span>{' '}
+                              <span className="text-gray-900 font-bold">{poke.stats.speed}</span>
                             </div>
                           </div>
 
                           {/* Experience Bar */}
-                          <div className="mt-3 pt-3 border-t border-gray-200">
-                            <div className="text-xs text-gray-500 text-center mb-1">
+                          <div className="mt-3 pt-3 border-t-2 border-gray-200">
+                            <div className="text-xs text-gray-700 font-semibold text-center mb-1">
                               XP: {poke.experience} / {Math.pow(poke.level + 1, 3)}
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="w-full bg-gray-300 rounded-full h-2 border border-gray-400">
                               <div
                                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all"
                                 style={{
@@ -361,7 +412,8 @@ export default function ProfilePage() {
                             </div>
                           </div>
                         </div>
-                      ))}
+                      );
+                      })}
                     </div>
                   )}
                 </div>
@@ -378,8 +430,8 @@ export default function ProfilePage() {
                   ) : eggs.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-4">🥚</div>
-                      <h3 className="text-xl font-semibold text-gray-700 mb-2">No Eggs Yet</h3>
-                      <p className="text-gray-500 mb-6">Breed your Pokémon to create eggs!</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">No Eggs Yet</h3>
+                      <p className="text-gray-700 font-medium mb-6">Breed your Pokémon to create eggs!</p>
                       <button
                         onClick={() => router.push('/breeding')}
                         className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
@@ -442,8 +494,8 @@ export default function ProfilePage() {
                   ) : battleHistory.length === 0 ? (
                     <div className="text-center py-12">
                       <div className="text-6xl mb-4">⚔️</div>
-                      <h3 className="text-xl font-semibold text-gray-700 mb-2">No Battles Yet</h3>
-                      <p className="text-gray-500 mb-6">Start battling to build your history!</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">No Battles Yet</h3>
+                      <p className="text-gray-700 font-medium mb-6">Start battling to build your history!</p>
                       <button
                         onClick={() => router.push('/battle')}
                         className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"

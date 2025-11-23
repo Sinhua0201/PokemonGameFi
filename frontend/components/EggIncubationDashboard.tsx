@@ -105,8 +105,8 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
     return (
       <div className="text-center py-8">
         <div className="text-6xl mb-4">🥚</div>
-        <p className="text-gray-300 text-lg">No eggs incubating</p>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-800 text-lg font-semibold">No eggs incubating</p>
+        <p className="text-gray-600 text-sm mt-2 font-medium">
           Breed two Pokémon to create an egg!
         </p>
       </div>
@@ -117,10 +117,10 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
     <>
       <div className="space-y-6">
         <div className="text-center">
-          <h3 className="text-2xl font-bold text-white mb-2">
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
             Incubating Eggs ({eggs.length}/{MAX_INCUBATING_EGGS})
           </h3>
-          <p className="text-gray-300 text-sm">
+          <p className="text-gray-700 text-sm font-medium">
             Win 10 battles to hatch your egg! (+1 step per win)
           </p>
         </div>
@@ -136,10 +136,10 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
               <div
                 key={egg.id}
                 className={`
-                  relative rounded-lg border-2 p-6 transition-all
+                  relative rounded-lg border-2 p-6 transition-all bg-white
                   ${isReady
-                    ? 'border-green-500 bg-green-900/20 shadow-lg shadow-green-500/30 animate-pulse'
-                    : 'border-purple-500 bg-purple-900/20'
+                    ? 'border-green-500 shadow-lg shadow-green-500/30 animate-pulse'
+                    : 'border-purple-500 shadow-md'
                   }
                 `}
               >
@@ -152,7 +152,7 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
 
                 {/* Parent Info */}
                 <div className="mb-4">
-                  <p className="text-sm text-gray-400 text-center mb-2">Parents:</p>
+                  <p className="text-sm text-gray-700 font-semibold text-center mb-2">Parents:</p>
                   <div className="flex justify-center gap-2">
                     {parent1 && (
                       <div className="text-center">
@@ -162,10 +162,10 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
                           className="pixelated w-12 h-12 mx-auto"
                           style={{ imageRendering: 'pixelated' }}
                         />
-                        <p className="text-xs text-gray-300">{parent1.name}</p>
+                        <p className="text-xs text-gray-800 font-semibold">{parent1.name}</p>
                       </div>
                     )}
-                    <div className="flex items-center text-gray-500">+</div>
+                    <div className="flex items-center text-gray-600 font-bold">+</div>
                     {parent2 && (
                       <div className="text-center">
                         <img
@@ -174,7 +174,7 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
                           className="pixelated w-12 h-12 mx-auto"
                           style={{ imageRendering: 'pixelated' }}
                         />
-                        <p className="text-xs text-gray-300">{parent2.name}</p>
+                        <p className="text-xs text-gray-800 font-semibold">{parent2.name}</p>
                       </div>
                     )}
                   </div>
@@ -183,12 +183,12 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
                 {/* Progress Bar */}
                 <div className="mb-4">
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-300">Incubation Progress</span>
-                    <span className="text-white font-semibold">
+                    <span className="text-gray-700 font-semibold">Incubation Progress</span>
+                    <span className="text-gray-900 font-bold">
                       {egg.incubationSteps}/{egg.requiredSteps}
                     </span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                  <div className="w-full bg-gray-300 rounded-full h-4 overflow-hidden border-2 border-gray-400">
                     <div
                       className={`h-full transition-all duration-500 ${isReady
                         ? 'bg-gradient-to-r from-green-500 to-green-400'
@@ -197,7 +197,7 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
                       style={{ width: `${Math.min(progress, 100)}%` }}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-1 text-center">
+                  <p className="text-xs text-gray-700 font-semibold mt-1 text-center">
                     {progress.toFixed(1)}% complete
                   </p>
                 </div>
@@ -219,11 +219,11 @@ export function EggIncubationDashboard({ eggs, onEggHatched }: EggIncubationDash
                     )}
                   </button>
                 ) : (
-                  <div className="text-center py-3 px-4 bg-gray-800/50 rounded-lg border border-gray-700">
-                    <p className="text-gray-300 text-sm">
+                  <div className="text-center py-3 px-4 bg-orange-50 rounded-lg border-2 border-orange-300">
+                    <p className="text-gray-900 text-sm font-bold">
                       还需赢 {egg.requiredSteps - egg.incubationSteps} 场战斗
                     </p>
-                    <p className="text-gray-400 text-xs mt-1">
+                    <p className="text-gray-700 text-xs mt-1 font-semibold">
                       去Island Explorer战斗来孵化蛋！
                     </p>
                   </div>
