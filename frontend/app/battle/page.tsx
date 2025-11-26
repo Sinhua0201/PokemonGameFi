@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { WalletGuard } from '@/components/WalletGuard';
 import { usePlayerPokemonNFT } from '@/hooks/usePlayerPokemonNFT';
 import { useAddExperience } from '@/hooks/usePokemonNFT';
+import { usePlayerEggs, useAddBattleSteps } from '@/hooks/useBreeding';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { toast } from 'sonner';
 import { doc, updateDoc, increment, serverTimestamp, setDoc } from 'firebase/firestore';
@@ -81,6 +82,8 @@ export default function BattlePage() {
   const router = useRouter();
   const { pokemon: playerPokemonList, loading } = usePlayerPokemonNFT();
   const { addExperience } = useAddExperience();
+  const { eggs } = usePlayerEggs();
+  const { addBattleSteps } = useAddBattleSteps();
   const { isPlaying, isMuted, togglePlay, toggleMute } = useBackgroundMusic('/music/Battle.mp3', {
     volume: 0.3,
     loop: true,
@@ -175,9 +178,9 @@ export default function BattlePage() {
     setBattleLog([]);
 
     setTimeout(() => {
-      addLog(`⚔️ 战斗开始！`);
-      addLog(`派出了 ${pokemon.name}！`);
-      addLog(`野生的 ${generatedOpponent.name} 出现了！`);
+      addLog(`⚔️ Battle Start!`);
+      addLog(`Go! ${pokemon.name}!`);
+      addLog(`Wild ${generatedOpponent.name} appeared!`);
     }, 500);
   };
 
@@ -201,34 +204,34 @@ export default function BattlePage() {
 
     const movesByType: Record<string, any[]> = {
       fire: [
-        { name: '火花', power: 40 },
-        { name: '火焰轮', power: 60 },
-        { name: '喷射火焰', power: 90 },
-        { name: '大字爆炎', power: 110 },
+        { name: 'Ember', power: 40 },
+        { name: 'Flame Wheel', power: 60 },
+        { name: 'Flamethrower', power: 90 },
+        { name: 'Fire Blast', power: 110 },
       ],
       water: [
-        { name: '水枪', power: 40 },
-        { name: '泡沫光线', power: 65 },
-        { name: '冲浪', power: 90 },
-        { name: '水炮', power: 110 },
+        { name: 'Water Gun', power: 40 },
+        { name: 'Bubble Beam', power: 65 },
+        { name: 'Surf', power: 90 },
+        { name: 'Hydro Pump', power: 110 },
       ],
       grass: [
-        { name: '藤鞭', power: 45 },
-        { name: '飞叶快刀', power: 55 },
-        { name: '能量球', power: 90 },
-        { name: '日光束', power: 120 },
+        { name: 'Vine Whip', power: 45 },
+        { name: 'Razor Leaf', power: 55 },
+        { name: 'Energy Ball', power: 90 },
+        { name: 'Solar Beam', power: 120 },
       ],
       electric: [
-        { name: '电击', power: 40 },
-        { name: '电光', power: 65 },
-        { name: '十万伏特', power: 90 },
-        { name: '打雷', power: 110 },
+        { name: 'Thunder Shock', power: 40 },
+        { name: 'Spark', power: 65 },
+        { name: 'Thunderbolt', power: 90 },
+        { name: 'Thunder', power: 110 },
       ],
       normal: [
-        { name: '撞击', power: 40 },
-        { name: '抓', power: 40 },
-        { name: '泰山压顶', power: 85 },
-        { name: '破坏光线', power: 150 },
+        { name: 'Tackle', power: 40 },
+        { name: 'Scratch', power: 40 },
+        { name: 'Body Slam', power: 85 },
+        { name: 'Hyper Beam', power: 150 },
       ],
     };
 
@@ -271,9 +274,9 @@ export default function BattlePage() {
     setOpponentHurt(true);
     showDamage(damage, false);
 
-    addLog(`${selectedPokemon.name} 使用了 ${move.name}！`);
-    if (isCritical) addLog('💥 会心一击！');
-    addLog(`造成了 ${damage} 点伤害！`);
+    addLog(`${selectedPokemon.name} used ${move.name}!`);
+    if (isCritical) addLog('💥 Critical Hit!');
+    addLog(`Dealt ${damage} damage!`);
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -306,9 +309,9 @@ export default function BattlePage() {
     setPlayerHurt(true);
     showDamage(damage, true);
 
-    addLog(`野生的 ${opponent.name} 发动攻击！`);
-    if (isCritical) addLog('💥 会心一击！');
-    addLog(`造成了 ${damage} 点伤害！`);
+    addLog(`Wild ${opponent.name} attacked!`);
+    if (isCritical) addLog('💥 Critical Hit!');
+    addLog(`Dealt ${damage} damage!`);
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -320,22 +323,39 @@ export default function BattlePage() {
 
     if (newHp === 0) {
       setPhase('defeat');
-      addLog(`${selectedPokemon.name} 失去战斗能力！`);
-      addLog('💔 战斗失败...');
+      addLog(`${selectedPokemon.name} fainted!`);
+      addLog('💔 Battle Lost...');
       await saveBattleResult('defeat', 0);
     }
   };
 
-  // 处理胜利
+  // Handle Victory
   const handleVictory = async () => {
-    addLog(`野生的 ${opponent.name} 失去战斗能力！`);
-    addLog('🎉 胜利！');
+    addLog(`Wild ${opponent.name} fainted!`);
+    addLog('🎉 Victory!');
 
     const expGained = Math.floor(opponent.level * 50);
     setExperienceGained(expGained);
-    addLog(`${selectedPokemon.name} 获得了 ${expGained} 经验值！`);
+    addLog(`${selectedPokemon.name} gained ${expGained} EXP!`);
 
     await checkLevelUp(expGained);
+
+    // Add battle steps to all eggs
+    if (eggs && eggs.length > 0) {
+      console.log(`🥚 Adding battle steps to ${eggs.length} egg(s)...`);
+      for (const egg of eggs) {
+        try {
+          await addBattleSteps(egg.id);
+          console.log(`✅ Added battle steps to egg ${egg.id}`);
+        } catch (error) {
+          console.error(`❌ Failed to add battle steps to egg ${egg.id}:`, error);
+        }
+      }
+      addLog(`🥚 +1 step to ${eggs.length} egg(s)!`);
+      toast.success(`Victory! Gained ${expGained} EXP! +1 step to ${eggs.length} egg(s)!`);
+    } else {
+      toast.success(`Victory! Gained ${expGained} EXP!`);
+    }
 
     setPhase('victory');
     await saveBattleResult('victory', expGained);
@@ -356,8 +376,8 @@ export default function BattlePage() {
       setLeveledUp(true);
 
       await new Promise(resolve => setTimeout(resolve, 1000));
-      addLog(`✨ ${selectedPokemon.name} 升级了！`);
-      addLog(`📈 Lv.${oldLevel} → Lv.${newLvl}！`);
+      addLog(`✨ ${selectedPokemon.name} leveled up!`);
+      addLog(`📈 Lv.${oldLevel} → Lv.${newLvl}!`);
 
       const newMaxHp = Math.floor(selectedPokemon.maxHp * 1.1);
       const newAttack = Math.floor(selectedPokemon.attack * 1.1);
@@ -377,7 +397,7 @@ export default function BattlePage() {
       const evolution = EVOLUTIONS[selectedPokemon.species_id || selectedPokemon.speciesId];
       if (evolution && newLvl >= evolution.level) {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        addLog(`🌟 什么？${selectedPokemon.name} 想要进化了！`);
+        addLog(`🌟 What? ${selectedPokemon.name} is evolving!`);
 
         // Show evolution choice dialog
         setPendingEvolution(evolution);
@@ -438,7 +458,7 @@ export default function BattlePage() {
     setShowEvolution(true);
 
     await new Promise(resolve => setTimeout(resolve, 2000));
-    addLog(`🦋 ${selectedPokemon.name} 进化成了 ${pendingEvolution.name}！`);
+    addLog(`🦋 ${selectedPokemon.name} evolved into ${pendingEvolution.name}!`);
 
     setEvolved({
       from: selectedPokemon.name,
@@ -470,10 +490,10 @@ export default function BattlePage() {
     setPendingEvolution(null);
   };
 
-  // 取消进化
+  // Cancel Evolution
   const cancelEvolution = async () => {
     setShowEvolutionChoice(false);
-    addLog(`❌ ${selectedPokemon.name} 的进化被取消了！`);
+    addLog(`❌ ${selectedPokemon.name}'s evolution was cancelled!`);
     setPendingEvolution(null);
 
     // Save stats without evolution
@@ -559,10 +579,10 @@ export default function BattlePage() {
   if (loading) {
     return (
       <WalletGuard>
-        <div className="game-container flex items-center justify-center">
+        <div className="pokemon-page flex items-center justify-center">
           <div className="text-center">
             <div className="pokeball-loader mx-auto mb-6" />
-            <p className="text-white text-2xl font-bold">加载中...</p>
+            <p className="text-gray-600 text-2xl font-bold">Loading...</p>
           </div>
         </div>
       </WalletGuard>
@@ -571,11 +591,8 @@ export default function BattlePage() {
 
   return (
     <WalletGuard>
-      <div className="game-container">
-        {/* 背景粒子 */}
-        <div className="game-bg-particles">
-          {generateParticles()}
-        </div>
+      <div className="pokemon-page">
+        <div className="pokemon-container">
 
         {/* Music Controls */}
         <div className="fixed top-4 right-4 z-50 flex gap-2">
@@ -625,39 +642,48 @@ export default function BattlePage() {
                       <div
                         key={pokemon.id}
                         onClick={() => handleSelectPokemon(pokemon)}
-                        className="pokemon-card cursor-pointer hover:scale-105 transition-transform"
+                        className="pokemon-card cursor-pointer hover:scale-105 transition-all relative overflow-hidden group"
+                        style={{ 
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
+                          borderColor: '#3b82f6'
+                        }}
                       >
-                        <div className="text-center">
+                        {/* Decorative corner */}
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-bl-full"></div>
+                        <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-green-400/20 to-cyan-400/20 rounded-tr-full"></div>
+                        
+                        <div className="text-center relative z-10">
                           <div className="mb-4 relative">
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full blur-xl opacity-50"></div>
+                            {/* Glow effect on hover */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-purple-400/0 group-hover:from-blue-400/30 group-hover:to-purple-400/30 rounded-full blur-2xl transition-all"></div>
                             <img
                               src={pokemon.sprite}
                               alt={pokemon.name}
-                              className="relative w-40 h-40 mx-auto pixelated drop-shadow-2xl"
+                              className="w-32 h-32 mx-auto pixelated relative z-10 group-hover:scale-110 transition-transform"
                               style={{ imageRendering: 'pixelated' }}
                             />
                           </div>
-                          <h3 className="text-3xl font-bold text-gray-900 mb-2">{pokemon.name}</h3>
-                          <div className="inline-block px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full mb-4 shadow-md">
-                            <span className="text-lg font-bold text-gray-900">⭐ Lv. {pokemon.level}</span>
+                          <h3 className="text-2xl font-black text-gray-900 mb-2">{pokemon.name}</h3>
+                          <div className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
+                            <span className="text-sm font-black text-white">⭐ Lv. {pokemon.level}</span>
                           </div>
 
                           <div className="space-y-2 mb-4">
-                            <div className="flex justify-between items-center bg-red-50 rounded-lg px-3 py-2 border border-red-200">
-                              <span className="text-gray-800 font-bold">❤️ HP:</span>
-                              <span className="text-red-600 font-bold text-lg">{pokemon.maxHp || (pokemon as any).stats?.hp}</span>
+                            <div className="flex justify-between items-center bg-gradient-to-r from-red-50 to-pink-50 rounded-lg px-3 py-2">
+                              <span className="text-gray-700 font-semibold text-sm">❤️ HP</span>
+                              <span className="text-red-600 font-bold">{pokemon.maxHp || (pokemon as any).stats?.hp}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-orange-50 rounded-lg px-3 py-2 border border-orange-200">
-                              <span className="text-gray-800 font-bold">⚔️ Attack:</span>
-                              <span className="text-orange-600 font-bold text-lg">{pokemon.attack || (pokemon as any).stats?.attack}</span>
+                            <div className="flex justify-between items-center bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg px-3 py-2">
+                              <span className="text-gray-700 font-semibold text-sm">⚔️ Attack</span>
+                              <span className="text-orange-600 font-bold">{pokemon.attack || (pokemon as any).stats?.attack}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-blue-50 rounded-lg px-3 py-2 border border-blue-200">
-                              <span className="text-gray-800 font-bold">🛡️ Defense:</span>
-                              <span className="text-blue-600 font-bold text-lg">{pokemon.defense || (pokemon as any).stats?.defense}</span>
+                            <div className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg px-3 py-2">
+                              <span className="text-gray-700 font-semibold text-sm">🛡️ Defense</span>
+                              <span className="text-blue-600 font-bold">{pokemon.defense || (pokemon as any).stats?.defense}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-purple-50 rounded-lg px-3 py-2 border border-purple-200">
-                              <span className="text-gray-800 font-bold">✨ EXP:</span>
-                              <span className="text-purple-600 font-bold text-lg">{pokemon.experience || 0}</span>
+                            <div className="flex justify-between items-center bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg px-3 py-2">
+                              <span className="text-gray-700 font-semibold text-sm">✨ EXP</span>
+                              <span className="text-purple-600 font-bold">{pokemon.experience || 0}</span>
                             </div>
                           </div>
 
@@ -686,7 +712,7 @@ export default function BattlePage() {
                 <div className="mt-12 text-center">
                   <button
                     onClick={() => router.push('/')}
-                    className="pokemon-button"
+                    className="px-8 py-4 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
                   >
                     ← Back to Home
                   </button>
@@ -696,15 +722,17 @@ export default function BattlePage() {
 
             {/* 战斗阶段 */}
             {phase === 'battle' && selectedPokemon && opponent && (
-              <div>
-                <div className="text-center mb-6">
-                  <h1 className="text-4xl font-bold text-white drop-shadow-lg">⚔️ 战斗中</h1>
+              <div className="pokemon-card fade-in">
+                <div className="text-center mb-8">
+                  <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500">
+                    ⚔️ Battle in Progress
+                  </h1>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* 战斗场景 */}
                   <div className="lg:col-span-2">
-                    <div className="battle-arena relative">
+                    <div className="relative bg-gradient-to-b from-blue-50 to-green-50 rounded-2xl p-6 border-2 border-blue-200 shadow-lg">
                       {/* 伤害数字 */}
                       {damageNumbers.map(({ id, damage, x, y }) => (
                         <div
@@ -721,16 +749,17 @@ export default function BattlePage() {
 
                       {/* 对手 Pokemon */}
                       <div className="mb-8">
-                        <div className="flex items-center justify-between mb-4 px-6">
+                        <div className="flex items-center justify-between mb-4 px-6 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4 border-2 border-red-300">
                           <div>
-                            <h3 className="text-2xl font-bold text-white drop-shadow-lg">{opponent.name}</h3>
-                            <div className="inline-block px-3 py-1 bg-red-500/80 rounded-full mt-1">
-                              <span className="text-white font-bold">Lv. {opponent.level}</span>
+                            <div className="text-xs font-bold text-red-600 mb-1">🔥 OPPONENT</div>
+                            <h3 className="text-2xl font-black text-gray-900">{opponent.name}</h3>
+                            <div className="inline-block px-3 py-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full mt-1">
+                              <span className="text-white font-bold text-sm">Lv. {opponent.level}</span>
                             </div>
                           </div>
                           <div className="text-right flex-1 ml-6">
-                            <div className="text-sm text-white/90 mb-2 font-semibold">
-                              HP: {opponent.currentHp}/{opponent.maxHp}
+                            <div className="text-sm text-gray-700 mb-2 font-bold">
+                              ❤️ HP: {opponent.currentHp}/{opponent.maxHp}
                             </div>
                             <div className="hp-bar-container">
                               <div className="hp-bar">
@@ -764,10 +793,10 @@ export default function BattlePage() {
                             />
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-4 px-6">
+                        <div className="flex items-center justify-between mt-4 px-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border-2 border-blue-300">
                           <div className="flex-1 mr-6">
-                            <div className="text-sm text-white/90 mb-2 font-semibold">
-                              HP: {selectedPokemon.currentHp}/{selectedPokemon.maxHp}
+                            <div className="text-sm text-gray-700 mb-2 font-bold">
+                              ❤️ HP: {selectedPokemon.currentHp}/{selectedPokemon.maxHp}
                             </div>
                             <div className="hp-bar-container">
                               <div className="hp-bar">
@@ -779,9 +808,10 @@ export default function BattlePage() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <h3 className="text-2xl font-bold text-white drop-shadow-lg">{selectedPokemon.name}</h3>
-                            <div className="inline-block px-3 py-1 bg-blue-500/80 rounded-full mt-1">
-                              <span className="text-white font-bold">Lv. {selectedPokemon.level}</span>
+                            <div className="text-xs font-bold text-blue-600 mb-1">⭐ YOUR POKÉMON</div>
+                            <h3 className="text-2xl font-black text-gray-900">{selectedPokemon.name}</h3>
+                            <div className="inline-block px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-1">
+                              <span className="text-white font-bold text-sm">Lv. {selectedPokemon.level}</span>
                             </div>
                           </div>
                         </div>
@@ -798,7 +828,7 @@ export default function BattlePage() {
                           className={`game-button game-button-attack text-xl py-4 ${isAttacking ? 'game-button-disabled' : ''}`}
                         >
                           <div className="font-bold">{move.name}</div>
-                          <div className="text-sm opacity-80">威力: {move.power}</div>
+                          <div className="text-sm opacity-80">Power: {move.power}</div>
                         </button>
                       ))}
                     </div>
@@ -809,7 +839,7 @@ export default function BattlePage() {
                     <div className="battle-log" ref={battleLogRef}>
                       <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
                         <span className="mr-2">📜</span>
-                        战斗日志
+                        Battle Log
                       </h3>
                       <div className="space-y-2">
                         {battleLog.map((log, index) => (
@@ -856,12 +886,12 @@ export default function BattlePage() {
                         color: phase === 'victory' ? '#48bb78' : '#f56565',
                         textShadow: '0 0 20px currentColor'
                       }}>
-                        {phase === 'victory' ? '胜利！' : '失败'}
+                        {phase === 'victory' ? 'Victory!' : 'Defeat'}
                       </h2>
                       <p className="text-2xl text-white">
                         {phase === 'victory'
-                          ? `${selectedPokemon.name} 击败了 ${opponent.name}！`
-                          : `${selectedPokemon.name} 失去了战斗能力...`
+                          ? `${selectedPokemon.name} defeated ${opponent.name}!`
+                          : `${selectedPokemon.name} fainted...`
                         }
                       </p>
                     </div>
@@ -872,10 +902,10 @@ export default function BattlePage() {
                         <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-2xl p-6 border-2 border-purple-500/50">
                           <h3 className="text-2xl font-bold text-white mb-4 flex items-center">
                             <span className="mr-2">🎁</span>
-                            战斗奖励
+                            Battle Rewards
                           </h3>
                           <div className="flex items-center justify-between mb-4">
-                            <span className="text-xl text-white">经验值:</span>
+                            <span className="text-xl text-white">Experience:</span>
                             <span className="text-3xl font-bold text-blue-400">+{experienceGained} EXP</span>
                           </div>
                           <div className="exp-bar">
@@ -884,6 +914,21 @@ export default function BattlePage() {
                               style={{ width: '100%' }}
                             />
                           </div>
+                          
+                          {/* 蛋步数奖励 */}
+                          {eggs && eggs.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-purple-500/30">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xl text-white flex items-center">
+                                  <span className="mr-2">🥚</span>
+                                  Egg Steps:
+                                </span>
+                                <span className="text-2xl font-bold text-pink-400">
+                                  +1 step to {eggs.length} egg{eggs.length > 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* 升级提示 */}
@@ -892,28 +937,28 @@ export default function BattlePage() {
                             <div className="flex items-center justify-between mb-4">
                               <div className="flex items-center">
                                 <span className="text-4xl mr-3">✨</span>
-                                <span className="text-2xl font-bold text-yellow-300">升级！</span>
+                                <span className="text-2xl font-bold text-yellow-300">Level Up!</span>
                               </div>
                               <span className="text-3xl font-bold text-yellow-400">
                                 Lv.{selectedPokemon.level - 1} → Lv.{newLevel}
                               </span>
                             </div>
-                            <p className="text-yellow-200 text-lg">所有属性提升 10%！</p>
+                            <p className="text-yellow-200 text-lg">All stats increased by 10%!</p>
                             <div className="grid grid-cols-2 gap-4 mt-4">
                               <div className="text-center">
                                 <div className="text-red-400 font-bold">❤️ HP</div>
                                 <div className="text-white text-xl">+10%</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-orange-400 font-bold">⚔️ 攻击</div>
+                                <div className="text-orange-400 font-bold">⚔️ Attack</div>
                                 <div className="text-white text-xl">+10%</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-blue-400 font-bold">🛡️ 防御</div>
+                                <div className="text-blue-400 font-bold">🛡️ Defense</div>
                                 <div className="text-white text-xl">+10%</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-green-400 font-bold">⚡ 速度</div>
+                                <div className="text-green-400 font-bold">⚡ Speed</div>
                                 <div className="text-white text-xl">+10%</div>
                               </div>
                             </div>
@@ -925,7 +970,7 @@ export default function BattlePage() {
                           <div className="bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-6 border-2 border-purple-500">
                             <div className="text-center">
                               <div className="text-4xl mb-3">🦋</div>
-                              <div className="text-2xl font-bold text-purple-300 mb-4">进化！</div>
+                              <div className="text-2xl font-bold text-purple-300 mb-4">Evolution!</div>
                               <div className="flex items-center justify-center gap-4 text-2xl">
                                 <span className="text-white font-bold">{evolved.from}</span>
                                 <span className="text-purple-400">→</span>
@@ -941,7 +986,7 @@ export default function BattlePage() {
                     <div className="bg-black/30 rounded-2xl p-6 mb-8 max-h-64 overflow-y-auto border-2 border-white/20">
                       <h4 className="text-xl font-bold text-white mb-3 flex items-center">
                         <span className="mr-2">📜</span>
-                        战斗记录
+                        Battle Log
                       </h4>
                       <div className="space-y-1">
                         {battleLog.map((log, index) => (
@@ -956,15 +1001,15 @@ export default function BattlePage() {
                     <div className="flex gap-4">
                       <button
                         onClick={handleRestart}
-                        className="game-button game-button-success flex-1 text-xl"
+                        className="flex-1 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-black text-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
                       >
-                        🔄 继续训练
+                        🔄 Continue Training
                       </button>
                       <button
                         onClick={() => router.push('/')}
-                        className="game-button flex-1 text-xl"
+                        className="flex-1 px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl font-black text-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
                       >
-                        🏠 返回首页
+                        🏠 Back to Home
                       </button>
                     </div>
                   </div>
@@ -972,6 +1017,7 @@ export default function BattlePage() {
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
 
@@ -1007,13 +1053,13 @@ export default function BattlePage() {
                 marginBottom: '20px',
                 textShadow: '0 0 20px rgba(251, 191, 36, 0.8)',
               }}>
-                进化确认
+                Evolution Confirmation
               </h2>
               <p style={{ fontSize: '24px', color: 'white', marginBottom: '10px' }}>
-                {selectedPokemon.name} 想要进化成 {pendingEvolution.name}！
+                {selectedPokemon.name} wants to evolve into {pendingEvolution.name}!
               </p>
               <p style={{ fontSize: '18px', color: 'rgba(255, 255, 255, 0.7)' }}>
-                是否允许进化？
+                Allow evolution?
               </p>
             </div>
 
@@ -1027,14 +1073,14 @@ export default function BattlePage() {
                 className="game-button game-button-success"
                 style={{ flex: 1, fontSize: '20px', padding: '15px' }}
               >
-                ✅ 进化！
+                ✅ Evolve!
               </button>
               <button
                 onClick={cancelEvolution}
                 className="game-button game-button-danger"
                 style={{ flex: 1, fontSize: '20px', padding: '15px' }}
               >
-                ❌ 取消
+                ❌ Cancel
               </button>
             </div>
 
@@ -1044,7 +1090,7 @@ export default function BattlePage() {
               color: 'rgba(255, 255, 255, 0.5)',
               textAlign: 'center',
             }}>
-              💡 提示：取消进化后，下次升级还可以再次进化
+              💡 Tip: You can evolve again on the next level up if you cancel
             </p>
           </div>
         </div>

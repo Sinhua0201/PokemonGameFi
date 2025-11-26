@@ -18,9 +18,11 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_PASSWORD: str = ""
     
-    # Gemini API Configuration
-    GEMINI_API_KEY: str
-    GEMINI_MODEL: str = "gemini-2.0-flash-exp"
+    # AI API Configuration
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.0-flash-lite"
+    DEEPSEEK_API_KEY: str = ""
+    DEEPSEEK_MODEL: str = "deepseek-chat"
     
     # Firebase Configuration
     FIREBASE_SERVICE_ACCOUNT_PATH: str = "serviceAccountKey.json"

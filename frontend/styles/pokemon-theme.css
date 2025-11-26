@@ -105,12 +105,12 @@
 
 /* Card Styles */
 .pokemon-card {
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 1);
   backdrop-filter: blur(12px);
   border-radius: var(--radius-2xl);
   padding: var(--space-8);
-  box-shadow: var(--shadow-xl);
-  border: 3px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(59, 130, 246, 0.1);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;

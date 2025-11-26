@@ -46,16 +46,14 @@ export function BattleModal({
   onCatch,
   onFlee,
 }: BattleModalProps) {
-  const [showMoves, setShowMoves] = useState(false);
+  const wildHPPercent = Math.max(0, Math.min(100, (wildHP / wildMaxHP) * 100));
+  const playerHPPercent = Math.max(0, Math.min(100, (playerHP / playerMaxHP) * 100));
 
-  const wildHPPercent = (wildHP / wildMaxHP) * 100;
-  const playerHPPercent = (playerHP / playerMaxHP) * 100;
-
-  const getHPColor = (percent: number) => {
-    if (percent > 50) return '#10b981';
-    if (percent > 20) return '#f59e0b';
-    return '#ef4444';
-  };
+  // Debug log
+  console.log('🩺 HP Status:', {
+    wild: { hp: wildHP, max: wildMaxHP, percent: wildHPPercent },
+    player: { hp: playerHP, max: playerMaxHP, percent: playerHPPercent }
+  });
 
   return (
     <>
@@ -66,8 +64,9 @@ export function BattleModal({
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.9);
-          z-index: 1000;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(10px);
+          z-index: 9999;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -83,10 +82,10 @@ export function BattleModal({
           width: 90%;
           max-width: 1000px;
           height: 85vh;
-          background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%);
-          border-radius: 20px;
-          border: 3px solid #fbbf24;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+          background: white;
+          border-radius: 24px;
+          border: 4px solid rgba(59, 130, 246, 0.3);
+          box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3), 0 10px 40px rgba(59, 130, 246, 0.2);
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -109,11 +108,11 @@ export function BattleModal({
         }
 
         .wild-area {
-          background: linear-gradient(to bottom, #60a5fa 0%, #3b82f6 100%);
+          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
         }
 
         .player-area {
-          background: linear-gradient(to bottom, #22c55e 0%, #16a34a 100%);
+          background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         }
 
         .pokemon-sprite {
@@ -177,54 +176,70 @@ export function BattleModal({
         }
 
         .hp-text {
-          font-size: 13px;
-          color: #6b7280;
-          margin: 0 0 6px 0;
+          font-size: 14px;
+          font-weight: 700;
+          color: #1f2937;
+          margin: 0 0 8px 0;
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
 
         .hp-bar-container {
           width: 100%;
-          height: 12px;
-          background: #e5e7eb;
-          border-radius: 6px;
-          overflow: hidden;
+          height: 18px;
+          background: linear-gradient(to bottom, #dc2626, #b91c1c);
+          border-radius: 9px;
+          overflow: visible;
+          border: 2px solid rgba(0, 0, 0, 0.5);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+          position: relative;
         }
 
         .hp-bar {
           height: 100%;
-          transition: width 0.5s ease, background-color 0.3s ease;
-          border-radius: 6px;
+          background: linear-gradient(to bottom, #22d3ee, #06b6d4);
+          transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 7px;
+          box-shadow: 
+            0 0 12px rgba(34, 211, 238, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 2;
         }
 
         .battle-log {
           position: absolute;
           top: 20px;
           right: 20px;
-          background: rgba(0, 0, 0, 0.85);
-          border-radius: 12px;
+          background: white;
+          border: 2px solid rgba(59, 130, 246, 0.3);
+          border-radius: 16px;
           padding: 15px;
           width: 280px;
           max-height: 120px;
           overflow-y: auto;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .battle-log h4 {
-          color: #fbbf24;
+          color: #3b82f6;
           font-size: 14px;
-          font-weight: bold;
+          font-weight: 900;
           margin: 0 0 10px 0;
         }
 
         .log-entry {
-          color: white;
+          color: #4b5563;
           font-size: 13px;
+          font-weight: 600;
           margin: 0 0 6px 0;
           line-height: 1.4;
         }
 
         .action-panel {
-          background: #1e293b;
-          border-top: 3px solid #fbbf24;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          border-top: 3px solid rgba(59, 130, 246, 0.3);
           padding: 20px;
         }
 
@@ -232,101 +247,100 @@ export function BattleModal({
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 15px;
-          margin-bottom: 15px;
         }
 
         .action-button {
-          padding: 18px;
+          padding: 20px;
           font-size: 18px;
-          font-weight: bold;
+          font-weight: 900;
           border: none;
-          border-radius: 12px;
+          border-radius: 16px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           color: white;
         }
 
         .action-button:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .action-button:active:not(:disabled) {
-          transform: translateY(0);
+          transform: translateY(-2px) scale(1.02);
         }
 
         .action-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
+          transform: none !important;
         }
 
         .attack-button {
           background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-          grid-column: 1 / -1;
         }
 
         .catch-button {
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
         }
 
         .flee-button {
           background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
         }
 
+        .moves-section {
+          margin-bottom: 20px;
+        }
+
+        .section-header {
+          color: #1f2937;
+          font-size: 18px;
+          font-weight: 900;
+          margin: 0 0 15px 0;
+        }
+
         .moves-panel {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 12px;
-          margin-bottom: 12px;
+          margin-bottom: 20px;
         }
 
         .move-button {
           background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
           color: white;
           border: none;
-          border-radius: 12px;
-          padding: 20px 15px;
+          border-radius: 16px;
+          padding: 18px 15px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           text-align: left;
         }
 
         .move-button:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+        }
+
+        .move-button:active:not(:disabled) {
+          transform: translateY(-2px) scale(1.02);
         }
 
         .move-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
+          transform: none !important;
         }
 
         .move-name {
           font-size: 16px;
-          font-weight: bold;
-          margin: 0 0 4px 0;
+          font-weight: 900;
+          margin: 0 0 6px 0;
         }
 
         .move-details {
           font-size: 13px;
+          font-weight: 600;
           opacity: 0.9;
-        }
-
-        .back-button {
-          background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-          color: white;
-          border: none;
-          border-radius: 12px;
-          padding: 15px;
-          font-size: 16px;
-          font-weight: bold;
-          cursor: pointer;
-          width: 100%;
-          transition: all 0.2s ease;
-        }
-
-        .back-button:hover {
-          transform: translateY(-2px);
         }
 
         @media (max-width: 768px) {
@@ -350,8 +364,12 @@ export function BattleModal({
           }
 
           .action-button {
-            padding: 15px;
+            padding: 18px;
             font-size: 16px;
+          }
+
+          .action-buttons {
+            grid-template-columns: 1fr;
           }
 
           .moves-panel {
@@ -383,15 +401,14 @@ export function BattleModal({
                   <div 
                     className="hp-bar"
                     style={{ 
-                      width: `${wildHPPercent}%`,
-                      backgroundColor: getHPColor(wildHPPercent)
+                      width: `${wildHPPercent}%`
                     }}
                   />
                 </div>
               </div>
 
               <div className="battle-log">
-                <h4>⚔️ 战斗日志</h4>
+                <h4>⚔️ Battle Log</h4>
                 {battleLog.slice(-4).map((log, i) => (
                   <p key={i} className="log-entry">{log}</p>
                 ))}
@@ -420,8 +437,7 @@ export function BattleModal({
                   <div 
                     className="hp-bar"
                     style={{ 
-                      width: `${playerHPPercent}%`,
-                      backgroundColor: getHPColor(playerHPPercent)
+                      width: `${playerHPPercent}%`
                     }}
                   />
                 </div>
@@ -431,60 +447,41 @@ export function BattleModal({
 
           {/* Action Panel */}
           <div className="action-panel">
-            {showMoves ? (
-              <>
-                <div className="moves-panel">
-                  {moves.map((move, index) => (
-                    <button
-                      key={index}
-                      className="move-button"
-                      onClick={() => {
-                        onAttack(move);
-                        setShowMoves(false);
-                      }}
-                      disabled={isAttacking || wildHP === 0 || playerHP === 0}
-                    >
-                      <p className="move-name">{move.name}</p>
-                      <p className="move-details">
-                        {move.type} • ⚡ {move.power}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-                <button 
-                  className="back-button"
-                  onClick={() => setShowMoves(false)}
-                >
-                  ← 返回
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  className="action-button attack-button"
-                  onClick={() => setShowMoves(true)}
-                  disabled={isAttacking || wildHP === 0 || playerHP === 0}
-                >
-                  ⚔️ 攻击
-                </button>
-                <div className="action-buttons">
+            <div className="moves-section">
+              <h3 className="section-header">⚔️ Choose Your Move:</h3>
+              <div className="moves-panel">
+                {moves.map((move, index) => (
                   <button
-                    className="action-button catch-button"
-                    onClick={onCatch}
+                    key={index}
+                    className="move-button"
+                    onClick={() => onAttack(move)}
                     disabled={isAttacking || wildHP === 0 || playerHP === 0}
                   >
-                    🎯 捕捉
+                    <p className="move-name">{move.name}</p>
+                    <p className="move-details">
+                      {move.type} • ⚡ {move.power}
+                    </p>
                   </button>
-                  <button
-                    className="action-button flee-button"
-                    onClick={onFlee}
-                    disabled={isAttacking}
-                  >
-                    🏃 逃跑
-                  </button>
-                </div>
-              </>
-            )}
+                ))}
+              </div>
+            </div>
+            
+            <div className="action-buttons">
+              <button
+                className="action-button catch-button"
+                onClick={onCatch}
+                disabled={isAttacking || wildHP === 0 || playerHP === 0}
+              >
+                🎯 Catch
+              </button>
+              <button
+                className="action-button flee-button"
+                onClick={onFlee}
+                disabled={isAttacking}
+              >
+                🏃 Flee
+              </button>
+            </div>
           </div>
         </div>
       </div>

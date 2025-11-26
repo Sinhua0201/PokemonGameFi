@@ -3,7 +3,8 @@
 # 复制下面的内容到 Railway Variables
 # ========================================
 
-# 1. GEMINI_API_KEY（必需）
+# 1. AI API KEYS（至少需要一个）
+DEEPSEEK_API_KEY=sk-3737e90fd7244a78ab9e2b0700c2d5fe
 GEMINI_API_KEY=AIzaSyDAL621Fd02tvoKCJ9apijDp0h6BRuJ_cE
 
 # 2. FIREBASE_SERVICE_ACCOUNT_PATH（必需）
@@ -24,6 +25,7 @@ DEBUG=false
 # 4. 点击 "New Variable" 或 "Raw Editor"
 # 5. 如果使用 Raw Editor，直接粘贴下面的内容：
 
+DEEPSEEK_API_KEY=sk-3737e90fd7244a78ab9e2b0700c2d5fe
 GEMINI_API_KEY=AIzaSyDAL621Fd02tvoKCJ9apijDp0h6BRuJ_cE
 FIREBASE_SERVICE_ACCOUNT_PATH=serviceAccountKey.json
 CORS_ORIGINS=http://localhost:3000

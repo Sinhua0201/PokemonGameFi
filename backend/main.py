@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 
 from config import settings
-from routes import pokemon, battle, ai, auth, blockchain, quest
+from routes import pokemon, battle, ai, auth, blockchain, quest, trainer_dialogue
 from services.redis_service import redis_service
 from services.pokemon_service import pokemon_service
 import asyncio
@@ -57,6 +57,7 @@ app.include_router(battle.router, prefix="/api/battle", tags=["Battle"])
 app.include_router(ai.router, prefix="/api/ai", tags=["AI"])
 app.include_router(blockchain.router, prefix="/api/blockchain", tags=["Blockchain"])
 app.include_router(quest.router, prefix="/api/quests", tags=["Quests"])
+app.include_router(trainer_dialogue.router, prefix="/api/trainer", tags=["Trainer Dialogue"])
 
 
 @app.get("/")

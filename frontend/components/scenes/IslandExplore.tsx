@@ -128,35 +128,40 @@ function BattleTower({
         rotation={[0, Math.PI * 1.5, 0]}
       />
       {/* Battle Icon */}
-      <Html position={[0, 12, 0]} center>
+      <Html position={[0, 12, 0]} center zIndexRange={[1, 0]}>
         <style>{`
           .battle-icon {
             transition: all 0.3s;
+            position: relative;
+            z-index: 1;
           }
           .battle-badge {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
-            padding: 6px 12px;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            font-weight: bold;
-            font-size: 1.125rem;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            font-weight: 800;
+            font-size: 0.875rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: float 3s ease-in-out infinite;
           }
           .battle-prompt {
-            margin-top: 4px;
-            background: #eab308;
-            color: black;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.875rem;
+            margin-top: 6px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
             animation: bounce 1s infinite;
           }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
           }
           @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -229,35 +234,40 @@ function ProfileBuilding({
         rotation={[0, 0, 0]}
       />
       {/* Profile Icon */}
-      <Html position={[0, 15, 0]} center>
+      <Html position={[0, 15, 0]} center zIndexRange={[1, 0]}>
         <style>{`
           .profile-icon {
             transition: all 0.3s;
+            position: relative;
+            z-index: 1;
           }
           .profile-badge {
-            background: #8b5cf6;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
             color: white;
-            padding: 6px 12px;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            font-weight: bold;
-            font-size: 1.125rem;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            font-weight: 800;
+            font-size: 0.875rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: float 3s ease-in-out infinite;
           }
           .profile-prompt {
-            margin-top: 4px;
-            background: #eab308;
-            color: black;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.875rem;
+            margin-top: 6px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
             animation: bounce 1s infinite;
           }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
           }
           @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -330,35 +340,40 @@ function Marketplace({
         rotation={[0, Math.PI / 2, 0]}
       />
       {/* Market Icon */}
-      <Html position={[0, 10, 0]} center>
+      <Html position={[0, 10, 0]} center zIndexRange={[1, 0]}>
         <style>{`
           .market-icon {
             transition: all 0.3s;
+            position: relative;
+            z-index: 1;
           }
           .market-badge {
-            background: #22c55e;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 6px 12px;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            font-weight: bold;
-            font-size: 1.125rem;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            font-weight: 800;
+            font-size: 0.875rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: float 3s ease-in-out infinite;
           }
           .market-prompt {
-            margin-top: 4px;
-            background: #eab308;
-            color: black;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.875rem;
+            margin-top: 6px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
             animation: bounce 1s infinite;
           }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
           }
           @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -429,35 +444,40 @@ function BreedingCenter({
         scale={0.1} // 缩小到原来的 1/10
       />
       {/* Breeding Icon */}
-      <Html position={[0, 10, 0]} center>
+      <Html position={[0, 10, 0]} center zIndexRange={[1, 0]}>
         <style>{`
           .breeding-icon {
             transition: all 0.3s;
+            position: relative;
+            z-index: 1;
           }
           .breeding-badge {
-            background: #ec4899;
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
             color: white;
-            padding: 6px 12px;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            font-weight: bold;
-            font-size: 1.125rem;
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            padding: 6px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            font-weight: 800;
+            font-size: 0.875rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            animation: float 3s ease-in-out infinite;
           }
           .breeding-prompt {
-            margin-top: 4px;
-            background: #eab308;
-            color: black;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.875rem;
+            margin-top: 6px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
             animation: bounce 1s infinite;
           }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
           }
           @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -633,9 +653,11 @@ function PlayerCharacter({
   return (
     <group ref={groupRef}>
       {model && <primitive object={model} />}
-      <Html position={[0, 8, 0]} center>
+      <Html position={[0, 8, 0]} center zIndexRange={[1, 0]}>
         <div style={{
           padding: '2px 8px',
+          position: 'relative',
+          zIndex: 1,
           borderRadius: '9999px',
           fontSize: '0.75rem',
           fontWeight: 'bold',
@@ -720,9 +742,11 @@ function WildPokemonSprite({
         <spriteMaterial map={texture} transparent />
       </sprite>
       {showPrompt && (
-        <Html position={[pokemon.position.x, pokemon.position.y + 5, pokemon.position.z]} center>
+        <Html position={[pokemon.position.x, pokemon.position.y + 5, pokemon.position.z]} center zIndexRange={[1, 0]}>
           <style jsx>{`
             .press-e-prompt {
+              position: relative;
+              z-index: 1;
               background: #ef4444;
               color: white;
               padding: 4px 8px;
@@ -1281,7 +1305,7 @@ export default function IslandExplore() {
     if (!currentPlayer) return;
 
     const interval = setInterval(() => {
-      const speed = 0.5; // Much slower movement
+      const speed = 0.8; // Movement speed
       const newPosition = { ...currentPlayer.position };
       let newRotation = currentPlayer.rotation;
       let moved = false;
@@ -1468,7 +1492,7 @@ export default function IslandExplore() {
     const hpBonus = (1 - hpPercentage) * 0.6;
     const successRate = baseRate + hpBonus;
 
-    toast.loading('尝试捕获...', { id: 'capture' });
+    toast.loading('Attempting to catch...', { id: 'capture' });
 
     try {
       // Use blockchain capture
@@ -1483,14 +1507,14 @@ export default function IslandExplore() {
       );
 
       if (result.success) {
-        toast.success(`成功捕获了 ${encounterPokemon.name}! NFT 已铸造`, { id: 'capture' });
+        toast.success(`Successfully caught ${encounterPokemon.name}! NFT minted`, { id: 'capture' });
 
         // Remove caught Pokemon from map
         setWildPokemon(prev => prev.filter(p => p.id !== encounterPokemon.id));
 
         // Add to battle log if in battle
         if (battleMode === 'battle') {
-          setBattleLog(prev => [...prev, `成功捕获了 ${encounterPokemon.name}!`]);
+          setBattleLog(prev => [...prev, `Successfully caught ${encounterPokemon.name}!`]);
         }
 
         // Close battle/selection after short delay
@@ -1501,7 +1525,7 @@ export default function IslandExplore() {
           setBattleLog([]);
         }, 2000);
       } else {
-        const message = `${encounterPokemon.name} 挣脱了！`;
+        const message = `${encounterPokemon.name} broke free!`;
         toast.error(message, { id: 'capture' });
 
         if (battleMode === 'battle') {
@@ -1510,10 +1534,10 @@ export default function IslandExplore() {
       }
     } catch (error) {
       console.error('Failed to capture:', error);
-      toast.error('捕获失败，请重试', { id: 'capture' });
+      toast.error('Capture failed, please try again', { id: 'capture' });
 
       if (battleMode === 'battle') {
-        setBattleLog(prev => [...prev, '捕获失败！']);
+        setBattleLog(prev => [...prev, 'Capture failed!']);
       }
     }
   };

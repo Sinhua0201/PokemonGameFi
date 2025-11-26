@@ -33,8 +33,9 @@ export function PokemonSelectionModal({
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.9);
-          z-index: 1000;
+          background: rgba(0, 0, 0, 0.7);
+          backdrop-filter: blur(10px);
+          z-index: 9999;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -46,25 +47,40 @@ export function PokemonSelectionModal({
           to { opacity: 1; }
         }
 
+        @keyframes slideUp {
+          from { 
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
         .selection-container {
           width: 90%;
           max-width: 900px;
           max-height: 85vh;
-          background: linear-gradient(to bottom, #dc2626 0%, #991b1b 100%);
-          border-radius: 20px;
-          border: 4px solid #fbbf24;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-          padding: 30px;
+          background: white;
+          border-radius: 24px;
+          border: 4px solid rgba(59, 130, 246, 0.3);
+          box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3), 0 10px 40px rgba(59, 130, 246, 0.2);
+          padding: 40px;
           overflow-y: auto;
+          animation: slideUp 0.4s ease-out;
         }
 
         .title {
-          font-size: 32px;
-          font-weight: bold;
-          color: white;
+          font-size: 36px;
+          font-weight: 900;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           text-align: center;
-          margin: 0 0 30px 0;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+          margin: 0 0 40px 0;
+          filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
         }
 
         .wild-pokemon-display {
@@ -72,48 +88,62 @@ export function PokemonSelectionModal({
           justify-content: center;
           align-items: center;
           margin-bottom: 40px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 15px;
-          padding: 20px;
+          background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+          border-radius: 20px;
+          padding: 30px;
+          border: 3px solid rgba(59, 130, 246, 0.3);
+          box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
         }
 
         .wild-sprite {
-          width: 160px;
-          height: 160px;
+          width: 180px;
+          height: 180px;
           image-rendering: pixelated;
-          animation: shake 0.5s ease-in-out infinite;
+          animation: float 3s ease-in-out infinite;
+          filter: drop-shadow(0 8px 16px rgba(59, 130, 246, 0.3));
         }
 
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
 
         .wild-info {
           margin-left: 30px;
-          color: white;
+          color: #1f2937;
         }
 
         .wild-name {
-          font-size: 28px;
-          font-weight: bold;
-          margin: 0 0 10px 0;
+          font-size: 32px;
+          font-weight: 900;
+          margin: 0 0 15px 0;
+          color: #1f2937;
         }
 
         .wild-level {
-          font-size: 18px;
-          background: rgba(0, 0, 0, 0.3);
-          padding: 5px 15px;
-          border-radius: 20px;
+          font-size: 20px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          padding: 8px 20px;
+          border-radius: 25px;
           display: inline-block;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .section-title {
-          font-size: 22px;
-          font-weight: bold;
-          color: white;
-          margin: 0 0 20px 0;
+          font-size: 24px;
+          font-weight: 900;
+          color: #1f2937;
+          margin: 0 0 25px 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .section-title::before {
+          content: '⚔️';
+          font-size: 28px;
         }
 
         .pokemon-grid {
@@ -124,39 +154,46 @@ export function PokemonSelectionModal({
         }
 
         .pokemon-card {
-          background: rgba(255, 255, 255, 0.15);
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-radius: 12px;
-          padding: 15px;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          border: 3px solid rgba(59, 130, 246, 0.2);
+          border-radius: 16px;
+          padding: 20px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           text-align: center;
         }
 
         .pokemon-card:hover {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: #fbbf24;
-          transform: translateY(-5px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+          background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+          border-color: #3b82f6;
+          transform: translateY(-8px) scale(1.05);
+          box-shadow: 0 12px 30px rgba(59, 130, 246, 0.3);
         }
 
         .pokemon-card-sprite {
-          width: 80px;
-          height: 80px;
+          width: 96px;
+          height: 96px;
           image-rendering: pixelated;
-          margin: 0 auto 10px;
+          margin: 0 auto 15px;
+          filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.2));
+          transition: transform 0.3s ease;
+        }
+
+        .pokemon-card:hover .pokemon-card-sprite {
+          transform: scale(1.1);
         }
 
         .pokemon-card-name {
-          font-size: 16px;
-          font-weight: bold;
-          color: white;
-          margin: 0 0 5px 0;
+          font-size: 18px;
+          font-weight: 900;
+          color: #1f2937;
+          margin: 0 0 8px 0;
         }
 
         .pokemon-card-level {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.8);
+          font-size: 15px;
+          font-weight: 700;
+          color: #3b82f6;
           margin: 0;
         }
 
@@ -167,41 +204,51 @@ export function PokemonSelectionModal({
         }
 
         .action-button {
-          padding: 18px;
-          font-size: 18px;
-          font-weight: bold;
+          padding: 20px;
+          font-size: 20px;
+          font-weight: 900;
           border: none;
-          border-radius: 12px;
+          border-radius: 16px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.3s ease;
           color: white;
         }
 
         .action-button:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+          transform: translateY(-4px) scale(1.05);
         }
 
         .action-button:active {
-          transform: translateY(0);
+          transform: translateY(-2px) scale(1.02);
         }
 
         .catch-button {
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+
+        .catch-button:hover {
+          box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
         }
 
         .flee-button {
           background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
         }
 
+        .flee-button:hover {
+          box-shadow: 0 10px 30px rgba(107, 114, 128, 0.4);
+        }
+
         .empty-message {
           text-align: center;
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 16px;
-          padding: 40px;
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 12px;
+          color: #4b5563;
+          font-size: 18px;
+          font-weight: 600;
+          padding: 50px;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+          border-radius: 16px;
           margin-bottom: 30px;
+          border: 2px solid rgba(59, 130, 246, 0.2);
+          line-height: 1.8;
         }
 
         @media (max-width: 768px) {
@@ -244,7 +291,7 @@ export function PokemonSelectionModal({
       <div className="selection-modal-overlay">
         <div className="selection-container">
           <h2 className="title">
-            野生宝可梦出现了！
+            ⚡ A Wild Pokémon Appeared! ⚡
           </h2>
 
           <div className="wild-pokemon-display">
@@ -255,16 +302,16 @@ export function PokemonSelectionModal({
             />
             <div className="wild-info">
               <p className="wild-name">{wildPokemon.name}</p>
-              <p className="wild-level">等级 {wildPokemon.level}</p>
+              <p className="wild-level">Level {wildPokemon.level}</p>
             </div>
           </div>
 
-          <h3 className="section-title">选择你的宝可梦：</h3>
+          <h3 className="section-title">Choose Your Pokémon:</h3>
 
           {playerPokemonList.length === 0 ? (
             <div className="empty-message">
-              你还没有宝可梦！<br />
-              尝试直接捕捉这只野生宝可梦吧！
+              You don&apos;t have any Pokémon yet!<br />
+              Try catching this wild Pokémon directly!
             </div>
           ) : (
             <div className="pokemon-grid">
@@ -291,13 +338,13 @@ export function PokemonSelectionModal({
               className="action-button catch-button"
               onClick={onCatch}
             >
-              🎯 直接捕捉
+              🎯 Catch
             </button>
             <button
               className="action-button flee-button"
               onClick={onFlee}
             >
-              🏃 逃跑
+              🏃 Flee
             </button>
           </div>
         </div>
