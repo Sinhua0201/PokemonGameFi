@@ -31,6 +31,7 @@ module pokemon_nft::pokemon {
         types: vector<String>,      // Pokémon types (e.g., ["fire"], ["water", "flying"])
         owner: address,             // Current owner address
         mint_timestamp: u64,        // When the NFT was minted
+        evolution_stage: u64,       // Evolution stage (0 = base, 1 = first evolution, 2 = second evolution)
     }
 
     // ============================================
@@ -76,6 +77,7 @@ module pokemon_nft::pokemon {
             types: type_strings,
             owner: sender,
             mint_timestamp: clock::timestamp_ms(clock),
+            evolution_stage: 0,
         };
 
         // Transfer to the player
@@ -127,10 +129,58 @@ module pokemon_nft::pokemon {
             types: type_strings,
             owner: sender,
             mint_timestamp: clock::timestamp_ms(clock),
+            evolution_stage: 0,
         };
 
         // Transfer to the player
         transfer::public_transfer(pokemon, sender);
+    }
+
+    // ============================================
+    // Core Functions - Evolution
+    // ============================================
+
+    /// Evolve a Pokémon to its next stage
+    /// First evolution requires level 12, second evolution requires level 20
+    /// Parameters:
+    /// - pokemon: Mutable reference to the Pokémon NFT
+    /// - new_species_id: New species ID after evolution
+    /// - new_name: New name after evolution
+    public entry fun evolve_pokemon(
+        pokemon: &mut Pokemon,
+        new_species_id: u64,
+        new_name: vector<u8>,
+    ) {
+        // Check evolution requirements
+        let required_level = if (pokemon.evolution_stage == 0) {
+            12  // First evolution at level 12
+        } else if (pokemon.evolution_stage == 1) {
+            20  // Second evolution at level 20
+        } else {
+            100 // Cannot evolve further
+        };
+
+        // Verify level requirement
+        assert!(pokemon.level >= required_level, 0); // Error code 0: Level too low
+        assert!(pokemon.evolution_stage < 2, 1); // Error code 1: Already fully evolved
+
+        // Update evolution stage
+        pokemon.evolution_stage = pokemon.evolution_stage + 1;
+        
+        // Update species and name
+        pokemon.species_id = new_species_id;
+        pokemon.name = string::utf8(new_name);
+        
+        // Boost stats on evolution (20% increase)
+        let hp_boost = pokemon.stats.hp / 5;
+        let attack_boost = pokemon.stats.attack / 5;
+        let defense_boost = pokemon.stats.defense / 5;
+        let speed_boost = pokemon.stats.speed / 5;
+        
+        pokemon.stats.hp = pokemon.stats.hp + hp_boost;
+        pokemon.stats.attack = pokemon.stats.attack + attack_boost;
+        pokemon.stats.defense = pokemon.stats.defense + defense_boost;
+        pokemon.stats.speed = pokemon.stats.speed + speed_boost;
     }
 
     // ============================================
@@ -303,6 +353,26 @@ module pokemon_nft::pokemon {
         pokemon.mint_timestamp
     }
 
+    /// Get evolution stage
+    public fun get_evolution_stage(pokemon: &Pokemon): u64 {
+        pokemon.evolution_stage
+    }
+
+    /// Check if Pokemon can evolve
+    public fun can_evolve(pokemon: &Pokemon): bool {
+        if (pokemon.evolution_stage >= 2) {
+            return false
+        };
+        
+        let required_level = if (pokemon.evolution_stage == 0) {
+            12
+        } else {
+            20
+        };
+        
+        pokemon.level >= required_level
+    }
+
     // ============================================
     // Test Functions
     // ============================================
@@ -327,6 +397,7 @@ module pokemon_nft::pokemon {
             types: vector::empty<String>(),
             owner: tx_context::sender(ctx),
             mint_timestamp: 0,
+            evolution_stage: 0,
         }
     }
 
@@ -341,7 +412,8 @@ module pokemon_nft::pokemon {
             stats: _, 
             types: _, 
             owner: _, 
-            mint_timestamp: _ 
+            mint_timestamp: _,
+            evolution_stage: _
         } = pokemon;
         object::delete(id);
     }

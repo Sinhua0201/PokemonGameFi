@@ -187,6 +187,73 @@ export function useAddExperience() {
 }
 
 /**
+ * Hook for evolving a Pokemon
+ */
+export function useEvolvePokemon() {
+  const { mutate: signAndExecute } = useSignAndExecuteTransaction();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+  
+  const evolvePokemon = async (
+    pokemonId: string,
+    newSpeciesId: number,
+    newName: string
+  ): Promise<void> => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      if (!PACKAGE_ID || PACKAGE_ID === '0x0') {
+        throw new Error('Package ID not configured');
+      }
+
+      console.log('🔧 Evolving Pokemon...');
+      console.log('Pokemon ID:', pokemonId);
+      console.log('New Species ID:', newSpeciesId);
+      console.log('New Name:', newName);
+      
+      const tx = new Transaction();
+      
+      tx.moveCall({
+        target: `${PACKAGE_ID}::pokemon::evolve_pokemon`,
+        arguments: [
+          tx.object(pokemonId),
+          tx.pure.u64(newSpeciesId),
+          tx.pure.string(newName),
+        ],
+      });
+      
+      return new Promise((resolve, reject) => {
+        signAndExecute(
+          { transaction: tx },
+          {
+            onSuccess: (result: any) => {
+              console.log('✅ Pokemon evolved on-chain:', result);
+              setIsLoading(false);
+              resolve();
+            },
+            onError: (error: any) => {
+              console.error('❌ Failed to evolve Pokemon:', error);
+              setError(error as Error);
+              setIsLoading(false);
+              reject(error);
+            },
+          }
+        );
+      });
+    } catch (err) {
+      const error = err as Error;
+      console.error('❌ Error preparing evolution transaction:', error);
+      setError(error);
+      setIsLoading(false);
+      throw error;
+    }
+  };
+  
+  return { evolvePokemon, isLoading, error };
+}
+
+/**
  * Hook for querying player's egg NFTs
  */
 export function usePlayerEggs() {

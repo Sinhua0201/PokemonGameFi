@@ -24,6 +24,7 @@ export interface PokemonNFT {
   types: string[];
   owner: string;
   mintTimestamp: number;
+  evolutionStage?: number; // 0 = base, 1 = first evolution, 2 = second evolution
 }
 
 export interface EggNFT {

@@ -557,6 +557,12 @@ export default function ProfilePage() {
         <PokemonDetailModal
           pokemon={selectedPokemon}
           onClose={() => setSelectedPokemon(null)}
+          onEvolved={async () => {
+            // Refresh Pokemon data
+            await refetchPokemon();
+            // Clear selection so if user clicks same Pokemon again, it will have fresh data
+            setSelectedPokemon(null);
+          }}
         />
       )}
 

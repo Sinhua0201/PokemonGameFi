@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 interface PokemonLoadingProps {
   onComplete?: () => void;
@@ -46,7 +45,7 @@ export function PokemonLoading({ onComplete, duration = 3000 }: PokemonLoadingPr
       {/* Main loading container */}
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Pikachu running */}
-        <div className="relative w-full flex justify-center mb-4" style={{ height: '120px' }}>
+        <div className="relative w-full flex justify-center mb-0" style={{ height: '120px', marginTop: '40px' }}>
           <div 
             className="pikachu-container"
             style={{ 
@@ -54,19 +53,25 @@ export function PokemonLoading({ onComplete, duration = 3000 }: PokemonLoadingPr
               transition: 'transform 0.1s linear'
             }}
           >
-            <Image
-              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
-              alt="Pikachu"
-              width={100}
-              height={100}
+            <img
+              src="/run-pikachu.gif"
+              alt="Pikachu Running"
+              width={120}
+              height={120}
               className="pikachu-image"
-              priority
+              style={{ objectFit: 'contain' }}
             />
           </div>
         </div>
 
         {/* Loading bar container */}
         <div className="loading-bar-container">
+          {/* Grass decorations */}
+          <div className="grass-left">🌿</div>
+          <div className="grass-left-2">🌱</div>
+          <div className="grass-right">🌿</div>
+          <div className="grass-right-2">🌱</div>
+          
           <div className="loading-bar-bg">
             <div 
               className="loading-bar-fill"
@@ -165,38 +170,7 @@ export function PokemonLoading({ onComplete, duration = 3000 }: PokemonLoadingPr
         }
 
         .pikachu-image {
-          animation: pikachu-run 0.3s steps(2) infinite, pikachu-bounce 0.5s ease-in-out infinite;
           filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3));
-        }
-
-        @keyframes pikachu-run {
-          0%, 100% {
-            transform: scaleX(1) scaleY(1) rotate(-5deg);
-          }
-          25% {
-            transform: scaleX(1.08) scaleY(0.92) rotate(0deg);
-          }
-          50% {
-            transform: scaleX(1.05) scaleY(0.95) rotate(5deg);
-          }
-          75% {
-            transform: scaleX(1.08) scaleY(0.92) rotate(0deg);
-          }
-        }
-
-        @keyframes pikachu-bounce {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          25% {
-            transform: translateY(-10px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-          75% {
-            transform: translateY(-10px);
-          }
         }
 
         /* Loading bar */
@@ -204,6 +178,55 @@ export function PokemonLoading({ onComplete, duration = 3000 }: PokemonLoadingPr
           position: relative;
           width: 400px;
           max-width: 90vw;
+        }
+
+        /* Grass decorations */
+        .grass-left {
+          position: absolute;
+          left: 20px;
+          bottom: -5px;
+          font-size: 1.5rem;
+          animation: sway 2s ease-in-out infinite;
+          z-index: 1;
+        }
+
+        .grass-left-2 {
+          position: absolute;
+          left: 35px;
+          bottom: 8px;
+          font-size: 1.2rem;
+          animation: sway 2.5s ease-in-out infinite;
+          animation-delay: -0.5s;
+          z-index: 1;
+        }
+
+        .grass-right {
+          position: absolute;
+          right: 5px;
+          bottom: -5px;
+          font-size: 1.5rem;
+          animation: sway 2s ease-in-out infinite;
+          animation-delay: -1s;
+          z-index: 1;
+        }
+
+        .grass-right-2 {
+          position: absolute;
+          right: 20px;
+          bottom: 8px;
+          font-size: 1.2rem;
+          animation: sway 2.5s ease-in-out infinite;
+          animation-delay: -1.5s;
+          z-index: 1;
+        }
+
+        @keyframes sway {
+          0%, 100% {
+            transform: rotate(-5deg);
+          }
+          50% {
+            transform: rotate(5deg);
+          }
         }
 
         .loading-bar-bg {

@@ -4,15 +4,30 @@ import { PokemonNFT } from '@/types/pokemon';
 import { useEffect, useState } from 'react';
 import { getPokemonData } from '@/lib/api';
 import { PokemonData } from '@/types/pokemon';
+import { useEvolvePokemon } from '@/hooks/usePokemonNFT';
+import { toast } from '@/lib/toast';
+import { EvolutionAnimation } from './EvolutionAnimation';
+import { getEvolutionData, inferEvolutionStage } from '@/lib/evolutionData';
 
 interface PokemonDetailModalProps {
   pokemon: PokemonNFT;
   onClose: () => void;
+  onEvolved?: () => void;
 }
 
-export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps) {
+export function PokemonDetailModal({ pokemon, onClose, onEvolved }: PokemonDetailModalProps) {
   const [pokemonData, setPokemonData] = useState<PokemonData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { evolvePokemon, isLoading: isEvolving } = useEvolvePokemon();
+  const [showEvolutionAnimation, setShowEvolutionAnimation] = useState(false);
+  const [evolutionTarget, setEvolutionTarget] = useState<{ id: number; name: string } | null>(null);
+  
+  // Evolution logic - infer correct stage based on species ID
+  const reportedStage = pokemon.evolutionStage || 0;
+  const evolutionStage = inferEvolutionStage(pokemon.speciesId, reportedStage);
+  const canEvolve = evolutionStage < 2;
+  const requiredLevel = evolutionStage === 0 ? 12 : 20;
+  const meetsLevelRequirement = pokemon.level >= requiredLevel;
 
   useEffect(() => {
     loadPokemonData();
@@ -32,6 +47,51 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
 
   const xpForNextLevel = Math.pow(pokemon.level + 1, 3);
   const xpProgress = (pokemon.experience / xpForNextLevel) * 100;
+
+  // Get evolution data from the complete evolution map
+  const evolutionData = getEvolutionData(pokemon.speciesId, evolutionStage);
+  
+  // Check if Pokemon can actually evolve (has evolution data available)
+  const hasEvolutionAvailable = evolutionData !== null;
+  
+  console.log('Evolution Debug:', {
+    speciesId: pokemon.speciesId,
+    evolutionStage,
+    hasEvolutionAvailable,
+    requiredLevel,
+    currentLevel: pokemon.level,
+    meetsLevelRequirement,
+    evolutionData
+  });
+
+  const handleEvolve = async () => {
+    if (!evolutionData) return;
+    
+    try {
+      // Show animation first
+      setEvolutionTarget(evolutionData);
+      setShowEvolutionAnimation(true);
+      
+      // Execute evolution on blockchain
+      await evolvePokemon(pokemon.id, evolutionData.id, evolutionData.name);
+    } catch (error) {
+      console.error('Evolution failed:', error);
+      toast.error('Failed to evolve Pokemon');
+      setShowEvolutionAnimation(false);
+    }
+  };
+
+  const handleEvolutionComplete = async () => {
+    setShowEvolutionAnimation(false);
+    toast.success(`${pokemon.name} evolved into ${evolutionTarget?.name}!`);
+    
+    // Wait a bit for blockchain to update
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Trigger refresh and close
+    onEvolved?.();
+    onClose();
+  };
 
   // Type colors for visual styling
   const typeColors: Record<string, string> = {
@@ -64,7 +124,19 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <>
+      {/* Evolution Animation */}
+      {showEvolutionAnimation && evolutionTarget && (
+        <EvolutionAnimation
+          oldSpeciesId={pokemon.speciesId}
+          oldName={pokemon.name}
+          newSpeciesId={evolutionTarget.id}
+          newName={evolutionTarget.name}
+          onComplete={handleEvolutionComplete}
+        />
+      )}
+
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-4 border-purple-500 shadow-2xl">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-100 to-purple-100 p-6 rounded-t-2xl border-b-4 border-purple-300">
@@ -273,7 +345,36 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
         </div>
 
         {/* Footer */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 rounded-b-2xl flex justify-end border-t-4 border-purple-300">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 rounded-b-2xl flex justify-between items-center border-t-4 border-purple-300">
+          {/* Evolution Button */}
+          <div className="flex items-center gap-3">
+            {hasEvolutionAvailable ? (
+              <>
+                <button
+                  onClick={handleEvolve}
+                  disabled={!meetsLevelRequirement || isEvolving}
+                  className={`px-6 py-3 rounded-lg font-bold transition-all shadow-md flex items-center gap-2 ${
+                    meetsLevelRequirement && !isEvolving
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white hover:shadow-lg'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <span className="text-xl">✨</span>
+                  {isEvolving ? 'Evolving...' : `Evolve to ${evolutionData!.name}`}
+                </button>
+                {!meetsLevelRequirement && (
+                  <span className="text-sm text-gray-600 font-semibold bg-yellow-100 px-3 py-2 rounded-lg border border-yellow-300">
+                    ⚠️ Requires Level {requiredLevel}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-sm text-gray-600 font-semibold bg-blue-100 px-3 py-2 rounded-lg border border-blue-300">
+                🌟 Fully Evolved
+              </span>
+            )}
+          </div>
+          
           <button
             onClick={onClose}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg font-bold transition-all shadow-md hover:shadow-lg"
@@ -283,5 +384,6 @@ export function PokemonDetailModal({ pokemon, onClose }: PokemonDetailModalProps
         </div>
       </div>
     </div>
+    </>
   );
 }
