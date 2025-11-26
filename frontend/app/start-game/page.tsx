@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCurrentAccount, ConnectButton } from '@mysten/dapp-kit';
+import { useCurrentAccount } from '@mysten/dapp-kit';
 import Image from 'next/image';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
@@ -12,8 +12,9 @@ import { LoadingProgress } from '@/components/LoadingProgress';
 import { FriendlyError } from '@/components/FriendlyError';
 import { SuccessModal } from '@/components/SuccessModal';
 import { useMintPokemon } from '@/hooks/useMintPokemon';
-import { usePlayerPokemon } from '@/hooks/usePlayerPokemon';
 import { toast } from 'sonner';
+import { WalletConnect } from '@/components/WalletConnect';
+import '@/styles/start-game.css';
 
 const CHARACTERS = [
   { id: 1, name: 'Character 1', image: '/character1/shaded.png' },
@@ -41,7 +42,6 @@ type Step = 'wallet' | 'character' | 'name' | 'pokemon';
 export default function StartGamePage() {
   const router = useRouter();
   const account = useCurrentAccount();
-  const { pokemon: playerPokemonList, loading: checkingPokemon } = usePlayerPokemon(account?.address);
   const { mintPokemon, isLoading: minting } = useMintPokemon();
   const [step, setStep] = useState<Step>('wallet');
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(null);
@@ -64,13 +64,34 @@ export default function StartGamePage() {
     }
   }, [isPackageIdSet, account]);
 
-  // 检查用户是否已经有宝可梦
+  // 检查用户是否已经完成设置
   useEffect(() => {
-    if (!checkingPokemon && playerPokemonList.length > 0) {
-      toast.info('You already have a Pokémon!');
-      router.push('/');
-    }
-  }, [playerPokemonList, checkingPokemon, router]);
+    const checkExistingSetup = async () => {
+      if (!account?.address) return;
+
+      try {
+        const trainerRef = doc(db, 'trainers', account.address);
+        const trainerSnap = await getDoc(trainerRef);
+
+        if (trainerSnap.exists()) {
+          const trainerData = trainerSnap.data();
+          const hasCharacter = !!trainerData.characterId;
+          const hasName = !!trainerData.name;
+          const hasStarter = !!trainerData.starterPokemonId;
+
+          if (hasCharacter && hasName && hasStarter) {
+            // Setup already complete, redirect to explore
+            toast.info('You already have a Pokémon!');
+            router.push('/explore');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking existing setup:', error);
+      }
+    };
+
+    checkExistingSetup();
+  }, [account, router]);
 
   // 自动进入下一步
   useEffect(() => {
@@ -95,12 +116,12 @@ export default function StartGamePage() {
 
   const handlePokemonSelect = async (pokemonId: number) => {
     if (!account?.address) {
-      setError('请先连接钱包');
+      setError('Please connect your wallet first');
       return;
     }
 
     if (!isPackageIdSet) {
-      setError('智能合约未部署，请先部署合约');
+      setError('Smart contracts not deployed yet');
       return;
     }
 
@@ -109,16 +130,16 @@ export default function StartGamePage() {
 
     const pokemon = STARTER_POKEMON.find(p => p.id === pokemonId);
     if (!pokemon) {
-      setError('宝可梦未找到');
+      setError('Pokémon not found');
       return;
     }
 
-    // 初始化步骤
+    // Initialize steps
     setMintingSteps([
-      { label: '创建训练师档案', completed: false },
-      { label: '铸造宝可梦 NFT', completed: false },
-      { label: '保存游戏数据', completed: false },
-      { label: '完成设置', completed: false },
+      { label: 'Creating trainer profile', completed: false },
+      { label: 'Minting Pokémon NFT', completed: false },
+      { label: 'Saving game data', completed: false },
+      { label: 'Completing setup', completed: false },
     ]);
 
     try {
@@ -179,7 +200,7 @@ export default function StartGamePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+    <div className="start-game-container">
       {/* 错误提示 */}
       {error && (
         <FriendlyError
@@ -195,29 +216,29 @@ export default function StartGamePage() {
         />
       )}
 
-      {/* 成功模态框 */}
+      {/* Success Modal */}
       {showSuccess && (
         <SuccessModal
-          title="🎉 欢迎来到 PokéChain！"
-          message={`你成功获得了 ${STARTER_POKEMON.find(p => p.id === selectedPokemon)?.name}！`}
+          title="🎉 Welcome to PokéChain!"
+          message={`You successfully obtained ${STARTER_POKEMON.find(p => p.id === selectedPokemon)?.name}!`}
           details={[
-            { label: '训练师', value: trainerName },
-            { label: '初始宝可梦', value: STARTER_POKEMON.find(p => p.id === selectedPokemon)?.name || '' },
-            { label: '等级', value: '5' },
+            { label: 'Trainer', value: trainerName },
+            { label: 'Starter Pokémon', value: STARTER_POKEMON.find(p => p.id === selectedPokemon)?.name || '' },
+            { label: 'Level', value: '5' },
           ]}
           primaryAction={{
-            label: '开始冒险',
+            label: 'Start Adventure',
             href: '/explore'
           }}
         />
       )}
 
-      {/* 铸造进度 */}
+      {/* Minting Progress */}
       {minting && mintingSteps.length > 0 && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
           <LoadingProgress
-            message="正在设置你的游戏..."
-            submessage="这可能需要 10-30 秒，请不要关闭页面"
+            message="Setting up your game..."
+            submessage="This may take 10-30 seconds, please don't close the page"
             steps={mintingSteps}
           />
         </div>
@@ -226,11 +247,36 @@ export default function StartGamePage() {
       <div className="max-w-4xl w-full">
         {/* Step 1: Connect Wallet */}
         {step === 'wallet' && (
-          <div className="text-center">
-            <h1 className="text-5xl font-bold text-white mb-8">Welcome to PokeChain</h1>
-            <p className="text-xl text-gray-200 mb-12">Connect your wallet to start your adventure</p>
-            <div className="flex justify-center">
-              <ConnectButton className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-4 px-8 rounded-lg text-xl transition-colors" />
+          <div className="wallet-guard-content">
+            <div className="pokeball-icon">
+              <div className="pokeball-top"></div>
+              <div className="pokeball-middle"></div>
+              <div className="pokeball-bottom"></div>
+              <div className="pokeball-center"></div>
+            </div>
+
+            <h1 className="wallet-guard-title">
+              PokéChain Battles
+            </h1>
+
+            <p className="wallet-guard-subtitle">
+              Connect your wallet to start your adventure
+            </p>
+
+            <div className="wallet-connect-wrapper">
+              <WalletConnect />
+            </div>
+
+            <div className="wallet-guard-footer">
+              <p>Don't have OneWallet?</p>
+              <a
+                href="https://chromewebstore.google.com/detail/onewallet/gclmcgmpkgblaglfokkaclneihpnbkli"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="download-link"
+              >
+                Download OneWallet Extension →
+              </a>
             </div>
           </div>
         )}
@@ -238,9 +284,9 @@ export default function StartGamePage() {
         {/* Step 2: Select Character */}
         {step === 'character' && (
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6">
-            {/* 进度指示 */}
+            {/* Progress Indicator */}
             <div className="mb-6 text-center">
-              <p className="text-sm text-gray-300">步骤 2/4</p>
+              <p className="text-sm text-gray-300">Step 2/4</p>
               <div className="flex gap-2 justify-center mt-2">
                 <div className="w-12 h-1 bg-green-500 rounded" />
                 <div className="w-12 h-1 bg-blue-500 rounded" />
@@ -250,11 +296,11 @@ export default function StartGamePage() {
             </div>
 
             <PageGuide
-              title="选择你的角色"
-              description="选择一个代表你的角色形象"
+              title="Choose Your Character"
+              description="Select a character to represent you"
               tips={[
-                '点击任意角色即可选择',
-                '选择后可以继续下一步'
+                'Click on any character to select',
+                'Continue to the next step after selection'
               ]}
               storageKey="character-selection"
             />
