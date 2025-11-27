@@ -127,7 +127,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
         ▼                    ▼                    ▼
    Pokemon NFTs         Multiplayer          AI Dialogue
    Marketplace          Position Sync        Quest System
-   Breeding/Eggs        Chat Messages        Battle Engine
+   Breeding/Eggs        Profile              Battle Engine
 ```
 
 ---
