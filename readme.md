@@ -175,7 +175,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 |-------|-------------|
 | `/` | Landing page |
 | `/start-game` | Character selection & game start |
-| `/game` | Main 3D island exploration |
+| `/explore` | Main 3D island exploration |
 | `/battle` | Pokemon battle arena |
 | `/breeding` | Breeding center & egg incubation |
 | `/marketplace` | NFT marketplace |
