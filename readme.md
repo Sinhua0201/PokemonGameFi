@@ -78,7 +78,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 - Chat with AI-powered Pokemon trainers
 - Get tips and strategies
 - Immersive storytelling experience
-- Powered by Google Gemini AI
+- Powered by Deepseek AI
 
 ### 📜 Quest System
 - Daily and weekly quests
@@ -149,7 +149,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 | Technology | Purpose |
 |------------|---------|
 | **Python FastAPI** | REST API server |
-| **Google Gemini AI** | AI trainer dialogue |
+| **Deepseek** | AI trainer dialogue |
 | **Firebase Firestore** | Real-time multiplayer sync |
 
 ### Blockchain
