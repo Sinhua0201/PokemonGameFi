@@ -71,6 +71,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 ### 👤 Profile & Collection
 - View your complete Pokemon collection
 - Track Pokemon stats, level, and experience
+- Evolve pokemon in 12 level and 20 level
 - Character customization (6 unique characters)
 - Battle history and achievements
 
