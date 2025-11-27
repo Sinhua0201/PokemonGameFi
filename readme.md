@@ -71,7 +71,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 ### 👤 Profile & Collection
 - View your complete Pokemon collection
 - Track Pokemon stats, level, and experience
-- Character customization (8 unique characters)
+- Character customization (6 unique characters)
 - Battle history and achievements
 
 ### 🤖 AI Trainer Dialogue
