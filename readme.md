@@ -71,6 +71,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 ### 👤 Profile & Collection
 - View your complete Pokemon collection
 - Track Pokemon stats, level, and experience
+- Evolve pokemon in 12 level and 20 level
 - Character customization (6 unique characters)
 - Battle history and achievements
 
@@ -104,7 +105,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        FRONTEND (Next.js)                        │
+│                        FRONTEND (Next.js)                       │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
 │  │   3D Scene  │  │   Battle    │  │  Breeding   │              │
 │  │  (Three.js) │  │   System    │  │   System    │              │
@@ -118,9 +119,9 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
          │                   │                   │
          ▼                   ▼                   ▼
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Sui Blockchain │  │    Firebase     │  │  Backend API    │
-│   (Move Smart    │  │   (Realtime     │  │   (Python       │
-│    Contracts)    │  │    Database)    │  │    FastAPI)     │
+│   Sui Blockchain│  │    Firebase     │  │  Backend API    │
+│   (Move Smart   │  │   (Firestore    │  │   (Python       │
+│    Contracts)   │  │    Database)    │  │    FastAPI)     │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
         │                    │                    │
         │                    │                    │
