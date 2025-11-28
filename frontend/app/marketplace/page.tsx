@@ -246,9 +246,17 @@ export default function MarketplacePage() {
         refetchEggs();
       }, 2000);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to purchase NFT:', error);
-      toast.error('Failed to purchase NFT. Please try again.', { id: 'buy' });
+      console.error('Error details:', {
+        message: error?.message,
+        cause: error?.cause,
+        stack: error?.stack,
+      });
+      
+      // Show more specific error message
+      const errorMessage = error?.message || 'Failed to purchase NFT. Please try again.';
+      toast.error(errorMessage, { id: 'buy' });
     }
   };
 
@@ -309,6 +317,17 @@ export default function MarketplacePage() {
             <p className="pokemon-subtitle">
               Buy, sell, and trade Pokémon and Egg NFTs
             </p>
+            {/* Payment Info */}
+            <div className="mt-4 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg p-4 border-2 border-blue-300 shadow-md">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">💎</span>
+                <div>
+                  <p className="text-sm text-gray-600 font-semibold">Payment Method</p>
+                  <p className="text-lg font-bold text-gray-900">OCT (OneChain Token)</p>
+                  <p className="text-xs text-gray-600 font-medium">Use your wallet's OCT to buy NFTs</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Tabs */}
@@ -540,12 +559,12 @@ export default function MarketplacePage() {
           <div className="mt-8 bg-blue-50 rounded-lg p-6 border-2 border-blue-400 shadow-lg">
             <h3 className="text-lg font-bold text-gray-900 mb-2">ℹ️ Marketplace Info</h3>
             <ul className="text-gray-700 space-y-2 text-sm font-medium">
-              <li>• All prices are in SUI tokens</li>
+              <li>• All prices are in POKE tokens</li>
               <li>• Marketplace fee: 2.5% on all sales</li>
               <li>• Sellers receive 97.5% of the sale price</li>
               <li>• You can cancel your listings at any time</li>
               <li>• Purchased NFTs are transferred immediately to your wallet</li>
-              <li>• Make sure you have enough SUI for gas fees</li>
+              <li>• Make sure you have enough OCT for gas fees</li>
             </ul>
           </div>
         </div>

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Sui-Testnet-blue?style=for-the-badge&logo=sui" alt="Sui Testnet"/>
+  <img src="https://img.shields.io/badge/OneChain-Testnet-blue?style=for-the-badge" alt="OneChain Testnet"/>
   <img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
   <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/Move-Smart%20Contracts-purple?style=for-the-badge" alt="Move"/>
@@ -26,7 +26,7 @@
 
 ## 📖 Project Overview
 
-**PokeChain** is a fully decentralized Pokemon-style game built on the **Sui blockchain**. Players can collect, battle, breed, and trade Pokemon NFTs in an immersive 3D island world. All game assets are stored on-chain as NFTs, ensuring true ownership and transparency.
+**PokeChain** is a fully decentralized Pokemon-style game built on the **OneChain blockchain** (Sui-compatible). Players can collect, battle, breed, and trade Pokemon NFTs in an immersive 3D island world. All game assets are stored on-chain as NFTs, ensuring true ownership and transparency.
 
 Experience the nostalgia of Pokemon with the power of Web3 technology!
 
@@ -65,8 +65,9 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 ### 🏪 NFT Marketplace
 - List your Pokemon NFTs for sale
 - Browse and purchase Pokemon from other trainers
-- Secure on-chain transactions
+- Secure on-chain transactions with OCT (OneChain Token)
 - Filter by type, level, and price
+- 2.5% marketplace fee
 
 ### 👤 Profile & Collection
 - View your complete Pokemon collection
@@ -156,9 +157,10 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 ### Blockchain
 | Technology | Purpose |
 |------------|---------|
-| **Sui Network** | Layer 1 blockchain (Testnet) |
+| **OneChain Testnet** | Sui-compatible Layer 1 blockchain |
 | **Move Language** | Smart contract development |
-| **OneWallet** | Wallet connection |
+| **Sui Wallet** | Wallet connection (Sui Wallet, Suiet, etc.) |
+| **OCT Token** | Native gas and marketplace currency |
 
 ### Development Tools
 | Tool | Purpose |
@@ -267,8 +269,8 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 
 - **Node.js** v18+ 
 - **Python** 3.9+
-- **OneWallet** browser extension
-- **Sui Testnet** tokens (for gas fees)
+- **Sui Wallet** browser extension (or Suiet, Ethos)
+- **OCT tokens** from OneChain faucet (for gas fees)
 
 ### Installation
 
@@ -294,8 +296,11 @@ pip install -r requirements.txt
 
 Frontend (`frontend/.env.local`):
 ```env
-NEXT_PUBLIC_SUI_NETWORK=testnet
-NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address
+NEXT_PUBLIC_SUI_NETWORK=onechain-testnet
+NEXT_PUBLIC_RPC_URL=https://rpc-testnet.onelabs.cc:443
+NEXT_PUBLIC_PACKAGE_ID=your_package_id
+NEXT_PUBLIC_MARKETPLACE_ID=your_marketplace_id
+NEXT_PUBLIC_GAME_STATE_ID=your_game_state_id
 NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_key
 ```
 
@@ -328,11 +333,22 @@ http://localhost:3000
 
 ### Wallet Setup
 
-1. Install **OneWallet** browser extension
+1. Install **Sui Wallet** browser extension
 2. Create or import a wallet
-3. Switch network to **Sui Testnet**
-4. Get testnet SUI tokens from [Sui Faucet](https://faucet.sui.io)
+3. Switch network to **OneChain Testnet**
+   - RPC URL: `https://rpc-testnet.onelabs.cc:443`
+4. Get OCT tokens from [OneChain Faucet](https://faucet.onechain.ai)
 5. Connect wallet to PokeChain
+
+### Smart Contract Deployment
+
+Deploy to OneChain Testnet:
+```bash
+cd contracts/pokemon_nft
+sui client publish --gas-budget 100000000
+```
+
+Update frontend `.env.local` with deployed contract addresses.
 
 ---
 

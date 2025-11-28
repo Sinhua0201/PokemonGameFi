@@ -2,7 +2,7 @@
 
 import { useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID } from '@/config/constants';
+import { PACKAGE_ID, RPC_URL } from '@/config/constants';
 import { useState } from 'react';
 
 export interface MintPokemonParams {
@@ -74,7 +74,7 @@ export function useMintPokemon() {
               
               try {
                 const { SuiClient } = await import('@mysten/sui/client');
-                const client = new SuiClient({ url: 'https://fullnode.testnet.sui.io:443' });
+                const client = new SuiClient({ url: RPC_URL });
                 
                 // Get transaction details
                 const txDetails = await client.getTransactionBlock({

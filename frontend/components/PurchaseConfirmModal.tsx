@@ -164,15 +164,15 @@ export function PurchaseConfirmModal({
         <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-2 border-2 border-gray-200">
           <div className="flex justify-between text-gray-900 font-semibold">
             <span>Price</span>
-            <span className="font-bold">{listing.price} SUI</span>
+            <span className="font-bold">{listing.price.toFixed(3)} OCT</span>
           </div>
           <div className="flex justify-between text-gray-600 text-sm font-medium">
             <span>Marketplace Fee (2.5%)</span>
-            <span>{marketplaceFee.toFixed(4)} SUI</span>
+            <span>{marketplaceFee.toFixed(3)} OCT</span>
           </div>
           <div className="border-t-2 border-gray-300 pt-2 flex justify-between text-gray-900 font-bold">
             <span>Total</span>
-            <span>{totalCost.toFixed(4)} SUI</span>
+            <span>{totalCost.toFixed(3)} OCT</span>
           </div>
         </div>
 

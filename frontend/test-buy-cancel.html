@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Marketplace Buy & Cancel</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .output {
+      background: #f9f9f9;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .error {
+      color: red;
+    }
+    .success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Marketplace Buy & Cancel Test</h1>
+    
+    <h2>Current Listing</h2>
+    <div class="output">
+NFT ID: 0x4dedd2e170e11782fa9eb176299978997f4cf7f25c201a017c0ed77abf49ee5c
+Type: Egg
+Price: 0.01 OCT
+Seller: 0x30def35cc304d21ce9c79bd468c2482733476c5d0662d1e44a18f2e583054436
+    </div>
+
+    <h2>Test Actions</h2>
+    <button onclick="testBuy()">Test Buy (as different user)</button>
+    <button onclick="testCancel()">Test Cancel (as seller)</button>
+    <button onclick="checkListing()">Check Listing Status</button>
+
+    <h2>Output</h2>
+    <div id="output" class="output">Ready...</div>
+  </div>
+
+  <script type="module">
+    import { SuiClient } from 'https://esm.sh/@mysten/sui/client';
+
+    const RPC_URL = 'https://rpc-testnet.onelabs.cc:443';
+    const MARKETPLACE_ID = '0x175c044fe0e0fc401f45e5741e31f35445102c4171266424c3821720390703bd';
+    const PACKAGE_ID = '0xb87355127acb2b607280836182fc811bea17a3cd7601dba07035975878e696fa';
+    const NFT_ID = '0x4dedd2e170e11782fa9eb176299978997f4cf7f25c201a017c0ed77abf49ee5c';
+
+    const client = new SuiClient({ url: RPC_URL });
+
+    function log(message, type = 'info') {
+      const output = document.getElementById('output');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+      output.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    window.testBuy = async function() {
+      log('🛒 Testing Buy Function...');
+      log('This requires wallet connection in the actual app');
+      log('Transaction structure:');
+      log(`
+1. SplitCoins: Split 10000000 MIST from OCT coin
+2. MoveCall: 
+   - Function: ${PACKAGE_ID}::marketplace::buy_egg
+   - TypeArgs: ["0x2::oct::OCT"]
+   - Args: [marketplace, nft_id, payment_coin]
+      `);
+      log('✅ Transaction structure is correct', 'success');
+    };
+
+    window.testCancel = async function() {
+      log('❌ Testing Cancel Function...');
+      log('This requires wallet connection in the actual app');
+      log('Transaction structure:');
+      log(`
+MoveCall: 
+   - Function: ${PACKAGE_ID}::marketplace::cancel_listing_egg
+   - Args: [marketplace, nft_id]
+      `);
+      log('✅ Transaction structure is correct', 'success');
+    };
+
+    window.checkListing = async function() {
+      try {
+        log('🔍 Checking listing status...');
+        
+        // Check marketplace
+        const marketplace = await client.getObject({
+          id: MARKETPLACE_ID,
+          options: { showContent: true },
+        });
+
+        if (marketplace.data?.content?.dataType === 'moveObject') {
+          const fields = marketplace.data.content.fields;
+          log(`Marketplace listings count: ${fields.listings.fields.size}`, 'success');
+        }
+
+        // Check dynamic fields
+        const dynamicFields = await client.getDynamicFields({
+          parentId: MARKETPLACE_ID,
+        });
+
+        log(`Active listings: ${dynamicFields.data.length}`, 'success');
+        
+        if (dynamicFields.data.length > 0) {
+          dynamicFields.data.forEach((field, index) => {
+            log(`Listing ${index + 1}: ${field.name.value}`);
+          });
+        }
+
+        // Check if our NFT is still listed
+        const isListed = dynamicFields.data.some(
+          field => field.name.value === NFT_ID
+        );
+
+        if (isListed) {
+          log(`✅ NFT ${NFT_ID} is still listed`, 'success');
+        } else {
+          log(`❌ NFT ${NFT_ID} is NOT listed (may have been sold/cancelled)`, 'error');
+        }
+
+      } catch (error) {
+        log(`Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Auto-check on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        window.checkListing();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

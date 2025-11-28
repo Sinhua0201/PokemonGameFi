@@ -1,7 +1,10 @@
 // OneChain Configuration
 export const PACKAGE_ID = process.env.NEXT_PUBLIC_ONECHAIN_PACKAGE_ID || '';
-export const NETWORK = process.env.NEXT_PUBLIC_ONECHAIN_NETWORK || 'testnet';
+export const NETWORK = process.env.NEXT_PUBLIC_ONECHAIN_NETWORK || 'onechain-testnet';
+export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc-testnet.onelabs.cc:443';
 export const MARKETPLACE_ID = process.env.NEXT_PUBLIC_MARKETPLACE_ID || '';
+export const GAME_STATE_ID = process.env.NEXT_PUBLIC_GAME_STATE_ID || '';
+export const TOKEN_TREASURY_ID = process.env.NEXT_PUBLIC_TOKEN_TREASURY_ID || '';
 
 // API Configuration
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';

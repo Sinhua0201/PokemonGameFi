@@ -186,21 +186,21 @@ export function ListNFTModal({
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <label className="block text-gray-900 font-bold mb-2">
-              Price (SUI)
+              Price (POKE)
             </label>
             <input
               type="number"
-              step="0.01"
-              min="0.01"
+              step="0.001"
+              min="0.001"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="Enter price in SUI"
+              placeholder="Enter price in POKE"
               className="w-full px-4 py-3 bg-white text-gray-900 rounded-lg border-2 border-gray-300 focus:border-purple-500 focus:outline-none font-medium"
               required
               disabled={isLoading}
             />
             <p className="text-gray-600 text-xs mt-2 font-semibold">
-              Marketplace fee: 2.5% • You'll receive: {price ? (parseFloat(price) * 0.975).toFixed(2) : '0.00'} SUI
+              Marketplace fee: 2.5% • You'll receive: {price ? (parseFloat(price) * 0.975).toFixed(3) : '0.000'} OCT
             </p>
           </div>
 

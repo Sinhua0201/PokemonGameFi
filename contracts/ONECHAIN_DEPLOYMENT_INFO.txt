@@ -1,0 +1,52 @@
+OneChain 测试网部署成功！
+======================
+
+部署时间: 2024-11-29
+Transaction Digest: 7xsiyhErkMxPTwN1og6ZXNGoevUhEZzZHPW7okQtF2CD
+
+重要对象 ID:
+-----------
+
+📦 Package ID (合约包):
+0x2d0c2ebdbefaa6b7c39b534439b7364c60477706bf2395423351bc36da0d9a63
+
+🎮 GameState (游戏状态 - Shared):
+0x9eb57f975090d3f7ff786fb2472ae9c2fdbfe023e61b41cd4a3aa60c2cd7d03e
+
+🏪 Marketplace (市场 - Shared):
+0x3c076e2784d93e934c23b7e57fa2a4302c173a27024159fa90f9ddc0502f3141
+
+💰 TokenTreasury (代币金库 - Shared):
+0xaac1932d069b3119f009c5fb1a9946cbbe8106ba006aa34b92eba29b17aa2b7c
+
+🔑 MarketplaceAdminCap (市场管理员权限):
+0xdae4d01c43df39f8ae59349e68771c597a9e314d5fc2583b8f74dfab934f3844
+
+📈 UpgradeCap (升级权限):
+0xcce54eb7f7f0860d19d487380aa7ccdf5372af762dd89270a234b109425898c9
+
+🪙 POKEMON Token Metadata (Immutable):
+0xd00a5e1703a56a4f4a8f4d45009fad9e534e2e885149b1c511f473c8ebb17dba
+
+部署者地址:
+0xc10af7cf809a4092f5d0bba7f2e85d6c9d2d7eb0510a6220cae966a2a591e4d4
+
+Gas 消耗:
+- Storage Cost: 69.7 OCT
+- Computation Cost: 1 OCT
+- Total: ~70.7 OCT
+
+模块列表:
+- pokemon (宝可梦 NFT)
+- egg (蛋系统)
+- marketplace (市场)
+
+OneChain 浏览器:
+https://testnet.onechain.com/tx/7xsiyhErkMxPTwN1og6ZXNGoevUhEZzZHPW7okQtF2CD
+
+注意事项:
+--------
+1. 本合约使用 POKEMON 自定义代币而非 SUI
+2. 使用 OCT 作为 gas token
+3. 所有共享对象已正确创建
+4. 市场和游戏状态可以立即使用

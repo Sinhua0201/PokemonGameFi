@@ -219,7 +219,7 @@ export function MarketplaceGrid({
                 <div>
                   <p className="text-gray-600 text-sm font-semibold">Price</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {listing.price} <span className="text-lg text-gray-600">SUI</span>
+                    {listing.price.toFixed(3)} <span className="text-lg text-gray-600">OCT</span>
                   </p>
                 </div>
                 {isOwnListing && (

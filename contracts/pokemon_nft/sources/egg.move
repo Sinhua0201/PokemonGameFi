@@ -142,11 +142,10 @@ module pokemon_nft::egg {
         } = egg;
         object::delete(id);
 
-        // Mint the new Pokémon at level 1
-        pokemon::mint_captured(
+        // Mint the new Pokémon at level 1 (using starter function for free breeding)
+        pokemon::mint_starter(
             offspring_species,
             offspring_name,
-            1, // Start at level 1
             offspring_types,
             clock,
             ctx

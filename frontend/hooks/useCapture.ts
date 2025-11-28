@@ -2,7 +2,7 @@
 
 import { useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
-import { PACKAGE_ID } from '@/config/constants';
+import { PACKAGE_ID, GAME_STATE_ID } from '@/config/constants';
 import { useState } from 'react';
 import { battleApi } from '@/lib/api';
 

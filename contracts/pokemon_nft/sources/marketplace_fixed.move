@@ -1,13 +1,10 @@
-/// Fixed Marketplace Smart Contract with Proper Escrow
-/// Implements NFT trading with object wrapping for PokéChain Battles
+/// OneChain Compatible Marketplace - Uses native gas coin for payments
+/// Simplified version without custom token requirements
 module pokemon_nft::marketplace {
     use sui::object::{Self, UID, ID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::coin::{Self, Coin};
-    use sui::sui::SUI;
-    use sui::clock::{Self, Clock};
-    use sui::balance::{Self, Balance};
     use sui::table::{Self, Table};
     use sui::dynamic_object_field as dof;
     use pokemon_nft::pokemon::Pokemon;
@@ -17,20 +14,18 @@ module pokemon_nft::marketplace {
     // Data Structures
     // ============================================
 
-    /// Marketplace shared object that holds all listings
+    /// Marketplace shared object
     public struct Marketplace has key {
         id: UID,
         listings: Table<ID, ListingInfo>,
-        fee_percentage: u64,        // Fee in basis points (250 = 2.5%)
-        collected_fees: Balance<SUI>,
+        fee_percentage: u64,
     }
 
-    /// Listing information (stored in table)
+    /// Listing information
     public struct ListingInfo has store, drop {
-        nft_type: u8,               // 1 = Pokemon, 2 = Egg
+        nft_type: u8,
         seller: address,
         price: u64,
-        listed_timestamp: u64,
     }
 
     /// Wrapper for escrowed Pokemon
@@ -43,11 +38,6 @@ module pokemon_nft::marketplace {
     public struct EggListing has key, store {
         id: UID,
         egg: Egg,
-    }
-
-    /// Capability for marketplace admin
-    public struct MarketplaceAdminCap has key, store {
-        id: UID,
     }
 
     // ============================================
@@ -76,15 +66,8 @@ module pokemon_nft::marketplace {
             id: object::new(ctx),
             listings: table::new(ctx),
             fee_percentage: DEFAULT_FEE_PERCENTAGE,
-            collected_fees: balance::zero(),
         };
-
         transfer::share_object(marketplace);
-
-        let admin_cap = MarketplaceAdminCap {
-            id: object::new(ctx),
-        };
-        transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
     // ============================================
@@ -96,7 +79,6 @@ module pokemon_nft::marketplace {
         marketplace: &mut Marketplace,
         pokemon: Pokemon,
         price: u64,
-        clock: &Clock,
         ctx: &mut TxContext
     ) {
         assert!(price > 0, EInvalidPrice);
@@ -104,18 +86,14 @@ module pokemon_nft::marketplace {
         let nft_id = object::id(&pokemon);
         let seller = tx_context::sender(ctx);
 
-        // Create listing info
         let listing_info = ListingInfo {
             nft_type: NFT_TYPE_POKEMON,
             seller,
             price,
-            listed_timestamp: clock::timestamp_ms(clock),
         };
 
-        // Add to marketplace table
         table::add(&mut marketplace.listings, nft_id, listing_info);
 
-        // Wrap Pokemon and store as dynamic field
         let wrapped = PokemonListing {
             id: object::new(ctx),
             pokemon,
@@ -128,7 +106,6 @@ module pokemon_nft::marketplace {
         marketplace: &mut Marketplace,
         egg: Egg,
         price: u64,
-        clock: &Clock,
         ctx: &mut TxContext
     ) {
         assert!(price > 0, EInvalidPrice);
@@ -136,18 +113,14 @@ module pokemon_nft::marketplace {
         let nft_id = object::id(&egg);
         let seller = tx_context::sender(ctx);
 
-        // Create listing info
         let listing_info = ListingInfo {
             nft_type: NFT_TYPE_EGG,
             seller,
             price,
-            listed_timestamp: clock::timestamp_ms(clock),
         };
 
-        // Add to marketplace table
         table::add(&mut marketplace.listings, nft_id, listing_info);
 
-        // Wrap Egg and store as dynamic field
         let wrapped = EggListing {
             id: object::new(ctx),
             egg,
@@ -159,85 +132,75 @@ module pokemon_nft::marketplace {
     // Core Functions - Purchasing
     // ============================================
 
-    /// Purchase a listed Pokémon NFT
-    public entry fun buy_pokemon(
+    /// Purchase a listed Pokémon NFT with any coin type
+    public entry fun buy_pokemon<T>(
         marketplace: &mut Marketplace,
         nft_id: ID,
-        mut payment: Coin<SUI>,
+        mut payment: Coin<T>,
         ctx: &mut TxContext
     ) {
-        // Get and remove listing info
         assert!(table::contains(&marketplace.listings, nft_id), EListingNotFound);
         let listing_info = table::remove(&mut marketplace.listings, nft_id);
         
-        // Verify payment amount
         let payment_value = coin::value(&payment);
         assert!(payment_value >= listing_info.price, EInsufficientPayment);
 
-        // Calculate marketplace fee
+        // Calculate fees
         let fee_amount = (listing_info.price * marketplace.fee_percentage) / 10000;
         let seller_amount = listing_info.price - fee_amount;
 
-        // Split payment
+        // Split and transfer payments
         let fee_coin = coin::split(&mut payment, fee_amount, ctx);
         let seller_coin = coin::split(&mut payment, seller_amount, ctx);
 
-        // Add fee to marketplace balance
-        balance::join(&mut marketplace.collected_fees, coin::into_balance(fee_coin));
-
-        // Transfer payment to seller
+        transfer::public_transfer(fee_coin, @pokemon_nft);
         transfer::public_transfer(seller_coin, listing_info.seller);
 
-        // Return any excess payment to buyer
+        // Return excess
         if (coin::value(&payment) > 0) {
             transfer::public_transfer(payment, tx_context::sender(ctx));
         } else {
             coin::destroy_zero(payment);
         };
 
-        // Retrieve Pokemon from escrow and transfer to buyer
+        // Transfer NFT
         let PokemonListing { id, pokemon } = dof::remove(&mut marketplace.id, nft_id);
         object::delete(id);
         transfer::public_transfer(pokemon, tx_context::sender(ctx));
     }
 
-    /// Purchase a listed Egg NFT
-    public entry fun buy_egg(
+    /// Purchase a listed Egg NFT with any coin type
+    public entry fun buy_egg<T>(
         marketplace: &mut Marketplace,
         nft_id: ID,
-        mut payment: Coin<SUI>,
+        mut payment: Coin<T>,
         ctx: &mut TxContext
     ) {
-        // Get and remove listing info
         assert!(table::contains(&marketplace.listings, nft_id), EListingNotFound);
         let listing_info = table::remove(&mut marketplace.listings, nft_id);
         
-        // Verify payment amount
         let payment_value = coin::value(&payment);
         assert!(payment_value >= listing_info.price, EInsufficientPayment);
 
-        // Calculate marketplace fee
+        // Calculate fees
         let fee_amount = (listing_info.price * marketplace.fee_percentage) / 10000;
         let seller_amount = listing_info.price - fee_amount;
 
-        // Split payment
+        // Split and transfer payments
         let fee_coin = coin::split(&mut payment, fee_amount, ctx);
         let seller_coin = coin::split(&mut payment, seller_amount, ctx);
 
-        // Add fee to marketplace balance
-        balance::join(&mut marketplace.collected_fees, coin::into_balance(fee_coin));
-
-        // Transfer payment to seller
+        transfer::public_transfer(fee_coin, @pokemon_nft);
         transfer::public_transfer(seller_coin, listing_info.seller);
 
-        // Return any excess payment to buyer
+        // Return excess
         if (coin::value(&payment) > 0) {
             transfer::public_transfer(payment, tx_context::sender(ctx));
         } else {
             coin::destroy_zero(payment);
         };
 
-        // Retrieve Egg from escrow and transfer to buyer
+        // Transfer NFT
         let EggListing { id, egg } = dof::remove(&mut marketplace.id, nft_id);
         object::delete(id);
         transfer::public_transfer(egg, tx_context::sender(ctx));
@@ -247,84 +210,33 @@ module pokemon_nft::marketplace {
     // Core Functions - Cancel Listing
     // ============================================
 
-    /// Cancel a listing and return NFT to seller
+    /// Cancel a Pokemon listing
     public entry fun cancel_listing_pokemon(
         marketplace: &mut Marketplace,
         nft_id: ID,
         ctx: &mut TxContext
     ) {
-        // Get and remove listing info
         assert!(table::contains(&marketplace.listings, nft_id), EListingNotFound);
         let listing_info = table::remove(&mut marketplace.listings, nft_id);
-
-        // Verify caller is the seller
         assert!(tx_context::sender(ctx) == listing_info.seller, ENotSeller);
 
-        // Retrieve Pokemon from escrow and return to seller
         let PokemonListing { id, pokemon } = dof::remove(&mut marketplace.id, nft_id);
         object::delete(id);
         transfer::public_transfer(pokemon, listing_info.seller);
     }
 
-    /// Cancel an egg listing and return NFT to seller
+    /// Cancel an Egg listing
     public entry fun cancel_listing_egg(
         marketplace: &mut Marketplace,
         nft_id: ID,
         ctx: &mut TxContext
     ) {
-        // Get and remove listing info
         assert!(table::contains(&marketplace.listings, nft_id), EListingNotFound);
         let listing_info = table::remove(&mut marketplace.listings, nft_id);
-
-        // Verify caller is the seller
         assert!(tx_context::sender(ctx) == listing_info.seller, ENotSeller);
 
-        // Retrieve Egg from escrow and return to seller
         let EggListing { id, egg } = dof::remove(&mut marketplace.id, nft_id);
         object::delete(id);
         transfer::public_transfer(egg, listing_info.seller);
-    }
-
-    // ============================================
-    // Admin Functions
-    // ============================================
-
-    /// Update marketplace fee percentage (admin only)
-    public entry fun update_fee(
-        _admin_cap: &MarketplaceAdminCap,
-        marketplace: &mut Marketplace,
-        new_fee_percentage: u64,
-    ) {
-        marketplace.fee_percentage = new_fee_percentage;
-    }
-
-    /// Withdraw collected fees (admin only)
-    public entry fun withdraw_fees(
-        _admin_cap: &MarketplaceAdminCap,
-        marketplace: &mut Marketplace,
-        amount: u64,
-        ctx: &mut TxContext
-    ) {
-        let withdrawn = coin::take(&mut marketplace.collected_fees, amount, ctx);
-        transfer::public_transfer(withdrawn, tx_context::sender(ctx));
-    }
-
-    // ============================================
-    // Query Functions (Read-only)
-    // ============================================
-
-    /// Get marketplace fee percentage
-    public fun get_fee_percentage(marketplace: &Marketplace): u64 {
-        marketplace.fee_percentage
-    }
-
-    /// Get collected fees balance
-    public fun get_collected_fees(marketplace: &Marketplace): u64 {
-        balance::value(&marketplace.collected_fees)
-    }
-
-    /// Check if a listing exists
-    public fun listing_exists(marketplace: &Marketplace, nft_id: ID): bool {
-        table::contains(&marketplace.listings, nft_id)
     }
 }

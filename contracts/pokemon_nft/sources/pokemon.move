@@ -1,12 +1,31 @@
-/// Pokémon NFT Smart Contract
-/// Implements core NFT functionality for PokéChain Battles game
+/// Pokemon NFT Smart Contract - OneChain Compatible Version
+/// Uses OTW pattern and custom POKEMON token for OneChain deployment
+
 module pokemon_nft::pokemon {
     use sui::object::{Self, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use sui::clock::{Self, Clock};
+    use sui::coin::{Self, Coin};
+    use sui::balance::{Self as balance, Balance, Supply};
+    use std::option;
     use std::string::{Self, String};
     use std::vector;
+
+    // ============================================
+    // One-Time Witness for Token Creation
+    // ============================================
+    
+    /// One-time witness for POKEMON token creation
+    public struct POKEMON has drop {}
+
+    // ============================================
+    // Error Constants
+    // ============================================
+    
+    const ELevelTooLow: u64 = 0;
+    const EAlreadyFullyEvolved: u64 = 1;
+    const EInsufficientPayment: u64 = 2;
 
     // ============================================
     // Data Structures
@@ -22,29 +41,72 @@ module pokemon_nft::pokemon {
 
     /// Pokémon NFT structure with all game attributes
     public struct Pokemon has key, store {
-        id: UID,                    // Unique NFT ID
-        species_id: u64,            // Pokémon species number (1-151 for Gen 1)
-        name: String,               // Pokémon nickname
-        level: u64,                 // Current level (starts at 1)
-        experience: u64,            // Total experience points
-        stats: Stats,               // Combat stats
-        types: vector<String>,      // Pokémon types (e.g., ["fire"], ["water", "flying"])
-        owner: address,             // Current owner address
-        mint_timestamp: u64,        // When the NFT was minted
-        evolution_stage: u64,       // Evolution stage (0 = base, 1 = first evolution, 2 = second evolution)
+        id: UID,
+        species_id: u64,
+        name: String,
+        level: u64,
+        experience: u64,
+        stats: Stats,
+        types: vector<String>,
+        owner: address,
+        mint_timestamp: u64,
+        evolution_stage: u64,
+    }
+
+    /// Token treasury for managing POKEMON token supply
+    public struct TokenTreasury has key {
+        id: UID,
+        supply: Supply<POKEMON>,
+    }
+
+    /// Game state to hold collected fees
+    public struct GameState has key {
+        id: UID,
+        treasury: Balance<POKEMON>,
+        mint_price: u64,
+    }
+
+    // ============================================
+    // Initialization - OTW Pattern
+    // ============================================
+
+    /// Initialize with One-Time Witness pattern
+    fun init(witness: POKEMON, ctx: &mut TxContext) {
+        // Create custom POKEMON currency
+        let (treasury_cap, metadata) = coin::create_currency(
+            witness,
+            9, // decimals
+            b"POKE",
+            b"Pokemon Token",
+            b"Token for Pokemon NFT Game",
+            option::none(),
+            ctx
+        );
+        
+        // Create token treasury
+        let treasury = TokenTreasury {
+            id: object::new(ctx),
+            supply: coin::treasury_into_supply(treasury_cap),
+        };
+        
+        // Create game state
+        let game_state = GameState {
+            id: object::new(ctx),
+            treasury: balance::zero<POKEMON>(),
+            mint_price: 1000000000, // 1 POKE token
+        };
+        
+        // Share objects
+        transfer::share_object(treasury);
+        transfer::share_object(game_state);
+        transfer::public_freeze_object(metadata);
     }
 
     // ============================================
     // Core Functions - Minting
     // ============================================
 
-    /// Mint a starter Pokémon for new players
-    /// Parameters:
-    /// - species_id: Pokémon species number (1-151)
-    /// - name: Nickname for the Pokémon
-    /// - types: Vector of type strings (e.g., ["fire"], ["water", "flying"])
-    /// - clock: Clock object for timestamp
-    /// - ctx: Transaction context
+    /// Mint a starter Pokémon (free)
     public entry fun mint_starter(
         species_id: u64,
         name: vector<u8>,
@@ -52,10 +114,8 @@ module pokemon_nft::pokemon {
         clock: &Clock,
         ctx: &mut TxContext
     ) {
-        // Get base stats for the species
         let base_stats = get_starter_stats(species_id);
         
-        // Convert type bytes to strings
         let mut type_strings = vector::empty<String>();
         let mut i = 0;
         let types_len = vector::length(&types);
@@ -65,7 +125,6 @@ module pokemon_nft::pokemon {
             i = i + 1;
         };
 
-        // Create the Pokémon NFT
         let sender = tx_context::sender(ctx);
         let pokemon = Pokemon {
             id: object::new(ctx),
@@ -80,18 +139,10 @@ module pokemon_nft::pokemon {
             evolution_stage: 0,
         };
 
-        // Transfer to the player
         transfer::public_transfer(pokemon, sender);
     }
 
-    /// Mint a captured wild Pokémon
-    /// Parameters:
-    /// - species_id: Pokémon species number
-    /// - name: Pokémon name
-    /// - level: Level of the captured Pokémon
-    /// - types: Vector of type strings
-    /// - clock: Clock object for timestamp
-    /// - ctx: Transaction context
+    /// Mint a captured wild Pokémon (requires payment)
     public entry fun mint_captured(
         species_id: u64,
         name: vector<u8>,
@@ -100,11 +151,13 @@ module pokemon_nft::pokemon {
         clock: &Clock,
         ctx: &mut TxContext
     ) {
-        // Get base stats and scale by level
+        // Captured Pokemon are free to mint (payment removed for better UX)
+        
+        // Get stats and scale by level
         let base_stats = get_starter_stats(species_id);
         let scaled_stats = scale_stats_by_level(base_stats, level);
         
-        // Convert type bytes to strings
+        // Convert types
         let mut type_strings = vector::empty<String>();
         let mut i = 0;
         let types_len = vector::length(&types);
@@ -114,11 +167,9 @@ module pokemon_nft::pokemon {
             i = i + 1;
         };
 
-        // Calculate experience for the level (XP = Level^3)
         let xp = level * level * level;
-
-        // Create the Pokémon NFT
         let sender = tx_context::sender(ctx);
+        
         let pokemon = Pokemon {
             id: object::new(ctx),
             species_id,
@@ -132,7 +183,6 @@ module pokemon_nft::pokemon {
             evolution_stage: 0,
         };
 
-        // Transfer to the player
         transfer::public_transfer(pokemon, sender);
     }
 
@@ -141,37 +191,27 @@ module pokemon_nft::pokemon {
     // ============================================
 
     /// Evolve a Pokémon to its next stage
-    /// First evolution requires level 12, second evolution requires level 20
-    /// Parameters:
-    /// - pokemon: Mutable reference to the Pokémon NFT
-    /// - new_species_id: New species ID after evolution
-    /// - new_name: New name after evolution
     public entry fun evolve_pokemon(
         pokemon: &mut Pokemon,
         new_species_id: u64,
         new_name: vector<u8>,
     ) {
-        // Check evolution requirements
         let required_level = if (pokemon.evolution_stage == 0) {
-            12  // First evolution at level 12
+            12
         } else if (pokemon.evolution_stage == 1) {
-            20  // Second evolution at level 20
+            20
         } else {
-            100 // Cannot evolve further
+            100
         };
 
-        // Verify level requirement
-        assert!(pokemon.level >= required_level, 0); // Error code 0: Level too low
-        assert!(pokemon.evolution_stage < 2, 1); // Error code 1: Already fully evolved
+        assert!(pokemon.level >= required_level, ELevelTooLow);
+        assert!(pokemon.evolution_stage < 2, EAlreadyFullyEvolved);
 
-        // Update evolution stage
         pokemon.evolution_stage = pokemon.evolution_stage + 1;
-        
-        // Update species and name
         pokemon.species_id = new_species_id;
         pokemon.name = string::utf8(new_name);
         
-        // Boost stats on evolution (20% increase)
+        // Boost stats by 20%
         let hp_boost = pokemon.stats.hp / 5;
         let attack_boost = pokemon.stats.attack / 5;
         let defense_boost = pokemon.stats.defense / 5;
@@ -188,33 +228,23 @@ module pokemon_nft::pokemon {
     // ============================================
 
     /// Add experience to a Pokémon after battle
-    /// Parameters:
-    /// - pokemon: Mutable reference to the Pokémon NFT
-    /// - exp_gained: Amount of experience to add
     public entry fun add_experience(
         pokemon: &mut Pokemon,
         exp_gained: u64,
     ) {
         pokemon.experience = pokemon.experience + exp_gained;
         
-        // Auto level up if enough experience (simple formula: 100 exp per level)
         let exp_for_next_level = pokemon.level * 100;
         if (pokemon.experience >= exp_for_next_level && pokemon.level < 100) {
             pokemon.level = pokemon.level + 1;
             
-            // Scale stats with new level
             let base_stats = get_starter_stats(pokemon.species_id);
             let new_stats = scale_stats_by_level(base_stats, pokemon.level);
             pokemon.stats = new_stats;
         };
     }
 
-    /// Update Pokémon stats after leveling up
-    /// Parameters:
-    /// - pokemon: Mutable reference to the Pokémon NFT
-    /// - new_experience: New total experience points
-    /// - new_level: New level
-    /// - new_stats: Updated stats
+    /// Update Pokémon stats
     public entry fun update_stats(
         pokemon: &mut Pokemon,
         new_experience: u64,
@@ -224,11 +254,8 @@ module pokemon_nft::pokemon {
         new_defense: u64,
         new_speed: u64,
     ) {
-        // Update experience and level
         pokemon.experience = new_experience;
         pokemon.level = new_level;
-        
-        // Update stats
         pokemon.stats.hp = new_hp;
         pokemon.stats.attack = new_attack;
         pokemon.stats.defense = new_defense;
@@ -239,45 +266,30 @@ module pokemon_nft::pokemon {
     // Helper Functions
     // ============================================
 
-    /// Get base stats for starter Pokémon species
-    /// Returns Stats struct with base values
     fun get_starter_stats(species_id: u64): Stats {
-        // Starter Pokémon base stats (9 options)
         if (species_id == 1) {
-            // Bulbasaur: Balanced
             Stats { hp: 45, attack: 49, defense: 49, speed: 45 }
         } else if (species_id == 4) {
-            // Charmander: Attack-focused
             Stats { hp: 39, attack: 52, defense: 43, speed: 65 }
         } else if (species_id == 7) {
-            // Squirtle: Defense-focused
             Stats { hp: 44, attack: 48, defense: 65, speed: 43 }
         } else if (species_id == 25) {
-            // Pikachu: Speed-focused
             Stats { hp: 35, attack: 55, defense: 40, speed: 90 }
         } else if (species_id == 133) {
-            // Eevee: Balanced
             Stats { hp: 55, attack: 55, defense: 50, speed: 55 }
         } else if (species_id == 152) {
-            // Chikorita: Defense-focused
             Stats { hp: 45, attack: 49, defense: 65, speed: 45 }
         } else if (species_id == 155) {
-            // Cyndaquil: Attack-focused
             Stats { hp: 39, attack: 52, defense: 43, speed: 65 }
         } else if (species_id == 158) {
-            // Totodile: Attack-focused
             Stats { hp: 50, attack: 65, defense: 64, speed: 43 }
         } else if (species_id == 175) {
-            // Togepi: Balanced
             Stats { hp: 35, attack: 20, defense: 65, speed: 20 }
         } else {
-            // Default stats for any other species
             Stats { hp: 40, attack: 45, defense: 45, speed: 40 }
         }
     }
 
-    /// Scale stats based on level
-    /// Formula: base_stat + (base_stat * (level - 1) / 10)
     fun scale_stats_by_level(base_stats: Stats, level: u64): Stats {
         let level_bonus = if (level > 1) { level - 1 } else { 0 };
         
@@ -290,86 +302,29 @@ module pokemon_nft::pokemon {
     }
 
     // ============================================
-    // Query Functions (Read-only)
+    // Query Functions
     // ============================================
 
-    /// Get Pokémon species ID
-    public fun get_species_id(pokemon: &Pokemon): u64 {
-        pokemon.species_id
-    }
+    public fun get_species_id(pokemon: &Pokemon): u64 { pokemon.species_id }
+    public fun get_name(pokemon: &Pokemon): String { pokemon.name }
+    public fun get_level(pokemon: &Pokemon): u64 { pokemon.level }
+    public fun get_experience(pokemon: &Pokemon): u64 { pokemon.experience }
+    public fun get_stats(pokemon: &Pokemon): Stats { pokemon.stats }
+    public fun get_hp(pokemon: &Pokemon): u64 { pokemon.stats.hp }
+    public fun get_attack(pokemon: &Pokemon): u64 { pokemon.stats.attack }
+    public fun get_defense(pokemon: &Pokemon): u64 { pokemon.stats.defense }
+    public fun get_speed(pokemon: &Pokemon): u64 { pokemon.stats.speed }
+    public fun get_types(pokemon: &Pokemon): vector<String> { pokemon.types }
+    public fun get_owner(pokemon: &Pokemon): address { pokemon.owner }
+    public fun get_mint_timestamp(pokemon: &Pokemon): u64 { pokemon.mint_timestamp }
+    public fun get_evolution_stage(pokemon: &Pokemon): u64 { pokemon.evolution_stage }
 
-    /// Get Pokémon name
-    public fun get_name(pokemon: &Pokemon): String {
-        pokemon.name
-    }
-
-    /// Get Pokémon level
-    public fun get_level(pokemon: &Pokemon): u64 {
-        pokemon.level
-    }
-
-    /// Get Pokémon experience
-    public fun get_experience(pokemon: &Pokemon): u64 {
-        pokemon.experience
-    }
-
-    /// Get Pokémon stats
-    public fun get_stats(pokemon: &Pokemon): Stats {
-        pokemon.stats
-    }
-
-    /// Get Pokémon HP
-    public fun get_hp(pokemon: &Pokemon): u64 {
-        pokemon.stats.hp
-    }
-
-    /// Get Pokémon attack
-    public fun get_attack(pokemon: &Pokemon): u64 {
-        pokemon.stats.attack
-    }
-
-    /// Get Pokémon defense
-    public fun get_defense(pokemon: &Pokemon): u64 {
-        pokemon.stats.defense
-    }
-
-    /// Get Pokémon speed
-    public fun get_speed(pokemon: &Pokemon): u64 {
-        pokemon.stats.speed
-    }
-
-    /// Get Pokémon types
-    public fun get_types(pokemon: &Pokemon): vector<String> {
-        pokemon.types
-    }
-
-    /// Get Pokémon owner
-    public fun get_owner(pokemon: &Pokemon): address {
-        pokemon.owner
-    }
-
-    /// Get mint timestamp
-    public fun get_mint_timestamp(pokemon: &Pokemon): u64 {
-        pokemon.mint_timestamp
-    }
-
-    /// Get evolution stage
-    public fun get_evolution_stage(pokemon: &Pokemon): u64 {
-        pokemon.evolution_stage
-    }
-
-    /// Check if Pokemon can evolve
     public fun can_evolve(pokemon: &Pokemon): bool {
         if (pokemon.evolution_stage >= 2) {
             return false
         };
         
-        let required_level = if (pokemon.evolution_stage == 0) {
-            12
-        } else {
-            20
-        };
-        
+        let required_level = if (pokemon.evolution_stage == 0) { 12 } else { 20 };
         pokemon.level >= required_level
     }
 
@@ -404,17 +359,14 @@ module pokemon_nft::pokemon {
     #[test_only]
     public fun destroy_test_pokemon(pokemon: Pokemon) {
         let Pokemon { 
-            id, 
-            species_id: _, 
-            name: _, 
-            level: _, 
-            experience: _, 
-            stats: _, 
-            types: _, 
-            owner: _, 
-            mint_timestamp: _,
-            evolution_stage: _
+            id, species_id: _, name: _, level: _, experience: _, 
+            stats: _, types: _, owner: _, mint_timestamp: _, evolution_stage: _
         } = pokemon;
         object::delete(id);
+    }
+
+    #[test_only]
+    public fun init_for_testing(ctx: &mut TxContext) {
+        init(POKEMON {}, ctx);
     }
 }

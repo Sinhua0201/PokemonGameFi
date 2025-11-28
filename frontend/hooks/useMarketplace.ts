@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Transaction } from '@mysten/sui/transactions';
 import { useCurrentAccount } from '@mysten/dapp-kit';
-import { PACKAGE_ID, MARKETPLACE_ID } from '@/config/constants';
+import { PACKAGE_ID, MARKETPLACE_ID, RPC_URL } from '@/config/constants';
 import { 
   getActiveListings, 
   createMarketplaceListing, 
@@ -91,7 +91,6 @@ export function useListPokemon() {
           tx.object(MARKETPLACE_ID), // Marketplace shared object
           tx.object(pokemonId),
           tx.pure.u64(priceInMist),
-          tx.object('0x6'), // Clock object
         ],
       });
 
@@ -189,7 +188,6 @@ export function useListEgg() {
           tx.object(MARKETPLACE_ID), // Marketplace shared object
           tx.object(eggId),
           tx.pure.u64(priceInMist),
-          tx.object('0x6'), // Clock object
         ],
       });
 
@@ -270,28 +268,65 @@ export function useBuyNFT() {
 
       console.log('🔧 Building buy NFT transaction...');
       console.log('Listing:', listing);
+      console.log('NFT ID:', listing.nftId);
+      console.log('Price:', listing.price);
+      console.log('NFT Type:', listing.nftType);
 
       const tx = new Transaction();
 
-      // Convert price to MIST
+      // Convert price to MIST (9 decimals for OCT token)
       const priceInMist = Math.floor(listing.price * 1_000_000_000);
 
-      // Split coin for payment
-      const [coin] = tx.splitCoins(tx.gas, [tx.pure.u64(priceInMist)]);
+      // Get user's OCT coins
+      const { SuiClient } = await import('@mysten/sui/client');
+      const client = new SuiClient({ url: RPC_URL });
+      
+      const octCoins = await client.getCoins({
+        owner: account.address,
+        coinType: '0x2::oct::OCT',
+      });
+
+      if (!octCoins.data || octCoins.data.length === 0) {
+        throw new Error('You don\'t have any OCT tokens. Please get some OCT from the faucet first.');
+      }
+
+      // Calculate total balance
+      const totalBalance = octCoins.data.reduce(
+        (sum, coin) => sum + BigInt(coin.balance),
+        BigInt(0)
+      );
+
+      if (totalBalance < BigInt(priceInMist)) {
+        const balanceInOct = Number(totalBalance) / 1_000_000_000;
+        throw new Error(
+          `Insufficient OCT. You have ${balanceInOct.toFixed(3)} OCT but need ${listing.price.toFixed(3)} OCT`
+        );
+      }
+
+      // IMPORTANT: We need to use tx.gas to avoid using the same coin for both payment and gas
+      // Split the payment amount from the gas coin
+      const [paymentCoin] = tx.splitCoins(tx.gas, [tx.pure.u64(priceInMist)]);
 
       // Call the appropriate buy function based on NFT type
       const buyFunction = listing.nftType === 'pokemon' ? 'buy_pokemon' : 'buy_egg';
       
+      console.log('💰 Payment details:');
+      console.log('  - Price in MIST:', priceInMist);
+      console.log('  - Total OCT balance:', Number(totalBalance) / 1_000_000_000);
+      console.log('  - Buy function:', buyFunction);
+      
       tx.moveCall({
         target: `${PACKAGE_ID}::marketplace::${buyFunction}`,
+        typeArguments: ['0x2::oct::OCT'], // Specify OCT as the payment token type
         arguments: [
           tx.object(MARKETPLACE_ID), // Marketplace shared object
           tx.pure.id(listing.nftId),
-          coin,
+          paymentCoin,
         ],
       });
 
       console.log('📝 Transaction built, requesting signature...');
+      console.log('Transaction preview:', JSON.stringify(tx, null, 2));
 
       return new Promise((resolve, reject) => {
         signAndExecute(
@@ -312,6 +347,23 @@ export function useBuyNFT() {
             },
             onError: (err) => {
               console.error('❌ Failed to purchase NFT:', err);
+              console.error('Error type:', typeof err);
+              console.error('Error details:', JSON.stringify(err, null, 2));
+              
+              // Try to extract more error information
+              if (err && typeof err === 'object') {
+                const errorObj = err as any;
+                if (errorObj.message) {
+                  console.error('Error message:', errorObj.message);
+                }
+                if (errorObj.cause) {
+                  console.error('Error cause:', errorObj.cause);
+                }
+                if (errorObj.digest) {
+                  console.error('Transaction digest:', errorObj.digest);
+                }
+              }
+              
               setError(err as Error);
               setIsLoading(false);
               reject(err);
@@ -365,12 +417,17 @@ export function useCancelListing() {
 
       console.log('🔧 Building cancel listing transaction...');
       console.log('Listing:', listing);
+      console.log('NFT Type:', listing.nftType);
 
       const tx = new Transaction();
 
-      // Call the cancel_listing function
+      // Call the appropriate cancel function based on NFT type
+      const cancelFunction = listing.nftType === 'pokemon' 
+        ? 'cancel_listing_pokemon' 
+        : 'cancel_listing_egg';
+
       tx.moveCall({
-        target: `${PACKAGE_ID}::marketplace::cancel_listing`,
+        target: `${PACKAGE_ID}::marketplace::${cancelFunction}`,
         arguments: [
           tx.object(MARKETPLACE_ID), // Marketplace shared object
           tx.pure.id(listing.nftId),
@@ -378,6 +435,7 @@ export function useCancelListing() {
       });
 
       console.log('📝 Transaction built, requesting signature...');
+      console.log('Cancel function:', cancelFunction);
 
       return new Promise((resolve, reject) => {
         signAndExecute(
