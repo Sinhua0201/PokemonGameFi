@@ -5,7 +5,7 @@
 <h1 align="center">🎮 PokeChain</h1>
 
 <p align="center">
-  <strong>A Web3 Pokemon Game on Sui Blockchain</strong>
+  <strong>A Web3 Pokemon Game on OneChain Blockchain</strong>
 </p>
 
 <p align="center">
