@@ -36,7 +36,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 
 | Platform | Link |
 |----------|------|
-| 🎥 **YouTube Demo** | [Watch Demo Video](https://youtu.be/4_Y_t3AGn2A?si=n15cwaNL8u2mpTQc) |
+| 🎥 **YouTube Demo** | [Watch Demo Video](https://youtube.com/your-video-link) |
 | 🌐 **Live Web App** | [Play PokeChain](https://pokemon-game-fi.vercel.app/) |
 
 ---
