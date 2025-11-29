@@ -120,7 +120,8 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
          │                   │                   │
          ▼                   ▼                   ▼
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   OneChain Blockchain│  │    Firebase     │  │  Backend API    │
+│OneChain         │  │    Firebase     │  │  Backend API    │
+│   Blockchain    │  │                 │  │                 │
 │   (Move Smart   │  │   (Firestore    │  │   (Python       │
 │    Contracts)   │  │    Database)    │  │    FastAPI)     │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
