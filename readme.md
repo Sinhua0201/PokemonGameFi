@@ -5,7 +5,7 @@
 <h1 align="center">🎮 PokeChain</h1>
 
 <p align="center">
-  <strong>A Web3 Pokemon Game on Sui Blockchain</strong>
+  <strong>A Web3 Pokemon Game on OneChain Blockchain</strong>
 </p>
 
 <p align="center">
@@ -120,7 +120,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
          │                   │                   │
          ▼                   ▼                   ▼
 ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Sui Blockchain│  │    Firebase     │  │  Backend API    │
+│   OneChain Blockchain│  │    Firebase     │  │  Backend API    │
 │   (Move Smart   │  │   (Firestore    │  │   (Python       │
 │    Contracts)   │  │    Database)    │  │    FastAPI)     │
 └─────────────────┘  └─────────────────┘  └─────────────────┘
@@ -159,7 +159,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 |------------|---------|
 | **OneChain Testnet** | Sui-compatible Layer 1 blockchain |
 | **Move Language** | Smart contract development |
-| **Sui Wallet** | Wallet connection (Sui Wallet, Suiet, etc.) |
+| **OneChain Wallet** | Wallet connection (Sui Wallet, Suiet, etc.) |
 | **OCT Token** | Native gas and marketplace currency |
 
 ### Development Tools
@@ -269,7 +269,7 @@ Experience the nostalgia of Pokemon with the power of Web3 technology!
 
 - **Node.js** v18+ 
 - **Python** 3.9+
-- **Sui Wallet** browser extension (or Suiet, Ethos)
+- **OneChain Wallet** browser extension
 - **OCT tokens** from OneChain faucet (for gas fees)
 
 ### Installation
