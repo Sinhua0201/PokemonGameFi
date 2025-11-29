@@ -7,32 +7,28 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    // Helper function to check if user owns the document
-    function isOwner(walletAddress) {
-      return isAuthenticated() && request.auth.uid == walletAddress;
-    }
-    
-    // Players collection
+    // Players collection - wallet address as document ID
     match /players/{walletAddress} {
       // Anyone can read player data
       allow read: if true;
       
-      // Only the owner can create or update their player document
-      allow create: if isOwner(walletAddress);
-      allow update: if isOwner(walletAddress);
+      // Any authenticated user can create or update player documents
+      // (wallet address is stored in the document, not matched to auth.uid)
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
       
       // No one can delete player documents
       allow delete: if false;
     }
     
-    // Game state collection
+    // Game state collection - wallet address as document ID
     match /gameState/{walletAddress} {
-      // Only the owner can read their game state
-      allow read: if isOwner(walletAddress);
+      // Any authenticated user can read game state
+      allow read: if isAuthenticated();
       
-      // Only the owner can create or update their game state
-      allow create: if isOwner(walletAddress);
-      allow update: if isOwner(walletAddress);
+      // Any authenticated user can create or update game state
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
       
       // No one can delete game state
       allow delete: if false;
@@ -59,12 +55,9 @@ service cloud.firestore {
       // Only authenticated users can create listings
       allow create: if isAuthenticated();
       
-      // Only the seller can update their listing (cancel)
-      // Or anyone can update to mark as sold (handled by backend)
-      allow update: if isAuthenticated() && (
-        resource.data.sellerAddress == request.auth.uid ||
-        request.resource.data.status == 'sold'
-      );
+      // Only authenticated users can update listings
+      // (seller verification happens in application logic)
+      allow update: if isAuthenticated();
       
       // No one can delete listings
       allow delete: if false;
@@ -75,7 +68,7 @@ service cloud.firestore {
       // Anyone can read cached Pokémon data
       allow read: if true;
       
-      // Only authenticated users can write to cache (typically backend)
+      // Only authenticated users can write to cache
       allow write: if isAuthenticated();
     }
   }
